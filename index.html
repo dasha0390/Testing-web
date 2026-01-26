@@ -1,562 +1,2000 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Logbook Magang</title>
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:Segoe UI,Tahoma;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;padding:20px}
-    .container{max-width:560px;margin:0 auto;background:#fff;border-radius:20px;box-shadow:0 10px 40px rgba(0,0,0,.2);overflow:hidden}
-    .header{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:28px 20px;text-align:center}
-    .header h1{font-size:22px;margin-top:8px}
-    .header p{font-size:13px;opacity:.9;margin-top:4px}
-    .content{padding:20px 16px}
-    .form-group{margin-bottom:14px}
-    label{display:block;margin-bottom:8px;color:#333;font-weight:800;font-size:13px}
-    .required{color:#e74c3c}
-    input,textarea,select{width:100%;padding:12px 14px;border:2px solid #e0e0e0;border-radius:10px;font-size:14px}
-    textarea{min-height:95px;resize:vertical}
-    input:focus,textarea:focus,select:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,.12)}
-    .btn{width:100%;padding:14px;border:none;border-radius:10px;font-size:15px;font-weight:900;cursor:pointer;margin-top:8px;transition:.2s}
-    .btn-primary{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff}
-    .btn-secondary{background:#667eea;color:#fff}
-    .btn:hover{transform:translateY(-1px)}
-    .hidden{display:none}
-    .alert{padding:12px 14px;border-radius:10px;margin-bottom:14px;font-size:13px}
-    .alert-success{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
-    .alert-error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
-    .alert-info{background:#d1ecf1;color:#0c5460;border:1px solid #bee5eb}
-    .tabs{display:flex;gap:6px;margin:10px 0 14px;border-bottom:2px solid #eee;flex-wrap:wrap}
-    .tab{flex:1;min-width:120px;text-align:center;padding:10px 8px;font-weight:900;color:#666;cursor:pointer}
-    .tab.active{color:#667eea;border-bottom:3px solid #667eea;margin-bottom:-2px}
-    .card{background:#f8f9fa;padding:14px;border-radius:12px;margin-bottom:12px;border-left:4px solid #667eea}
-    .card h3{color:#667eea;font-size:15px;margin-bottom:6px}
-    .card p{color:#555;font-size:13px;margin-bottom:4px}
-    .muted{font-size:12px;color:#888}
-    .user-info{display:flex;justify-content:space-between;gap:10px;align-items:center;background:#f8f9fa;padding:12px;border-radius:12px;margin-bottom:14px}
-    .user-info span{font-weight:900;color:#667eea}
-    .mini-actions{display:flex;gap:8px}
-    .mini-btn{padding:8px 12px;border:none;border-radius:10px;font-weight:900;background:#667eea;color:#fff;cursor:pointer}
-    .logo{width:62px;height:62px;border-radius:14px;object-fit:cover;background:rgba(255,255,255,.15);padding:6px}
-    #globalLoading{display:none;position:fixed;inset:0;background:rgba(255,255,255,.75);z-index:99999;align-items:center;justify-content:center}
-    #globalLoading .box{background:#fff;padding:16px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.12);font-weight:900;color:#667eea}
-    .split{display:flex;gap:8px}
-    .split > *{flex:1}
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+
+    .header {
+      position: relative;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .header h1 { font-size: 24px; margin-bottom: 5px; }
+    .header p { font-size: 14px; opacity: 0.9; }
+
+    .content { padding: 30px 20px; }
+
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .required { color: #e74c3c; }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-group textarea { resize: vertical; min-height: 100px; }
+
+    .btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #667eea;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .logbook-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      border-left: 4px solid #667eea;
+      position: relative;
+    }
+
+    .logbook-item h3 {
+      color: #667eea;
+      font-size: 16px;
+      margin-bottom: 8px;
+      padding-right: 0;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .logbook-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      margin-bottom: 8px;
+    }
+
+    .btn-action {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .btn-edit { background: #3498db; color: white; }
+    .btn-edit:hover { background: #2980b9; }
+
+    .btn-delete { background: #e74c3c; color: white; }
+    .btn-delete:hover { background: #c0392b; }
+
+    .logbook-item p { color: #666; font-size: 14px; margin-bottom: 5px; }
+    .logbook-item .date { color: #999; font-size: 12px; }
+
+    .logbook-image {
+      margin-top: 10px;
+      border-radius: 8px;
+      overflow: hidden;
+      max-width: 100%;
+    }
+
+    .logbook-image img {
+      width: 100%;
+      height: auto;
+      display: block;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .logbook-image img:hover { transform: scale(1.02); }
+
+    .image-placeholder {
+      width: 100%;
+      height: 200px;
+      background: #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      color: #999;
+      font-size: 14px;
+    }
+
+    .image-modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.9);
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .image-modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 90%;
+      max-height: 90%;
+    }
+
+    .image-modal-content img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+    }
+
+    .image-modal-close {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: white;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10000;
+    }
+
+    .image-modal-close:hover { color: #667eea; }
+
+    .file-link {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 6px 12px;
+      background: #667eea;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 12px;
+    }
+
+    .file-link:hover { background: #5568d3; }
+
+    .alert {
+      padding: 12px 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .alert-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
+    .hidden { display: none; }
+
+    .user-info {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-info span { font-weight: 600; color: #667eea; }
+
+    .loading { text-align: center; padding: 20px; color: #667eea; }
+
+    .file-upload {
+      border: 2px dashed #e0e0e0;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      cursor: default;
+      transition: all 0.3s;
+    }
+
+    .file-upload:hover { border-color: #667eea; background: #f8f9fa; }
+
+    .file-upload input[type="file"] { display: none; }
+
+    .file-name { margin-top: 10px; font-size: 14px; color: #667eea; }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 600;
+      color: #666;
+      transition: all 0.3s;
+      user-select: none;
+      font-size: 13px;
+    }
+
+    .tab.active {
+      color: #667eea;
+      border-bottom: 3px solid #667eea;
+      margin-bottom: -2px;
+    }
+
+    .profile-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .profile-card h2 { font-size: 20px; margin-bottom: 5px; }
+    .profile-card p { font-size: 14px; opacity: 0.9; }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    @media (max-width: 600px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    .student-card {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border-left: 4px solid #667eea;
+    }
+
+    .student-card:hover {
+      transform: translateX(5px);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    .student-card h3 {
+      color: #667eea;
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+
+    .student-card p { color: #666; font-size: 13px; }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .info-item {
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .info-item label {
+      font-size: 11px;
+      color: #999;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .info-item span {
+      font-size: 13px;
+      color: #333;
+      font-weight: 600;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      display: block;
+    }
+
+    .info-item.full-width { grid-column: 1 / -1; }
+
+    @media (max-width: 600px) {
+      .info-grid { grid-template-columns: 1fr; gap: 8px; }
+      .info-item { padding: 12px; }
+      .info-item label { font-size: 12px; }
+      .info-item span { font-size: 14px; }
+    }
+
+    .refresh-mini {
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      padding: 8px 12px;
+      width: auto;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: rgba(255,255,255,0.18);
+      color: white;
+      font-weight: 700;
+      transition: all 0.2s;
+    }
+    .refresh-mini:hover { background: rgba(255,255,255,0.3); }
+
+    #globalLoading {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.75);
+      z-index: 99999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    #globalLoading .box {
+      background: white;
+      border-radius: 14px;
+      padding: 16px 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      font-weight: 700;
+      color: #667eea;
+      text-align: center;
+      min-width: 240px;
+    }
+    #globalLoading .small {
+      margin-top: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #666;
+    }
+
+    /* tambahan kecil untuk presensi */
+    .mini-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    .mini-grid .btn-secondary{ margin-top:0; }
+    .photo-preview{
+      margin-top:10px;
+      border-radius:10px;
+      overflow:hidden;
+      border:2px solid #e0e0e0;
+      background:#fafafa;
+    }
+    .photo-preview img{ width:100%; display:block; }
   </style>
 </head>
 
 <body>
-<div class="container">
+  <div class="container">
 
-  <!-- LOGIN PAGE -->
-  <div id="loginPage">
-    <div class="header">
-      <img id="logoImg" class="logo" alt="logo">
-      <h1>Logbook Magang</h1>
-      <p>Login Siswa / Admin</p>
+    <!-- Login Page -->
+    <div id="loginPage">
+      <div class="header">
+        <button class="refresh-mini" onclick="refreshCurrentPage()" title="Refresh">🔄</button>
+        <img src="eagle.png" width="60">
+        <h1>Logbook Magang</h1>
+        <p>Sistem Pencatatan Kegiatan Magang</p>
+      </div>
+      <div class="content">
+        <div id="loginAlert"></div>
+        <form id="loginForm">
+          <div class="form-group">
+            <label>Username <span class="required">*</span></label>
+            <input type="text" id="username" required placeholder="Masukkan username">
+          </div>
+          <div class="form-group">
+            <label>Password <span class="required">*</span></label>
+            <input type="password" id="password" required placeholder="Masukkan password">
+          </div>
+          <div class="form-group" style="margin-bottom: 10px;">
+            <label style="display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+              <input type="checkbox" id="rememberMe" style="width: auto; margin-right: 8px;">
+              <span style="font-size: 14px;">Ingat saya</span>
+            </label>
+          </div>
+          <button type="submit" class="btn btn-primary" id="loginBtn">Masuk</button>
+        </form>
+      </div>
     </div>
 
-    <div class="content">
-      <div id="loginAlert"></div>
-      <form id="loginForm">
-        <div class="form-group">
-          <label>Username <span class="required">*</span></label>
-          <input id="username" required placeholder="Masukkan username">
-        </div>
-        <div class="form-group">
-          <label>Password <span class="required">*</span></label>
-          <input type="password" id="password" required placeholder="Masukkan password">
-        </div>
-
-        <div class="form-group" style="margin-bottom:6px">
-          <label style="font-weight:600;display:flex;gap:8px;align-items:center">
-            <input type="checkbox" id="rememberMe" style="width:auto">
-            Ingat saya
-          </label>
+    <!-- Student Page -->
+    <div id="studentPage" class="hidden">
+      <div class="header">
+        <button class="refresh-mini" onclick="refreshCurrentPage()" title="Refresh">🔄</button>
+        <img src="eagle.png" width="60">
+        <h1>Logbook Saya</h1>
+        <p>Catat kegiatan magang harian Anda</p>
+      </div>
+      <div class="content">
+        <div class="user-info">
+          <span id="studentName">Siswa</span>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-secondary" onclick="refreshCurrentPage()" style="padding: 8px 12px; width: auto; border-radius: 6px;">🔄 Refresh</button>
+            <button class="btn-secondary" onclick="logout()" style="padding: 8px 12px; width: auto; border-radius: 6px;">Keluar</button>
+          </div>
         </div>
 
-        <button class="btn btn-primary" id="loginBtn" type="submit">Masuk</button>
-      </form>
+        <!-- ✅ TAB SISWA DITAMBAH PRESENSI -->
+        <div class="tabs">
+          <div class="tab active" onclick="showStudentTab('profil')">👤 Profil</div>
+          <div class="tab" onclick="showStudentTab('add')">➕ Tambah</div>
+          <div class="tab" onclick="showStudentTab('view')">📋 Lihat</div>
+          <div class="tab" onclick="showStudentTab('presensi')">📍 Presensi</div>
+        </div>
+
+        <!-- Tab Profil -->
+        <div id="profilTab">
+          <div id="profilAlert"></div>
+          <form id="profilForm">
+            <div class="form-group">
+              <label>Nama Lengkap <span class="required">*</span></label>
+              <input type="text" id="namaLengkap" required placeholder="Nama lengkap">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>No Absen <span class="required">*</span></label>
+                <input type="text" id="noAbsen" required placeholder="Nomor absen">
+              </div>
+              <div class="form-group">
+                <label>Telepon <span class="required">*</span></label>
+                <input type="tel" id="telepon" required placeholder="Nomor telepon">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Email <span class="required">*</span></label>
+              <input type="email" id="email" required placeholder="Email">
+            </div>
+
+            <div class="form-group">
+              <label>Tempat Magang <span class="required">*</span></label>
+              <input type="text" id="tempatMagang" required placeholder="Nama perusahaan/instansi">
+            </div>
+
+            <div class="form-group">
+              <label>Alamat Tempat Magang <span class="required">*</span></label>
+              <textarea id="alamatMagang" required placeholder="Alamat lengkap tempat magang"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Posisi Magang <span class="required">*</span></label>
+              <input type="text" id="posisi" required placeholder="Contoh: Web Developer, Designer">
+            </div>
+
+            <div class="form-group">
+              <label>Nama Pembimbing</label>
+              <input type="text" id="pembimbing" placeholder="Nama pembimbing di tempat magang">
+            </div>
+
+            <div class="form-group">
+              <label>No HP Mentor</label>
+              <input type="tel" id="noHpMentor" placeholder="Contoh: 08xxxxxxxxxx">
+            </div>
+
+            <div class="form-group">
+              <label>Hari Kerja <span class="required">*</span></label>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; padding:10px; border:2px solid #e0e0e0; border-radius:10px;">
+                <label style="display:flex; gap:8px; align-items:center;"><input type="checkbox" class="hariKerja" value="Senin"> Senin</label>
+                <label style="display:flex; gap:8px; align-items:center;"><input type="checkbox" class="hariKerja" value="Selasa"> Selasa</label>
+                <label style="display:flex; gap:8px; align-items:center;"><input type="checkbox" class="hariKerja" value="Rabu"> Rabu</label>
+                <label style="display:flex; gap:8px; align-items:center;"><input type="checkbox" class="hariKerja" value="Kamis"> Kamis</label>
+                <label style="display:flex; gap:8px; align-items:center;"><input type="checkbox" class="hariKerja" value="Jumat"> Jumat</label>
+                <label style="display:flex; gap:8px; align-items:center;"><input type="checkbox" class="hariKerja" value="Sabtu"> Sabtu</label>
+                <label style="display:flex; gap:8px; align-items:center;"><input type="checkbox" class="hariKerja" value="Minggu"> Minggu</label>
+              </div>
+              <small style="display:block; margin-top:8px; color:#666;">Centang hari kerja magang kamu.</small>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Jam Kerja Mulai <span class="required">*</span></label>
+                <input type="time" id="jamKerjaMulai" required>
+              </div>
+              <div class="form-group">
+                <label>Jam Kerja Selesai <span class="required">*</span></label>
+                <input type="time" id="jamKerjaSelesai" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Tanggal Mulai <span class="required">*</span></label>
+                <input type="date" id="tanggalMulai" required>
+              </div>
+              <div class="form-group">
+                <label>Tanggal Selesai <span class="required">*</span></label>
+                <input type="date" id="tanggalSelesai" required>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="saveProfilBtn">💾 Simpan Profil</button>
+
+            <!-- ✅ TAMBAHAN PRESENSI POINT -->
+            <div style="height:18px"></div>
+            <div class="logbook-item">
+              <h3>📍 Titik Presensi (GPS)</h3>
+              <p style="font-size:13px;margin-bottom:8px;color:#666;">
+                Simpan lokasi kantor/tempat magang. Presensi valid maksimal radius <b>50 meter</b>.
+              </p>
+
+              <div id="gpsPointAlert"></div>
+
+              <div class="form-row">
+                <div class="form-group" style="margin-bottom:10px;">
+                  <label>Latitude (Lat) <span class="required">*</span></label>
+                  <input type="text" id="presensiLat" placeholder="-6.9573691">
+                </div>
+                <div class="form-group" style="margin-bottom:10px;">
+                  <label>Longitude (Lng) <span class="required">*</span></label>
+                  <input type="text" id="presensiLng" placeholder="110.4114006">
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-bottom:10px;">
+                <label>Radius (meter)</label>
+                <input type="number" id="presensiRadius" value="50" min="10" max="500">
+              </div>
+
+              <div class="mini-grid">
+                <button type="button" class="btn btn-secondary" onclick="ambilLokasiTitik()">🛰️ Ambil Lokasi dari GPS</button>
+                <button type="button" class="btn btn-primary" onclick="simpanTitikPresensi()">✅ Simpan Titik Presensi</button>
+              </div>
+
+              <p id="lastPointInfo" style="margin-top:10px;font-size:12px;color:#666;"></p>
+            </div>
+          </form>
+        </div>
+
+        <!-- Tab Tambah Logbook -->
+        <div id="addTab" class="hidden">
+          <div id="studentAlert"></div>
+          <form id="logbookForm">
+            <div class="form-group">
+              <label>Tanggal <span class="required">*</span></label>
+              <input type="date" id="tanggal" required>
+            </div>
+            <div class="form-group">
+              <label>Judul Kegiatan <span class="required">*</span></label>
+              <input type="text" id="judul" required placeholder="Contoh: Membuat video promosi">
+            </div>
+            <div class="form-group">
+              <label>Deskripsi <span class="required">*</span></label>
+              <textarea id="deskripsi" required placeholder="Jelaskan kegiatan yang dilakukan"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Upload Foto (Opsional)</label>
+              <div class="file-upload">
+                <p>📷 Pilih sumber foto</p>
+                <p style="font-size: 12px; color: #999;">Otomatis dikompres max 2MB</p>
+
+                <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:10px;">
+                  <button type="button" class="btn-secondary" onclick="pickCamera()"
+                    style="padding: 10px 14px; width:auto; border-radius:8px;">📷 Kamera</button>
+                  <button type="button" class="btn-secondary" onclick="pickGallery()"
+                    style="padding: 10px 14px; width:auto; border-radius:8px;">🖼️ Galeri</button>
+                  <button type="button" class="btn-secondary" onclick="clearSelectedImage()"
+                    style="padding: 10px 14px; width:auto; border-radius:8px; background:#999;">✖ Hapus</button>
+                </div>
+
+                <input type="file" id="fileInputCamera" accept="image/*" capture="environment">
+                <input type="file" id="fileInputGallery" accept="image/*">
+
+                <div id="fileName" class="file-name"></div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="submitBtn">Simpan Logbook</button>
+            <button type="button" class="btn btn-secondary hidden" id="cancelBtn" onclick="cancelEdit()">Batal Edit</button>
+          </form>
+        </div>
+
+        <div id="viewTab" class="hidden">
+          <div id="logbookList" class="loading">Memuat data...</div>
+        </div>
+
+        <!-- ✅ TAB PRESENSI SISWA -->
+        <div id="presensiTab" class="hidden">
+          <div id="presensiAlert"></div>
+
+          <div class="logbook-item">
+            <h3>🧭 Presensi Hari Ini</h3>
+            <p style="font-size:13px;color:#666;margin-bottom:10px;">
+              Presensi membutuhkan <b>GPS + Selfie</b> dan harus berada dalam radius titik presensi.
+            </p>
+
+            <div class="form-row">
+              <div class="form-group" style="margin-bottom:10px;">
+                <label>Latitude (Lat)</label>
+                <input type="text" id="myLat" readonly>
+              </div>
+              <div class="form-group" style="margin-bottom:10px;">
+                <label>Longitude (Lng)</label>
+                <input type="text" id="myLng" readonly>
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-secondary" onclick="ambilLokasiSaya()">🛰️ Ambil Lokasi Saya</button>
+
+            <div class="form-group" style="margin-top:12px;">
+              <label>Selfie Presensi <span class="required">*</span></label>
+              <div class="file-upload">
+                <p>🤳 Ambil selfie (wajib)</p>
+                <p style="font-size: 12px; color: #999;">Otomatis dikompres max 2MB</p>
+
+                <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:10px;">
+                  <button type="button" class="btn-secondary" onclick="pickSelfie()"
+                    style="padding: 10px 14px; width:auto; border-radius:8px;">🤳 Kamera Depan</button>
+                  <button type="button" class="btn-secondary" onclick="clearSelfie()"
+                    style="padding: 10px 14px; width:auto; border-radius:8px; background:#999;">✖ Hapus</button>
+                </div>
+
+                <input type="file" id="selfieInput" accept="image/*" capture="user">
+                <div id="selfieName" class="file-name"></div>
+
+                <div id="selfiePreview" class="photo-preview hidden">
+                  <img id="selfieImg" src="">
+                </div>
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-primary" onclick="kirimPresensi()">✅ Presensi Sekarang</button>
+          </div>
+
+          <div class="logbook-item">
+            <h3>📌 Riwayat Presensi</h3>
+            <div id="presensiHistory" class="loading">Memuat presensi...</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Admin Page -->
+    <div id="adminPage" class="hidden">
+      <div class="header">
+        <button class="refresh-mini" onclick="refreshCurrentPage()" title="Refresh">🔄</button>
+        <img src="eagle.png" width="60">
+        <h1>Dashboard Admin</h1>
+        <p>Kelola dan pantau logbook siswa</p>
+      </div>
+      <div class="content">
+        <div class="user-info">
+          <span>Administrator</span>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-secondary" onclick="refreshCurrentPage()" style="padding: 8px 12px; width: auto; border-radius: 6px;">🔄 Refresh</button>
+            <button class="btn-secondary" onclick="logout()" style="padding: 8px 12px; width: auto; border-radius: 6px;">Keluar</button>
+          </div>
+        </div>
+
+        <!-- ✅ TAB ADMIN: SISWA + PRESENSI -->
+        <div class="tabs">
+          <div class="tab active" onclick="showAdminTab('siswa')">👥 Siswa</div>
+          <div class="tab" onclick="showAdminTab('presensi')">📍 Presensi</div>
+        </div>
+
+        <div id="adminAlert"></div>
+
+        <!-- TAB ADMIN SISWA -->
+        <div id="adminSiswaTab">
+          <div id="studentsList"></div>
+        </div>
+
+        <!-- TAB ADMIN PRESENSI -->
+        <div id="adminPresensiTab" class="hidden">
+          <div class="logbook-item">
+            <h3>📍 Presensi Semua (Per Tanggal)</h3>
+            <div class="form-group" style="margin-bottom:10px;">
+              <label>Pilih Tanggal</label>
+              <input type="date" id="adminFilterTanggal">
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="loadPresensiAdminAll()">🔍 Tampilkan Presensi</button>
+          </div>
+
+          <div class="logbook-item">
+            <h3>🔎 Presensi Per Siswa</h3>
+            <div class="form-group" style="margin-bottom:10px;">
+              <label>Pilih Siswa</label>
+              <select id="adminSelectSiswa"></select>
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="loadPresensiAdminByStudent()">🔍 Tampilkan Presensi Siswa</button>
+          </div>
+
+          <div id="adminPresensiList" class="loading">Memuat presensi...</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Detail Siswa (Admin) -->
+    <div id="studentDetailPage" class="hidden">
+      <div class="header">
+        <button class="refresh-mini" onclick="refreshCurrentPage()" title="Refresh">🔄</button>
+        <img src="eagle.png" width="60">
+        <h1 id="detailStudentName">Detail Siswa</h1>
+        <p>Profil dan Logbook</p>
+      </div>
+      <div class="content">
+        <div style="display:flex; gap:10px; margin-bottom: 20px;">
+          <button class="btn btn-secondary" onclick="backToAdmin()" style="margin:0;">← Kembali</button>
+          <button class="btn btn-secondary" onclick="refreshCurrentPage()" style="margin:0;">🔄 Refresh</button>
+        </div>
+
+        <div class="tabs">
+          <div class="tab active" onclick="showDetailTab('profil')">👤 Profil</div>
+          <div class="tab" onclick="showDetailTab('logbook')">📋 Logbook</div>
+        </div>
+
+        <div id="detailProfilTab">
+          <div id="studentProfileDisplay" class="loading">Memuat profil...</div>
+        </div>
+
+        <div id="detailLogbookTab" class="hidden">
+          <div id="adminLogbookList" class="loading">Memuat logbook...</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="imageModal" class="image-modal" onclick="closeImageModal()">
+    <span class="image-modal-close">&times;</span>
+    <div class="image-modal-content">
+      <img id="modalImage" src="" alt="Preview">
     </div>
   </div>
 
-  <!-- SISWA PAGE -->
-  <div id="studentPage" class="hidden">
-    <div class="header">
-      <img id="logoImgStudent" class="logo" alt="logo">
-      <h1>Halaman Siswa</h1>
-      <p>Logbook & Presensi</p>
-    </div>
-
-    <div class="content">
-      <div class="user-info">
-        <span id="studentName">Siswa</span>
-        <div class="mini-actions">
-          <button class="mini-btn" onclick="location.reload()">🔄</button>
-          <button class="mini-btn" onclick="logout()">Keluar</button>
-        </div>
-      </div>
-
-      <div class="alert alert-info">✅ Halaman siswa tetap seperti sebelumnya. (Jika kamu mau versi siswa lengkap lagi, bilang ya)</div>
+  <div id="globalLoading">
+    <div class="box">
+      🔄 Memproses...
+      <div class="small">Mohon tunggu sebentar</div>
     </div>
   </div>
 
-  <!-- ADMIN PAGE -->
-  <div id="adminPage" class="hidden">
-    <div class="header">
-      <img id="logoImgAdmin" class="logo" alt="logo">
-      <h1>Halaman Admin</h1>
-      <p>Kelola & Monitor Magang</p>
-    </div>
+  <script>
+    // =========================
+    // GANTI URL WEB APP KAMU
+    // =========================
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwCXewpRHmZsnxVZ9F91l6qVZ13aP6gyWha_U-_6UXvMR3Pjjrc1u1IfocYzeChU_rH2A/exec";
 
-    <div class="content">
-      <div class="user-info">
-        <span id="adminName">Admin</span>
-        <div class="mini-actions">
-          <button class="mini-btn" onclick="refreshAdmin()">🔄</button>
-          <button class="mini-btn" onclick="logout()">Keluar</button>
-        </div>
-      </div>
+    let currentUser = null;
+    let currentRole = null;
+    let editingLogbookNo = null;
+    let selectedStudent = null;
 
-      <div class="tabs">
-        <div class="tab active" onclick="showAdminTab('presensiAll')">📍 Presensi Semua</div>
-        <div class="tab" onclick="showAdminTab('logbookAll')">📋 Logbook Semua</div>
-        <div class="tab" onclick="showAdminTab('presensiSiswa')">🔎 Presensi Siswa</div>
-        <div class="tab" onclick="showAdminTab('logbookSiswa')">🔎 Logbook Siswa</div>
-      </div>
+    let selectedImageFile = null;
 
-      <!-- TAB PRESENSI ALL -->
-      <div id="adminPresensiAll">
-        <div class="card">
-          <h3>Filter Presensi (Per Tanggal)</h3>
-          <div class="form-group">
-            <label>Pilih Tanggal</label>
-            <input type="date" id="filterTanggalPresensi">
-          </div>
-          <button class="btn btn-secondary" onclick="loadPresensiAll()">🔍 Tampilkan</button>
-        </div>
+    // ✅ PRESENSI
+    let presensiSelfieFile = null;
 
-        <div id="presensiAllList" class="alert alert-info">Memuat presensi...</div>
-      </div>
+    function showGlobalLoading(show, text) {
+      const el = document.getElementById('globalLoading');
+      if (text) {
+        const box = el.querySelector('.box');
+        if (box) box.childNodes[0].textContent = text;
+      }
+      el.style.display = show ? 'flex' : 'none';
+    }
 
-      <!-- TAB LOGBOOK ALL -->
-      <div id="adminLogbookAll" class="hidden">
-        <div class="card">
-          <h3>Filter Logbook</h3>
-          <div class="form-group">
-            <label>Cari Nama/Username/Judul</label>
-            <input id="searchLogbookAll" placeholder="contoh: siswa1 / budi / laporan">
-          </div>
-          <button class="btn btn-secondary" onclick="loadLogbookAll()">🔍 Cari</button>
-        </div>
+    document.addEventListener('DOMContentLoaded', async function() {
+      const today = new Date().toISOString().split('T')[0];
+      const tanggalInput = document.getElementById('tanggal');
+      if (tanggalInput) tanggalInput.value = today;
 
-        <div id="logbookAllList" class="alert alert-info">Memuat logbook...</div>
-      </div>
+      // admin default tanggal
+      const admTgl = document.getElementById('adminFilterTanggal');
+      if (admTgl) admTgl.value = today;
 
-      <!-- TAB PRESENSI SISWA -->
-      <div id="adminPresensiSiswa" class="hidden">
-        <div class="card">
-          <h3>Presensi per Siswa</h3>
-          <div class="form-group">
-            <label>Pilih Siswa</label>
-            <select id="selectSiswaPresensi"></select>
-          </div>
+      const remember = localStorage.getItem('logbook_remember') === '1';
+      const u = localStorage.getItem('logbook_username');
+      const p = localStorage.getItem('logbook_password');
+      if (remember && u && p) {
+        document.getElementById('rememberMe').checked = true;
+        document.getElementById('username').value = u;
+        document.getElementById('password').value = p;
+        await autoLogin(u, p);
+      }
+    });
 
-          <div class="form-group">
-            <label>Pilih Tanggal (opsional)</label>
-            <input type="date" id="filterTanggalPresensiSiswa">
-          </div>
+    async function autoLogin(username, password) {
+      try {
+        showGlobalLoading(true, '🔄 Memulihkan sesi login...');
+        const response = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
+        const data = await response.json();
+        if (data.success) {
+          currentUser = data.user;
+          currentRole = data.role;
 
-          <button class="btn btn-secondary" onclick="loadPresensiBySiswa()">🔍 Tampilkan Presensi</button>
-        </div>
+          document.getElementById('loginPage').classList.add('hidden');
 
-        <div id="presensiSiswaList" class="alert alert-info">Pilih siswa untuk melihat presensi</div>
-      </div>
-
-      <!-- TAB LOGBOOK SISWA -->
-      <div id="adminLogbookSiswa" class="hidden">
-        <div class="card">
-          <h3>Logbook per Siswa</h3>
-          <div class="form-group">
-            <label>Pilih Siswa</label>
-            <select id="selectSiswaLogbook"></select>
-          </div>
-
-          <div class="form-group">
-            <label>Cari Judul/Deskripsi (opsional)</label>
-            <input id="searchLogbookSiswa" placeholder="contoh: desain / rapat / laporan">
-          </div>
-
-          <button class="btn btn-secondary" onclick="loadLogbookBySiswa()">🔍 Tampilkan Logbook</button>
-        </div>
-
-        <div id="logbookSiswaList" class="alert alert-info">Pilih siswa untuk melihat logbook</div>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<div id="globalLoading">
-  <div class="box">🔄 Memproses...</div>
-</div>
-
-<script>
-  // ==============================
-  // ✅ WAJIB DIISI
-  // ==============================
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw3s6New3PU7k5FjrqtU9Q_dcMsmG6xqelWQWbi0Fa5mLShBUv2X00QD_z5o_0dceu69w/exec";
-  const LOGO_URL   = "eagle.png";
-
-  let currentUser = null;
-  let currentRole = null;
-  let studentsCache = [];
-
-  function showGlobalLoading(show){
-    document.getElementById('globalLoading').style.display = show ? 'flex' : 'none';
-  }
-
-  function showAlert(id, msg, type){
-    const el = document.getElementById(id);
-    if(!el) return;
-    el.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
-    setTimeout(()=> el.innerHTML = '', 5000);
-  }
-
-  function escapeHtml(s){
-    return String(s||"").replace(/[&<>"']/g,(m)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
-  }
-
-  document.addEventListener("DOMContentLoaded", async ()=>{
-    document.getElementById("logoImg").src = LOGO_URL;
-    document.getElementById("logoImgStudent").src = LOGO_URL;
-    document.getElementById("logoImgAdmin").src = LOGO_URL;
-
-    // default date filter = hari ini
-    const today = new Date().toISOString().split("T")[0];
-    document.getElementById("filterTanggalPresensi").value = today;
-    document.getElementById("filterTanggalPresensiSiswa").value = today;
-
-    // auto login
-    const remember = localStorage.getItem("logbook_remember") === "1";
-    if(remember){
-      const u = localStorage.getItem("logbook_username");
-      const p = localStorage.getItem("logbook_password");
-      if(u && p){
-        document.getElementById("rememberMe").checked = true;
-        document.getElementById("username").value = u;
-        document.getElementById("password").value = p;
-        await login(u,p,true);
+          if (data.role === 'admin') {
+            document.getElementById('adminPage').classList.remove('hidden');
+            await loadStudentsForAdmin();
+            await preloadStudentsToAdminSelect();
+            await loadPresensiAdminAll(true);
+          } else {
+            document.getElementById('studentPage').classList.remove('hidden');
+            document.getElementById('studentName').textContent = data.nama;
+            await loadProfile();
+            await loadTitikPresensiUI();
+            showStudentTab('profil');
+          }
+        }
+      } catch (e) {
+      } finally {
+        showGlobalLoading(false);
       }
     }
-  });
 
-  // ==============================
-  // LOGIN
-  // ==============================
-  document.getElementById("loginForm").addEventListener("submit", async (e)=>{
-    e.preventDefault();
-    const u = document.getElementById("username").value.trim();
-    const p = document.getElementById("password").value.trim();
-    await login(u,p,false);
-  });
+    async function refreshCurrentPage() {
+      try {
+        showGlobalLoading(true, '🔄 Memperbarui data...');
 
-  async function login(username,password,isAuto){
-    try{
-      showGlobalLoading(true);
+        if (!currentUser) {
+          document.getElementById('loginForm').reset();
+          showAlert('loginAlert', '🔄 Halaman login diperbarui', 'info');
+          return;
+        }
 
-      const res = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
-      const data = await res.json();
+        if (currentRole === 'siswa') {
+          const profilVisible = !document.getElementById('profilTab').classList.contains('hidden');
+          const viewVisible = !document.getElementById('viewTab').classList.contains('hidden');
+          const presVisible = !document.getElementById('presensiTab').classList.contains('hidden');
 
-      if(!data.success){
-        showAlert("loginAlert", data.message || "Login gagal", "error");
+          if (profilVisible) {
+            await loadProfile();
+            await loadTitikPresensiUI();
+            showAlert('profilAlert', '🔄 Profil diperbarui', 'info');
+          } else if (viewVisible) {
+            await loadMyLogbook();
+            showAlert('studentAlert', '🔄 Logbook diperbarui', 'info');
+          } else if (presVisible) {
+            await loadPresensiHistory();
+            showAlert('presensiAlert', '🔄 Presensi diperbarui', 'info');
+          } else {
+            await loadProfile();
+            await loadMyLogbook();
+            await loadPresensiHistory();
+          }
+          return;
+        }
+
+        if (currentRole === 'admin') {
+          const adminVisible = !document.getElementById('adminPage').classList.contains('hidden');
+          const detailVisible = !document.getElementById('studentDetailPage').classList.contains('hidden');
+
+          if (adminVisible) {
+            await loadStudentsForAdmin();
+            await preloadStudentsToAdminSelect();
+            await loadPresensiAdminAll(true);
+            showAlert('adminAlert', '🔄 Data admin diperbarui', 'info');
+          } else if (detailVisible && selectedStudent) {
+            const detailProfilVisible = !document.getElementById('detailProfilTab').classList.contains('hidden');
+            const detailLogbookVisible = !document.getElementById('detailLogbookTab').classList.contains('hidden');
+
+            if (detailProfilVisible) await loadStudentProfile(selectedStudent);
+            else if (detailLogbookVisible) await loadStudentLogbook(selectedStudent);
+            else {
+              await loadStudentProfile(selectedStudent);
+              await loadStudentLogbook(selectedStudent);
+            }
+          }
+        }
+      } catch (err) {
+        alert('Gagal refresh: ' + err.message);
+      } finally {
+        showGlobalLoading(false);
+      }
+    }
+
+    // =========================
+    // LOGIN
+    // =========================
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const loginBtn = document.getElementById('loginBtn');
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Memproses...';
+
+      try {
+        showGlobalLoading(true, '🔄 Memproses login...');
+        const response = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
+        const data = await response.json();
+
+        if (data.success) {
+          currentUser = data.user;
+          currentRole = data.role;
+
+          const remember = document.getElementById('rememberMe').checked;
+          if (remember) {
+            localStorage.setItem('logbook_remember', '1');
+            localStorage.setItem('logbook_username', username);
+            localStorage.setItem('logbook_password', password);
+          } else {
+            localStorage.removeItem('logbook_remember');
+            localStorage.removeItem('logbook_username');
+            localStorage.removeItem('logbook_password');
+          }
+
+          document.getElementById('loginPage').classList.add('hidden');
+
+          if (data.role === 'admin') {
+            document.getElementById('adminPage').classList.remove('hidden');
+            await loadStudentsForAdmin();
+            await preloadStudentsToAdminSelect();
+            await loadPresensiAdminAll(true);
+          } else {
+            document.getElementById('studentPage').classList.remove('hidden');
+            document.getElementById('studentName').textContent = data.nama;
+            await loadProfile();
+            await loadTitikPresensiUI();
+            showStudentTab('profil');
+          }
+        } else {
+          showAlert('loginAlert', data.message || 'Username atau password salah', 'error');
+        }
+      } catch (error) {
+        showAlert('loginAlert', 'Gagal login: ' + error.message, 'error');
+      } finally {
+        showGlobalLoading(false);
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Masuk';
+      }
+    });
+
+    // =========================
+    // FIX: JAM ISO 1899 -> HH:mm
+    // =========================
+    function normalizeTime(val) {
+      if (!val) return '';
+
+      if (typeof val === 'string' && /^\d{2}:\d{2}(:\d{2})?$/.test(val.trim())) {
+        return val.trim().slice(0, 5);
+      }
+
+      if (typeof val === 'string' && val.includes('T')) {
+        const d = new Date(val);
+        if (!isNaN(d.getTime())) {
+          const hh = String(d.getHours()).padStart(2, '0');
+          const mm = String(d.getMinutes()).padStart(2, '0');
+          return `${hh}:${mm}`;
+        }
+        const m = val.match(/T(\d{2}):(\d{2})/);
+        if (m) return `${m[1]}:${m[2]}`;
+      }
+
+      return String(val);
+    }
+
+    // =========================
+    // PROFIL
+    // =========================
+    function getHariKerjaValue() {
+      const checked = Array.from(document.querySelectorAll('.hariKerja:checked')).map(x => x.value);
+      return checked.join(',');
+    }
+    function setHariKerjaValue(value) {
+      const set = new Set(String(value || '').split(',').map(s => s.trim()).filter(Boolean));
+      document.querySelectorAll('.hariKerja').forEach(cb => {
+        cb.checked = set.has(cb.value);
+      });
+    }
+
+    async function loadProfile() {
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(currentUser)}`);
+        const data = await response.json();
+
+        if (data.success && data.profile) {
+          const p = data.profile;
+          document.getElementById('namaLengkap').value = p.namaLengkap || '';
+          document.getElementById('noAbsen').value = p.noAbsen || '';
+          document.getElementById('email').value = p.email || '';
+          document.getElementById('telepon').value = p.telepon || '';
+          document.getElementById('tempatMagang').value = p.tempatMagang || '';
+          document.getElementById('alamatMagang').value = p.alamatMagang || '';
+          document.getElementById('posisi').value = p.posisi || '';
+          document.getElementById('pembimbing').value = p.pembimbing || '';
+          document.getElementById('tanggalMulai').value = convertDateToInput(p.tanggalMulai) || '';
+          document.getElementById('tanggalSelesai').value = convertDateToInput(p.tanggalSelesai) || '';
+
+          document.getElementById('noHpMentor').value = p.noHpMentor || '';
+          setHariKerjaValue(p.hariKerja || '');
+
+          document.getElementById('jamKerjaMulai').value = normalizeTime(p.jamKerjaMulai);
+          document.getElementById('jamKerjaSelesai').value = normalizeTime(p.jamKerjaSelesai);
+        }
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    }
+
+    document.getElementById('profilForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const saveBtn = document.getElementById('saveProfilBtn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = '💾 Menyimpan...';
+
+      try {
+        showGlobalLoading(true, '🔄 Menyimpan profil...');
+
+        const payload = {
+          action: 'saveProfile',
+          username: currentUser,
+          namaLengkap: document.getElementById('namaLengkap').value,
+          noAbsen: document.getElementById('noAbsen').value,
+          email: document.getElementById('email').value,
+          telepon: document.getElementById('telepon').value,
+          tempatMagang: document.getElementById('tempatMagang').value,
+          alamatMagang: document.getElementById('alamatMagang').value,
+          posisi: document.getElementById('posisi').value,
+          pembimbing: document.getElementById('pembimbing').value,
+          tanggalMulai: document.getElementById('tanggalMulai').value,
+          tanggalSelesai: document.getElementById('tanggalSelesai').value,
+          noHpMentor: document.getElementById('noHpMentor').value,
+          hariKerja: getHariKerjaValue(),
+          jamKerjaMulai: document.getElementById('jamKerjaMulai').value,
+          jamKerjaSelesai: document.getElementById('jamKerjaSelesai').value
+        };
+
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          showAlert('profilAlert', '✅ Profil berhasil disimpan!', 'success');
+        } else {
+          showAlert('profilAlert', '❌ ' + (data.message || 'Gagal menyimpan'), 'error');
+        }
+      } catch (error) {
+        showAlert('profilAlert', '❌ Gagal menyimpan: ' + error.message, 'error');
+      } finally {
+        showGlobalLoading(false);
+        saveBtn.disabled = false;
+        saveBtn.textContent = '💾 Simpan Profil';
+      }
+    });
+
+    // =========================
+    // ✅ PRESENSI POINT UI
+    // =========================
+    async function loadTitikPresensiUI() {
+      try{
+        const res = await fetch(`${SCRIPT_URL}?action=getPresensiPoint&username=${encodeURIComponent(currentUser)}`);
+        const data = await res.json();
+        if(data.success && data.point){
+          document.getElementById('presensiLat').value = data.point.lat || '';
+          document.getElementById('presensiLng').value = data.point.lng || '';
+          document.getElementById('presensiRadius').value = data.point.radiusM || 50;
+          const info = data.point.updatedAt ? `✅ Titik tersimpan. Terakhir update: ${data.point.updatedAt}` : '';
+          document.getElementById('lastPointInfo').textContent = info;
+        }
+      }catch(e){}
+    }
+
+    function ambilLokasiTitik(){
+      if(!navigator.geolocation){
+        showAlert('gpsPointAlert', '❌ GPS tidak didukung di perangkat ini', 'error');
+        return;
+      }
+      // harus https
+      if(location.protocol !== 'https:' && !location.hostname.includes('script.google.com')){
+        showAlert('gpsPointAlert', '❌ GPS hanya bisa di HTTPS. Buka lewat Web App Apps Script.', 'error');
+        return;
+      }
+      showAlert('gpsPointAlert','🔄 Mengambil lokasi...', 'info');
+
+      navigator.geolocation.getCurrentPosition((pos)=>{
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+
+        document.getElementById('presensiLat').value = lat.toFixed(7);
+        document.getElementById('presensiLng').value = lng.toFixed(7);
+
+        showAlert('gpsPointAlert','✅ Lokasi berhasil diambil', 'success');
+      },(err)=>{
+        showAlert('gpsPointAlert','❌ Gagal ambil GPS: ' + err.message, 'error');
+      },{ enableHighAccuracy:true, timeout:15000, maximumAge:0 });
+    }
+
+    async function simpanTitikPresensi(){
+      const lat = String(document.getElementById('presensiLat').value || '').trim().replace(',', '.');
+      const lng = String(document.getElementById('presensiLng').value || '').trim().replace(',', '.');
+      const radiusM = Number(document.getElementById('presensiRadius').value || 50);
+
+      if(!lat || !lng){
+        showAlert('gpsPointAlert','❌ Latitude & Longitude wajib diisi', 'error');
         return;
       }
 
-      currentUser = data.user;
-      currentRole = data.role;
+      try{
+        showGlobalLoading(true,'🔄 Menyimpan titik presensi...');
+        const payload = {
+          action: 'savePresensiPoint',
+          username: currentUser,
+          lat, lng,
+          radiusM
+        };
 
-      // remember
-      if(document.getElementById("rememberMe").checked){
-        localStorage.setItem("logbook_remember","1");
-        localStorage.setItem("logbook_username", username);
-        localStorage.setItem("logbook_password", password);
+        const res = await fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(payload) });
+        const data = await res.json();
+
+        if(data.success){
+          showAlert('gpsPointAlert','✅ Titik presensi tersimpan (radius '+radiusM+'m)', 'success');
+          await loadTitikPresensiUI();
+        }else{
+          showAlert('gpsPointAlert','❌ ' + (data.message || 'Gagal menyimpan'), 'error');
+        }
+      }catch(e){
+        showAlert('gpsPointAlert','❌ Error: ' + e.message, 'error');
+      }finally{
+        showGlobalLoading(false);
+      }
+    }
+
+    // =========================
+    // ✅ PRESENSI SISWA (GPS + Selfie)
+    // =========================
+    function ambilLokasiSaya(){
+      if(!navigator.geolocation){
+        showAlert('presensiAlert','❌ GPS tidak didukung', 'error');
+        return;
+      }
+      if(location.protocol !== 'https:' && !location.hostname.includes('script.google.com')){
+        showAlert('presensiAlert', '❌ GPS hanya bisa di HTTPS. Buka lewat Web App Apps Script.', 'error');
+        return;
+      }
+
+      showAlert('presensiAlert','🔄 Mengambil lokasi...', 'info');
+      navigator.geolocation.getCurrentPosition((pos)=>{
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        document.getElementById('myLat').value = lat.toFixed(7);
+        document.getElementById('myLng').value = lng.toFixed(7);
+        showAlert('presensiAlert','✅ Lokasi berhasil diambil', 'success');
+      },(err)=>{
+        showAlert('presensiAlert','❌ Gagal ambil GPS: ' + err.message, 'error');
+      },{ enableHighAccuracy:true, timeout:15000, maximumAge:0 });
+    }
+
+    function pickSelfie(){
+      const input = document.getElementById('selfieInput');
+      input.value = '';
+      input.click();
+    }
+    function clearSelfie(){
+      presensiSelfieFile = null;
+      document.getElementById('selfieName').textContent = '';
+      document.getElementById('selfiePreview').classList.add('hidden');
+      document.getElementById('selfieImg').src = '';
+    }
+    document.getElementById('selfieInput').addEventListener('change', function(){
+      if(!this.files || this.files.length===0) return;
+      presensiSelfieFile = this.files[0];
+      document.getElementById('selfieName').textContent = `✓ ${presensiSelfieFile.name} (Selfie)`;
+
+      // preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById('selfieImg').src = reader.result;
+        document.getElementById('selfiePreview').classList.remove('hidden');
+      };
+      reader.readAsDataURL(presensiSelfieFile);
+    });
+
+    async function kirimPresensi(){
+      const lat = String(document.getElementById('myLat').value || '').trim().replace(',', '.');
+      const lng = String(document.getElementById('myLng').value || '').trim().replace(',', '.');
+
+      if(!lat || !lng){
+        showAlert('presensiAlert','❌ Ambil lokasi dulu (GPS)', 'error');
+        return;
+      }
+      if(!presensiSelfieFile){
+        showAlert('presensiAlert','❌ Selfie wajib untuk presensi', 'error');
+        return;
+      }
+
+      try{
+        showGlobalLoading(true,'🔄 Mengirim presensi...');
+        const selfieData = await compressImageToDataURL(presensiSelfieFile, 2 * 1024 * 1024);
+
+        const payload = {
+          action: 'addPresensi',
+          username: currentUser,
+          nama: document.getElementById('namaLengkap').value || document.getElementById('studentName').textContent || '',
+          lat, lng,
+          photoData: selfieData
+        };
+
+        const res = await fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(payload) });
+        const data = await res.json();
+
+        if(data.success){
+          showAlert('presensiAlert', `✅ Presensi berhasil! (Jarak ${Math.round(Number(data.distanceM||0))}m)`, 'success');
+          clearSelfie();
+          await loadPresensiHistory();
+        }else{
+          showAlert('presensiAlert', '❌ ' + (data.message || 'Gagal presensi'), 'error');
+        }
+      }catch(e){
+        showAlert('presensiAlert','❌ Error: ' + e.message, 'error');
+      }finally{
+        showGlobalLoading(false);
+      }
+    }
+
+    async function loadPresensiHistory(){
+      const div = document.getElementById('presensiHistory');
+      div.innerHTML = '<div class="loading">Memuat presensi...</div>';
+
+      try{
+        const res = await fetch(`${SCRIPT_URL}?action=getPresensiByStudent&username=${encodeURIComponent(currentUser)}`);
+        const data = await res.json();
+        const items = (data.success && data.presensi) ? data.presensi : [];
+
+        if(items.length===0){
+          div.innerHTML = '<div class="alert alert-info">Belum ada presensi.</div>';
+          return;
+        }
+
+        div.innerHTML = items.map(x=>`
+          <div class="logbook-item" style="margin-bottom:10px;">
+            <h3>✅ ${escapeHtml(x.tanggal)} (${escapeHtml(x.jam)})</h3>
+            <p><b>Status:</b> ${escapeHtml(x.status)} | <b>Jarak:</b> ${Math.round(Number(x.distanceM||0))}m</p>
+            ${x.photoId ? `<a class="file-link" target="_blank" href="https://drive.google.com/file/d/${escapeHtml(x.photoId)}/view">🤳 Lihat Selfie</a>` : ''}
+          </div>
+        `).join('');
+
+      }catch(e){
+        div.innerHTML = '<div class="alert alert-error">Gagal memuat presensi.</div>';
+      }
+    }
+
+    // =========================
+    // ADMIN TAB
+    // =========================
+    function showAdminTab(tab){
+      document.querySelectorAll('#adminPage .tab').forEach(t=>t.classList.remove('active'));
+      const tabs = document.querySelectorAll('#adminPage .tab');
+
+      document.getElementById('adminSiswaTab').classList.add('hidden');
+      document.getElementById('adminPresensiTab').classList.add('hidden');
+
+      if(tab==='siswa'){
+        tabs[0].classList.add('active');
+        document.getElementById('adminSiswaTab').classList.remove('hidden');
       }else{
-        localStorage.removeItem("logbook_remember");
-        localStorage.removeItem("logbook_username");
-        localStorage.removeItem("logbook_password");
+        tabs[1].classList.add('active');
+        document.getElementById('adminPresensiTab').classList.remove('hidden');
+        loadPresensiAdminAll(true);
+      }
+    }
+
+    async function preloadStudentsToAdminSelect(){
+      try{
+        const res = await fetch(`${SCRIPT_URL}?action=getStudents`);
+        const data = await res.json();
+        const students = (data.success && data.students) ? data.students : [];
+
+        const sel = document.getElementById('adminSelectSiswa');
+        sel.innerHTML = students.map(s=>`<option value="${escapeHtml(s.username)}">${escapeHtml(s.nama)} (${escapeHtml(s.username)})</option>`).join('');
+      }catch(e){}
+    }
+
+    async function loadPresensiAdminAll(auto=false){
+      const list = document.getElementById('adminPresensiList');
+      if(!auto) list.innerHTML = '<div class="loading">Memuat presensi...</div>';
+
+      try{
+        const res = await fetch(`${SCRIPT_URL}?action=getPresensiList`);
+        const data = await res.json();
+
+        if(!data.success){
+          list.innerHTML = '<div class="alert alert-error">Gagal memuat presensi</div>';
+          return;
+        }
+
+        let items = data.presensi || [];
+        const tgl = document.getElementById('adminFilterTanggal').value;
+        if(tgl) items = items.filter(x => String(x.tanggal) === String(tgl));
+
+        if(items.length===0){
+          list.innerHTML = '<div class="alert alert-info">Tidak ada presensi pada tanggal tersebut.</div>';
+          return;
+        }
+
+        list.innerHTML = items.map(x=>`
+          <div class="logbook-item">
+            <h3>📍 ${escapeHtml(x.nama)} (${escapeHtml(x.username)})</h3>
+            <p><b>Tanggal:</b> ${escapeHtml(x.tanggal)} | <b>Jam:</b> ${escapeHtml(x.jam)}</p>
+            <p><b>Status:</b> ${escapeHtml(x.status)} | <b>Jarak:</b> ${Math.round(Number(x.distanceM||0))}m</p>
+            ${x.photoId ? `<a class="file-link" target="_blank" href="https://drive.google.com/file/d/${escapeHtml(x.photoId)}/view">🤳 Lihat Selfie</a>` : ''}
+          </div>
+        `).join('');
+
+      }catch(e){
+        list.innerHTML = '<div class="alert alert-error">Gagal memuat presensi</div>';
+      }
+    }
+
+    async function loadPresensiAdminByStudent(){
+      const list = document.getElementById('adminPresensiList');
+      list.innerHTML = '<div class="loading">Memuat presensi siswa...</div>';
+
+      try{
+        const u = document.getElementById('adminSelectSiswa').value;
+        const res = await fetch(`${SCRIPT_URL}?action=getPresensiByStudent&username=${encodeURIComponent(u)}`);
+        const data = await res.json();
+
+        if(!data.success){
+          list.innerHTML = '<div class="alert alert-error">Gagal memuat presensi siswa</div>';
+          return;
+        }
+
+        const items = data.presensi || [];
+        if(items.length===0){
+          list.innerHTML = '<div class="alert alert-info">Siswa ini belum presensi.</div>';
+          return;
+        }
+
+        list.innerHTML = items.map(x=>`
+          <div class="logbook-item">
+            <h3>✅ ${escapeHtml(x.nama)} (${escapeHtml(x.username)})</h3>
+            <p><b>Tanggal:</b> ${escapeHtml(x.tanggal)} | <b>Jam:</b> ${escapeHtml(x.jam)}</p>
+            <p><b>Status:</b> ${escapeHtml(x.status)} | <b>Jarak:</b> ${Math.round(Number(x.distanceM||0))}m</p>
+            ${x.photoId ? `<a class="file-link" target="_blank" href="https://drive.google.com/file/d/${escapeHtml(x.photoId)}/view">🤳 Lihat Selfie</a>` : ''}
+          </div>
+        `).join('');
+
+      }catch(e){
+        list.innerHTML = '<div class="alert alert-error">Gagal memuat presensi siswa</div>';
+      }
+    }
+
+    // =========================
+    // UPLOAD FOTO LOGBOOK
+    // =========================
+    function pickCamera() {
+      const input = document.getElementById('fileInputCamera');
+      input.value = '';
+      input.click();
+    }
+
+    function pickGallery() {
+      const input = document.getElementById('fileInputGallery');
+      input.value = '';
+      input.click();
+    }
+
+    function clearSelectedImage() {
+      selectedImageFile = null;
+      const cam = document.getElementById('fileInputCamera');
+      const gal = document.getElementById('fileInputGallery');
+      if (cam) cam.value = '';
+      if (gal) gal.value = '';
+      document.getElementById('fileName').textContent = '';
+    }
+
+    document.getElementById('fileInputCamera').addEventListener('change', function() {
+      if (!this.files || this.files.length === 0) return;
+      selectedImageFile = this.files[0];
+      document.getElementById('fileName').textContent = `✓ ${selectedImageFile.name} (Kamera)`;
+    });
+
+    document.getElementById('fileInputGallery').addEventListener('change', function() {
+      if (!this.files || this.files.length === 0) return;
+      selectedImageFile = this.files[0];
+      document.getElementById('fileName').textContent = `✓ ${selectedImageFile.name} (Galeri)`;
+    });
+
+    // =========================
+    // LOGBOOK
+    // =========================
+    document.getElementById('logbookForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+
+      const isEditing = editingLogbookNo !== null;
+      submitBtn.textContent = isEditing ? 'Mengupdate...' : 'Menyimpan...';
+
+      const tanggal = document.getElementById('tanggal').value;
+      const judul = document.getElementById('judul').value;
+      const deskripsi = document.getElementById('deskripsi').value;
+
+      let fileData = '';
+      let fileName = '';
+
+      try {
+        showGlobalLoading(true, isEditing ? '🔄 Mengupdate logbook...' : '🔄 Menyimpan logbook...');
+
+        if (selectedImageFile) {
+          fileName = selectedImageFile.name || '';
+          fileData = await compressImageToDataURL(selectedImageFile, 2 * 1024 * 1024);
+        }
+
+        const payload = {
+          action: isEditing ? 'updateLogbook' : 'addLogbook',
+          username: currentUser,
+          tanggal,
+          judul,
+          deskripsi,
+          fileData,
+          fileName
+        };
+        if (isEditing) payload.no = editingLogbookNo;
+
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showAlert('studentAlert', isEditing ? '✅ Logbook berhasil diupdate!' : '✅ Logbook berhasil disimpan!', 'success');
+
+          document.getElementById('logbookForm').reset();
+          document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
+
+          editingLogbookNo = null;
+          submitBtn.textContent = 'Simpan Logbook';
+          submitBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+          document.getElementById('cancelBtn').classList.add('hidden');
+
+          clearSelectedImage();
+          await loadMyLogbook();
+        } else {
+          showAlert('studentAlert', '❌ ' + (data.message || 'Gagal menyimpan'), 'error');
+        }
+      } catch (error) {
+        showAlert('studentAlert', '❌ Gagal menyimpan: ' + error.message, 'error');
+      } finally {
+        showGlobalLoading(false);
+        submitBtn.disabled = false;
+        if (!isEditing) submitBtn.textContent = 'Simpan Logbook';
+      }
+    });
+
+    async function loadMyLogbook() {
+      const listDiv = document.getElementById('logbookList');
+      listDiv.innerHTML = '<div class="loading">Memuat data...</div>';
+
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=getLogbook&username=${encodeURIComponent(currentUser)}`);
+        const data = await response.json();
+
+        if (data.success && data.logbook && data.logbook.length > 0) {
+          listDiv.innerHTML = data.logbook.map(log => {
+            let imageHtml = '';
+
+            if (log.fileId) {
+              const thumbnailUrl = `https://drive.google.com/thumbnail?id=${log.fileId}&sz=w400`;
+              const fullImageUrl = `https://drive.google.com/uc?id=${log.fileId}`;
+              imageHtml = `
+                <div class="logbook-image">
+                  <img src="${thumbnailUrl}"
+                       alt="Foto kegiatan"
+                       onclick="openImageModal('${fullImageUrl}')"
+                       onerror="this.parentElement.innerHTML='<div class=image-placeholder>📷 Foto tidak dapat dimuat</div>'">
+                </div>
+              `;
+            } else if (log.berkas && String(log.berkas).includes('drive.google.com')) {
+              imageHtml = `<a href="${log.berkas}" target="_blank" class="file-link">📷 Lihat Foto</a>`;
+            }
+
+            return `
+              <div class="logbook-item">
+                <div class="logbook-actions">
+                  <button class="btn-action btn-edit"
+                    onclick="editLogbook(${log.no}, '${escapeHtml(log.tanggal)}', '${escapeHtml(log.judul)}', '${escapeHtml(log.deskripsi)}')">✏️ Edit</button>
+                  <button class="btn-action btn-delete" onclick="deleteLogbook(${log.no})">🗑️ Hapus</button>
+                </div>
+                <h3>${escapeHtml(log.judul || '')}</h3>
+                <p>${escapeHtml(log.deskripsi || '')}</p>
+                <p class="date">📅 ${escapeHtml(log.tanggal || '')}</p>
+                ${imageHtml}
+              </div>
+            `;
+          }).join('');
+        } else {
+          listDiv.innerHTML = '<div class="alert alert-info">Belum ada logbook. Mulai tambahkan kegiatan Anda!</div>';
+        }
+      } catch (error) {
+        console.error('Error loading logbook:', error);
+        listDiv.innerHTML = '<div class="alert alert-error">Gagal memuat logbook.</div>';
+      }
+    }
+
+    function editLogbook(no, tanggal, judul, deskripsi) {
+      editingLogbookNo = no;
+
+      const dateParts = String(tanggal).split('/');
+      const formattedDate = dateParts.length === 3 ? `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}` : tanggal;
+
+      document.getElementById('tanggal').value = formattedDate;
+      document.getElementById('judul').value = judul;
+      document.getElementById('deskripsi').value = deskripsi;
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.textContent = 'Update Logbook';
+      submitBtn.style.background = 'linear-gradient(135deg, #3498db 0%, #2980b9 100%)';
+
+      document.getElementById('cancelBtn').classList.remove('hidden');
+
+      showStudentTab('add');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showAlert('studentAlert', '📝 Mode edit: Ubah data dan klik "Update Logbook"', 'info');
+    }
+
+    function cancelEdit() {
+      editingLogbookNo = null;
+      document.getElementById('logbookForm').reset();
+      document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.textContent = 'Simpan Logbook';
+      submitBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+
+      document.getElementById('cancelBtn').classList.add('hidden');
+      document.getElementById('studentAlert').innerHTML = '';
+
+      clearSelectedImage();
+    }
+
+    async function deleteLogbook(no) {
+      if (!confirm('Apakah Anda yakin ingin menghapus logbook ini?')) return;
+
+      try {
+        showGlobalLoading(true, '🔄 Menghapus logbook...');
+        const response = await fetch(`${SCRIPT_URL}?action=deleteLogbook&username=${encodeURIComponent(currentUser)}&no=${encodeURIComponent(no)}`);
+        const data = await response.json();
+
+        if (data.success) {
+          showAlert('studentAlert', '✅ Logbook berhasil dihapus!', 'success');
+          await loadMyLogbook();
+        } else {
+          showAlert('studentAlert', '❌ ' + (data.message || 'Gagal menghapus'), 'error');
+        }
+      } catch (error) {
+        showAlert('studentAlert', '❌ Gagal menghapus: ' + error.message, 'error');
+      } finally {
+        showGlobalLoading(false);
+      }
+    }
+
+    // =========================
+    // ADMIN
+    // =========================
+    async function loadStudentsForAdmin() {
+    const listDiv = document.getElementById('studentsList');
+    listDiv.innerHTML = '<div class="loading">Memuat daftar siswa...</div>';
+
+    try {
+      const response = await fetch(`${SCRIPT_URL}?action=getStudents`);
+      const data = await response.json();
+
+      if (data.success && data.students && data.students.length > 0) {
+        listDiv.innerHTML = data.students.map(student => `
+          <div class="student-card" onclick="viewStudentDetail('${escapeHtml(student.username)}', '${escapeHtml(student.nama)}')">
+            <h3>👤 ${escapeHtml(student.nama)}</h3>
+            <p>Username: ${escapeHtml(student.username)}</p>
+            <p style="font-size: 12px; margin-top: 8px; color: #667eea;">Klik untuk melihat detail →</p>
+          </div>
+        `).join('');
+      } else {
+        listDiv.innerHTML = '<div class="alert alert-info">Belum ada siswa terdaftar.</div>';
       }
 
-      // hide login
-      document.getElementById("loginPage").classList.add("hidden");
-
-      // ✅ arahkan sesuai role
-      if(currentRole === "admin"){
-        document.getElementById("adminPage").classList.remove("hidden");
-        document.getElementById("studentPage").classList.add("hidden");
-        document.getElementById("adminName").textContent = data.nama || "Admin";
-
-        await preloadStudentsForAdmin();
-        await loadPresensiAll();
-        await loadLogbookAll();
-
-      }else{
-        document.getElementById("studentPage").classList.remove("hidden");
-        document.getElementById("adminPage").classList.add("hidden");
-        document.getElementById("studentName").textContent = data.nama || "Siswa";
-      }
-
-    }catch(err){
-      showAlert("loginAlert", "Gagal login: " + err.message, "error");
-    }finally{
-      showGlobalLoading(false);
+    } catch (error) {
+      console.error(error);
+      listDiv.innerHTML = '<div class="alert alert-error">Gagal memuat daftar siswa.</div>';
     }
   }
 
-  function logout(){
-    currentUser=null;
-    currentRole=null;
 
-    localStorage.removeItem("logbook_remember");
-    localStorage.removeItem("logbook_username");
-    localStorage.removeItem("logbook_password");
+    async function viewStudentDetail(username, nama) {
+      selectedStudent = username;
+      document.getElementById('detailStudentName').textContent = nama;
 
-    document.getElementById("adminPage").classList.add("hidden");
-    document.getElementById("studentPage").classList.add("hidden");
-    document.getElementById("loginPage").classList.remove("hidden");
-    document.getElementById("loginForm").reset();
-  }
+      document.getElementById('adminPage').classList.add('hidden');
+      document.getElementById('studentDetailPage').classList.remove('hidden');
 
-  // ==============================
-  // ADMIN UI
-  // ==============================
-  function showAdminTab(tab){
-    document.querySelectorAll("#adminPage .tab").forEach(t=>t.classList.remove("active"));
-
-    document.getElementById("adminPresensiAll").classList.add("hidden");
-    document.getElementById("adminLogbookAll").classList.add("hidden");
-    document.getElementById("adminPresensiSiswa").classList.add("hidden");
-    document.getElementById("adminLogbookSiswa").classList.add("hidden");
-
-    if(tab==="presensiAll"){
-      document.querySelectorAll("#adminPage .tab")[0].classList.add("active");
-      document.getElementById("adminPresensiAll").classList.remove("hidden");
+      await showDetailTab('profil');
     }
-    if(tab==="logbookAll"){
-      document.querySelectorAll("#adminPage .tab")[1].classList.add("active");
-      document.getElementById("adminLogbookAll").classList.remove("hidden");
+
+    function backToAdmin() {
+      document.getElementById('studentDetailPage').classList.add('hidden');
+      document.getElementById('adminPage').classList.remove('hidden');
+      selectedStudent = null;
     }
-    if(tab==="presensiSiswa"){
-      document.querySelectorAll("#adminPage .tab")[2].classList.add("active");
-      document.getElementById("adminPresensiSiswa").classList.remove("hidden");
+
+    async function showDetailTab(tab) {
+      document.querySelectorAll('#studentDetailPage .tab').forEach(t => t.classList.remove('active'));
+
+      if (tab === 'profil') {
+        document.querySelectorAll('#studentDetailPage .tab')[0].classList.add('active');
+        document.getElementById('detailProfilTab').classList.remove('hidden');
+        document.getElementById('detailLogbookTab').classList.add('hidden');
+        await loadStudentProfile(selectedStudent);
+      } else {
+        document.querySelectorAll('#studentDetailPage .tab')[1].classList.add('active');
+        document.getElementById('detailProfilTab').classList.add('hidden');
+        document.getElementById('detailLogbookTab').classList.remove('hidden');
+        await loadStudentLogbook(selectedStudent);
+      }
     }
-    if(tab==="logbookSiswa"){
-      document.querySelectorAll("#adminPage .tab")[3].classList.add("active");
-      document.getElementById("adminLogbookSiswa").classList.remove("hidden");
+
+    async function loadStudentProfile(username) {
+      const displayDiv = document.getElementById('studentProfileDisplay');
+      displayDiv.innerHTML = '<div class="loading">Memuat profil...</div>';
+
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`);
+        const data = await response.json();
+
+        if (data.success && data.profile) {
+          const p = data.profile;
+          const hasData = p.namaLengkap || p.tempatMagang || p.noAbsen;
+
+          if (!hasData) {
+            displayDiv.innerHTML = '<div class="alert alert-info">Siswa belum melengkapi profil.</div>';
+            return;
+          }
+
+          const jamMulai = normalizeTime(p.jamKerjaMulai);
+          const jamSelesai = normalizeTime(p.jamKerjaSelesai);
+          const jamKerjaText = (jamMulai || jamSelesai) ? `${escapeHtml(jamMulai || '-') } - ${escapeHtml(jamSelesai || '-')}` : '-';
+
+          displayDiv.innerHTML = `
+            <div class="profile-card">
+              <h2>${escapeHtml(p.namaLengkap || '-')}</h2>
+              <p>No Absen: ${escapeHtml(p.noAbsen || '-')}</p>
+            </div>
+
+            <div class="info-grid">
+              <div class="info-item full-width">
+                <label>Email</label>
+                <span>${escapeHtml(p.email || '-')}</span>
+              </div>
+              <div class="info-item full-width">
+                <label>Telepon</label>
+                <span>${escapeHtml(p.telepon || '-')}</span>
+              </div>
+              <div class="info-item full-width">
+                <label>Tempat Magang</label>
+                <span>${escapeHtml(p.tempatMagang || '-')}</span>
+              </div>
+              <div class="info-item full-width">
+                <label>Alamat Tempat Magang</label>
+                <span>${escapeHtml(p.alamatMagang || '-')}</span>
+              </div>
+              <div class="info-item full-width">
+                <label>Posisi</label>
+                <span>${escapeHtml(p.posisi || '-')}</span>
+              </div>
+              <div class="info-item full-width">
+                <label>Pembimbing</label>
+                <span>${escapeHtml(p.pembimbing || '-')}</span>
+              </div>
+
+              <div class="info-item full-width">
+                <label>No HP Mentor</label>
+                <span>${escapeHtml(p.noHpMentor || '-')}</span>
+              </div>
+              <div class="info-item full-width">
+                <label>Hari Kerja</label>
+                <span>${escapeHtml(p.hariKerja || '-')}</span>
+              </div>
+              <div class="info-item full-width">
+                <label>Jam Kerja</label>
+                <span>${jamKerjaText}</span>
+              </div>
+
+              <div class="info-item">
+                <label>Tanggal Mulai</label>
+                <span>${escapeHtml(p.tanggalMulai || '-')}</span>
+              </div>
+              <div class="info-item">
+                <label>Tanggal Selesai</label>
+                <span>${escapeHtml(p.tanggalSelesai || '-')}</span>
+              </div>
+            </div>
+          `;
+        } else {
+          displayDiv.innerHTML = '<div class="alert alert-error">Gagal memuat profil.</div>';
+        }
+      } catch (error) {
+        displayDiv.innerHTML = '<div class="alert alert-error">Gagal memuat profil.</div>';
+      }
     }
-  }
 
-  async function refreshAdmin(){
-    await preloadStudentsForAdmin();
-    await loadPresensiAll();
-    await loadLogbookAll();
-  }
+    async function loadStudentLogbook(username) {
+      const listDiv = document.getElementById('adminLogbookList');
+      listDiv.innerHTML = '<div class="loading">Memuat logbook...</div>';
 
-  async function preloadStudentsForAdmin(){
-    try{
-      const res = await fetch(`${SCRIPT_URL}?action=getStudents`);
-      const data = await res.json();
-      studentsCache = data.students || [];
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=getLogbook&username=${encodeURIComponent(username)}`);
+        const data = await response.json();
 
-      const opt = (s)=> `<option value="${escapeHtml(s.username)}">${escapeHtml(s.nama)} (${escapeHtml(s.username)})</option>`;
+        if (data.success && data.logbook && data.logbook.length > 0) {
+          listDiv.innerHTML = data.logbook.map(log => {
+            let imageHtml = '';
 
-      const selP = document.getElementById("selectSiswaPresensi");
-      const selL = document.getElementById("selectSiswaLogbook");
+            if (log.fileId) {
+              const thumbnailUrl = `https://drive.google.com/thumbnail?id=${log.fileId}&sz=w400`;
+              imageHtml = `
+                <div class="logbook-image">
+                  <img src="${thumbnailUrl}"
+                       alt="Foto kegiatan"
+                       onclick="window.open('https://drive.google.com/file/d/${log.fileId}/view', '_blank')"
+                       onerror="this.parentElement.innerHTML='<div class=image-placeholder>📷 Foto tidak dapat dimuat</div>'">
+                </div>
+              `;
+            } else if (log.berkas && String(log.berkas).includes('drive.google.com')) {
+              imageHtml = `<a href="${log.berkas}" target="_blank" class="file-link">📷 Lihat Foto</a>`;
+            }
 
-      selP.innerHTML = studentsCache.map(opt).join("");
-      selL.innerHTML = studentsCache.map(opt).join("");
-
-    }catch(e){}
-  }
-
-  // ==============================
-  // ✅ ADMIN PRESENSI ALL (filter tanggal)
-  // ==============================
-  async function loadPresensiAll(){
-    const list = document.getElementById("presensiAllList");
-    list.innerHTML = `<div class="alert alert-info">Memuat presensi...</div>`;
-
-    try{
-      const res = await fetch(`${SCRIPT_URL}?action=getPresensiList`);
-      const data = await res.json();
-
-      if(!data.success){
-        list.innerHTML = `<div class="alert alert-error">${escapeHtml(data.message||"Gagal memuat presensi")}</div>`;
-        return;
+            return `
+              <div class="logbook-item">
+                <h3>${escapeHtml(log.judul || '')}</h3>
+                <p>${escapeHtml(log.deskripsi || '')}</p>
+                <p class="date">📅 ${escapeHtml(log.tanggal || '')}</p>
+                ${imageHtml}
+              </div>
+            `;
+          }).join('');
+        } else {
+          listDiv.innerHTML = '<div class="alert alert-info">Belum ada logbook untuk siswa ini.</div>';
+        }
+      } catch (error) {
+        listDiv.innerHTML = '<div class="alert alert-error">Gagal memuat logbook.</div>';
       }
-
-      let items = data.presensi || [];
-
-      const tanggal = document.getElementById("filterTanggalPresensi").value;
-      if(tanggal){
-        items = items.filter(x => String(x.tanggal) === String(tanggal));
-      }
-
-      if(items.length===0){
-        list.innerHTML = `<div class="alert alert-info">Tidak ada presensi pada tanggal tersebut.</div>`;
-        return;
-      }
-
-      list.innerHTML = items.map(x=>`
-        <div class="card">
-          <h3>📍 ${escapeHtml(x.nama)} (${escapeHtml(x.username)})</h3>
-          <p><b>Tanggal:</b> ${escapeHtml(x.tanggal)} | <b>Jam:</b> ${escapeHtml(x.jam)}</p>
-          <p><b>Status:</b> ${escapeHtml(x.status)} | <b>Jarak:</b> ${Math.round(Number(x.distanceM||0))}m</p>
-          <p class="muted">Lat: ${escapeHtml(x.lat)} | Lng: ${escapeHtml(x.lng)}</p>
-        </div>
-      `).join("");
-
-    }catch(err){
-      list.innerHTML = `<div class="alert alert-error">Gagal memuat: ${escapeHtml(err.message)}</div>`;
     }
-  }
 
-  // ==============================
-  // ✅ ADMIN LOGBOOK ALL (search)
-  // ==============================
-  async function loadLogbookAll(){
-    const list = document.getElementById("logbookAllList");
-    list.innerHTML = `<div class="alert alert-info">Memuat logbook...</div>`;
+    // =========================
+    // HELPER UI
+    // =========================
+    function showStudentTab(tab) {
+      document.querySelectorAll('#studentPage .tab').forEach(t => t.classList.remove('active'));
 
-    try{
-      const q = document.getElementById("searchLogbookAll").value.trim().toLowerCase();
+      const tabs = document.querySelectorAll('#studentPage .tab');
 
-      const res = await fetch(`${SCRIPT_URL}?action=getAllLogbooks&requester=${encodeURIComponent(currentUser)}`);
-      const data = await res.json();
+      document.getElementById('profilTab').classList.add('hidden');
+      document.getElementById('addTab').classList.add('hidden');
+      document.getElementById('viewTab').classList.add('hidden');
+      document.getElementById('presensiTab').classList.add('hidden');
 
-      if(!data.success){
-        list.innerHTML = `<div class="alert alert-error">${escapeHtml(data.message||"Gagal memuat logbook")}</div>`;
-        return;
+      if (tab === 'profil') {
+        tabs[0].classList.add('active');
+        document.getElementById('profilTab').classList.remove('hidden');
+      } else if (tab === 'add') {
+        tabs[1].classList.add('active');
+        document.getElementById('addTab').classList.remove('hidden');
+      } else if (tab === 'view') {
+        tabs[2].classList.add('active');
+        document.getElementById('viewTab').classList.remove('hidden');
+
+        editingLogbookNo = null;
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.textContent = 'Simpan Logbook';
+        submitBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        document.getElementById('cancelBtn').classList.add('hidden');
+
+        document.getElementById('logbookForm').reset();
+        document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
+        clearSelectedImage();
+
+        loadMyLogbook();
+      } else {
+        tabs[3].classList.add('active');
+        document.getElementById('presensiTab').classList.remove('hidden');
+        loadPresensiHistory();
       }
-
-      let items = data.logbooks || [];
-
-      if(q){
-        items = items.filter(x =>
-          String(x.username||"").toLowerCase().includes(q) ||
-          String(x.nama||"").toLowerCase().includes(q) ||
-          String(x.judul||"").toLowerCase().includes(q) ||
-          String(x.deskripsi||"").toLowerCase().includes(q)
-        );
-      }
-
-      if(items.length===0){
-        list.innerHTML = `<div class="alert alert-info">Tidak ada logbook sesuai pencarian.</div>`;
-        return;
-      }
-
-      list.innerHTML = items.map(x=>`
-        <div class="card">
-          <h3>📋 ${escapeHtml(x.nama)} (${escapeHtml(x.username)})</h3>
-          <p><b>Tanggal:</b> ${escapeHtml(x.tanggal)}</p>
-          <p><b>Judul:</b> ${escapeHtml(x.judul)}</p>
-          <p>${escapeHtml(x.deskripsi)}</p>
-          <p class="muted">Update: ${escapeHtml(x.timestamp)}</p>
-        </div>
-      `).join("");
-
-    }catch(err){
-      list.innerHTML = `<div class="alert alert-error">Gagal memuat: ${escapeHtml(err.message)}</div>`;
     }
-  }
 
-  // ==============================
-  // ✅ ADMIN PRESENSI BY SISWA (pisah)
-  // ==============================
-  async function loadPresensiBySiswa(){
-    const list = document.getElementById("presensiSiswaList");
-    list.innerHTML = `<div class="alert alert-info">Memuat presensi siswa...</div>`;
-
-    try{
-      const u = document.getElementById("selectSiswaPresensi").value;
-      const t = document.getElementById("filterTanggalPresensiSiswa").value;
-
-      const res = await fetch(`${SCRIPT_URL}?action=getPresensiByStudent&username=${encodeURIComponent(u)}`);
-      const data = await res.json();
-
-      if(!data.success){
-        list.innerHTML = `<div class="alert alert-error">${escapeHtml(data.message||"Gagal memuat")}</div>`;
-        return;
-      }
-
-      let items = data.presensi || [];
-      if(t) items = items.filter(x => String(x.tanggal) === String(t));
-
-      if(items.length===0){
-        list.innerHTML = `<div class="alert alert-info">Tidak ada presensi untuk siswa ini pada tanggal tersebut.</div>`;
-        return;
-      }
-
-      list.innerHTML = items.map(x=>`
-        <div class="card">
-          <h3>📍 ${escapeHtml(x.nama)} (${escapeHtml(x.username)})</h3>
-          <p><b>Tanggal:</b> ${escapeHtml(x.tanggal)} | <b>Jam:</b> ${escapeHtml(x.jam)}</p>
-          <p><b>Status:</b> ${escapeHtml(x.status)} | <b>Jarak:</b> ${Math.round(Number(x.distanceM||0))}m</p>
-          <p class="muted">Lat: ${escapeHtml(x.lat)} | Lng: ${escapeHtml(x.lng)}</p>
-        </div>
-      `).join("");
-
-    }catch(err){
-      list.innerHTML = `<div class="alert alert-error">Gagal memuat: ${escapeHtml(err.message)}</div>`;
+    function showAlert(elementId, message, type) {
+      const alertDiv = document.getElementById(elementId);
+      if (!alertDiv) return;
+      alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+      setTimeout(() => alertDiv.innerHTML = '', 5000);
     }
-  }
 
-  // ==============================
-  // ✅ ADMIN LOGBOOK BY SISWA (pisah)
-  // ==============================
-  async function loadLogbookBySiswa(){
-    const list = document.getElementById("logbookSiswaList");
-    list.innerHTML = `<div class="alert alert-info">Memuat logbook siswa...</div>`;
-
-    try{
-      const u = document.getElementById("selectSiswaLogbook").value;
-      const q = document.getElementById("searchLogbookSiswa").value.trim().toLowerCase();
-
-      const res = await fetch(`${SCRIPT_URL}?action=getLogbook&username=${encodeURIComponent(u)}`);
-      const data = await res.json();
-
-      if(!data.success){
-        list.innerHTML = `<div class="alert alert-error">${escapeHtml(data.message||"Gagal memuat")}</div>`;
-        return;
-      }
-
-      let items = data.logbook || [];
-      if(q){
-        items = items.filter(x =>
-          String(x.judul||"").toLowerCase().includes(q) ||
-          String(x.deskripsi||"").toLowerCase().includes(q)
-        );
-      }
-
-      if(items.length===0){
-        list.innerHTML = `<div class="alert alert-info">Tidak ada logbook sesuai filter.</div>`;
-        return;
-      }
-
-      list.innerHTML = items.map(x=>`
-        <div class="card">
-          <h3>📋 ${escapeHtml(x.judul)}</h3>
-          <p><b>Tanggal:</b> ${escapeHtml(x.tanggal)}</p>
-          <p>${escapeHtml(x.deskripsi)}</p>
-          <p class="muted">Update: ${escapeHtml(x.timestamp||"-")}</p>
-        </div>
-      `).join("");
-
-    }catch(err){
-      list.innerHTML = `<div class="alert alert-error">Gagal memuat: ${escapeHtml(err.message)}</div>`;
+    function convertDateToInput(dateStr) {
+      if (!dateStr) return '';
+      const parts = String(dateStr).split('/');
+      if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
+      return dateStr;
     }
-  }
-</script>
+
+    function escapeHtml(text) {
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;',
+        '\n': ' ',
+        '\r': ''
+      };
+      return String(text ?? '').replace(/[&<>"'\n\r]/g, m => map[m]);
+    }
+
+    function logout() {
+      currentUser = null;
+      currentRole = null;
+      selectedStudent = null;
+      editingLogbookNo = null;
+      presensiSelfieFile = null;
+
+      localStorage.removeItem('logbook_remember');
+      localStorage.removeItem('logbook_username');
+      localStorage.removeItem('logbook_password');
+
+      document.getElementById('loginPage').classList.remove('hidden');
+      document.getElementById('studentPage').classList.add('hidden');
+      document.getElementById('adminPage').classList.add('hidden');
+      document.getElementById('studentDetailPage').classList.add('hidden');
+
+      document.getElementById('loginForm').reset();
+      document.getElementById('rememberMe').checked = false;
+      clearSelectedImage();
+      clearSelfie();
+    }
+
+    function openImageModal(imageUrl) {
+      const modal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImage');
+      modal.style.display = 'block';
+      modalImg.src = imageUrl;
+    }
+
+    function closeImageModal() {
+      document.getElementById('imageModal').style.display = 'none';
+    }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') closeImageModal();
+    });
+
+    // =========================
+    // AUTO KOMPRES FOTO MAX 2MB
+    // =========================
+    function readFileAsDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+    }
+
+    function loadImageFromDataURL(dataURL) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = dataURL;
+      });
+    }
+
+    async function compressImageToDataURL(file, maxBytes = 2 * 1024 * 1024) {
+      const originalDataURL = await readFileAsDataURL(file);
+      const img = await loadImageFromDataURL(originalDataURL);
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      let quality = 0.86;
+      let scale = 1.0;
+
+      const encode = () => {
+        const w = Math.max(1, Math.round(img.width * scale));
+        const h = Math.max(1, Math.round(img.height * scale));
+        canvas.width = w;
+        canvas.height = h;
+        ctx.clearRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        return canvas.toDataURL('image/jpeg', quality);
+      };
+
+      for (let i = 0; i < 12; i++) {
+        const dataUrl = encode();
+        const base64 = (dataUrl.split(',')[1] || '');
+        const approxBytes = Math.floor(base64.length * 0.75);
+
+        if (approxBytes <= maxBytes) return dataUrl;
+
+        if (quality > 0.55) quality -= 0.08;
+        else scale -= 0.12;
+
+        if (scale < 0.3) break;
+      }
+
+      throw new Error('Gambar terlalu besar walau sudah dikompres. Coba foto lain.');
+    }
+  </script>
 </body>
 </html>
