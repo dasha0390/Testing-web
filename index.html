@@ -419,7 +419,6 @@
       color: #666;
     }
 
-    /* tambahan kecil untuk presensi */
     .mini-grid {
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -487,7 +486,7 @@
           </div>
         </div>
 
-        <!-- ✅ TAB SISWA DITAMBAH PRESENSI -->
+        <!-- TAB SISWA -->
         <div class="tabs">
           <div class="tab active" onclick="showStudentTab('profil')">👤 Profil</div>
           <div class="tab" onclick="showStudentTab('add')">➕ Tambah</div>
@@ -583,12 +582,12 @@
 
             <button type="submit" class="btn btn-primary" id="saveProfilBtn">💾 Simpan Profil</button>
 
-            <!-- ✅ TAMBAHAN PRESENSI POINT -->
+            <!-- ✅ TITIK PRESENSI FIX 50m (SISWA TIDAK BISA UBAH RADIUS) -->
             <div style="height:18px"></div>
             <div class="logbook-item">
               <h3>📍 Titik Presensi (GPS)</h3>
               <p style="font-size:13px;margin-bottom:8px;color:#666;">
-                Simpan lokasi kantor/tempat magang. Presensi valid maksimal radius <b>50 meter</b>.
+                Simpan lokasi kantor/tempat magang. Presensi valid maksimal radius <b>50 meter</b> (fix).
               </p>
 
               <div id="gpsPointAlert"></div>
@@ -604,10 +603,8 @@
                 </div>
               </div>
 
-              <div class="form-group" style="margin-bottom:10px;">
-                <label>Radius (meter)</label>
-                <input type="number" id="presensiRadius" value="50" min="10" max="500">
-              </div>
+              <!-- ✅ radius disembunyikan (fix 50) -->
+              <input type="hidden" id="presensiRadius" value="50">
 
               <div class="mini-grid">
                 <button type="button" class="btn btn-secondary" onclick="ambilLokasiTitik()">🛰️ Ambil Lokasi dari GPS</button>
@@ -674,7 +671,7 @@
           <div class="logbook-item">
             <h3>🧭 Presensi Hari Ini</h3>
             <p style="font-size:13px;color:#666;margin-bottom:10px;">
-              Presensi membutuhkan <b>GPS + Selfie</b> dan harus berada dalam radius titik presensi.
+              Presensi membutuhkan <b>GPS + Selfie</b>, radius <b>50 meter</b> dan hanya bisa <b>1x per hari</b>.
             </p>
 
             <div class="form-row">
@@ -741,7 +738,6 @@
           </div>
         </div>
 
-        <!-- ✅ TAB ADMIN: SISWA + PRESENSI -->
         <div class="tabs">
           <div class="tab active" onclick="showAdminTab('siswa')">👥 Siswa</div>
           <div class="tab" onclick="showAdminTab('presensi')">📍 Presensi</div>
@@ -749,12 +745,10 @@
 
         <div id="adminAlert"></div>
 
-        <!-- TAB ADMIN SISWA -->
         <div id="adminSiswaTab">
           <div id="studentsList"></div>
         </div>
 
-        <!-- TAB ADMIN PRESENSI -->
         <div id="adminPresensiTab" class="hidden">
           <div class="logbook-item">
             <h3>📍 Presensi Semua (Per Tanggal)</h3>
@@ -827,9 +821,9 @@
 
   <script>
     // =========================
-    // GANTI URL WEB APP KAMU
+    // ✅ GANTI URL WEB APP KAMU
     // =========================
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbygf8HgFs1GUPPgqFUa9G73nmkpGwF1S8thNQlWDOCSk7g0ayknMjGpXx-hNNBpijQlvg/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbySBXUXC-ZNMh7Pe56XFTGkjyhudNwzMzv1ML7wBxkxWOJ17b7tEvdlkJePNSdX8HcBbg/exec";
 
     let currentUser = null;
     let currentRole = null;
@@ -855,7 +849,6 @@
       const tanggalInput = document.getElementById('tanggal');
       if (tanggalInput) tanggalInput.value = today;
 
-      // admin default tanggal
       const admTgl = document.getElementById('adminFilterTanggal');
       if (admTgl) admTgl.value = today;
 
@@ -1020,14 +1013,11 @@
     });
 
     // =========================
-    // FIX: JAM ISO 1899 -> HH:mm
+    // FIX: JAM ISO -> HH:mm
     // =========================
     function normalizeTime(val) {
       if (!val) return '';
-
-      if (typeof val === 'string' && /^\d{2}:\d{2}(:\d{2})?$/.test(val.trim())) {
-        return val.trim().slice(0, 5);
-      }
+      if (typeof val === 'string' && /^\d{2}:\d{2}(:\d{2})?$/.test(val.trim())) return val.trim().slice(0, 5);
 
       if (typeof val === 'string' && val.includes('T')) {
         const d = new Date(val);
@@ -1039,7 +1029,6 @@
         const m = val.match(/T(\d{2}):(\d{2})/);
         if (m) return `${m[1]}:${m[2]}`;
       }
-
       return String(val);
     }
 
@@ -1052,9 +1041,7 @@
     }
     function setHariKerjaValue(value) {
       const set = new Set(String(value || '').split(',').map(s => s.trim()).filter(Boolean));
-      document.querySelectorAll('.hariKerja').forEach(cb => {
-        cb.checked = set.has(cb.value);
-      });
+      document.querySelectorAll('.hariKerja').forEach(cb => cb.checked = set.has(cb.value));
     }
 
     async function loadProfile() {
@@ -1121,11 +1108,9 @@
         });
 
         const data = await response.json();
-        if (data.success) {
-          showAlert('profilAlert', '✅ Profil berhasil disimpan!', 'success');
-        } else {
-          showAlert('profilAlert', '❌ ' + (data.message || 'Gagal menyimpan'), 'error');
-        }
+        if (data.success) showAlert('profilAlert', '✅ Profil berhasil disimpan!', 'success');
+        else showAlert('profilAlert', '❌ ' + (data.message || 'Gagal menyimpan'), 'error');
+
       } catch (error) {
         showAlert('profilAlert', '❌ Gagal menyimpan: ' + error.message, 'error');
       } finally {
@@ -1136,7 +1121,7 @@
     });
 
     // =========================
-    // ✅ PRESENSI POINT UI
+    // ✅ TITIK PRESENSI FIX (lat/lng aman + radius fix 50)
     // =========================
     async function loadTitikPresensiUI() {
       try{
@@ -1145,9 +1130,11 @@
         if(data.success && data.point){
           document.getElementById('presensiLat').value = data.point.lat || '';
           document.getElementById('presensiLng').value = data.point.lng || '';
-          document.getElementById('presensiRadius').value = data.point.radiusM || 50;
-          const info = data.point.updatedAt ? `✅ Titik tersimpan. Terakhir update: ${data.point.updatedAt}` : '';
+          document.getElementById('presensiRadius').value = 50;
+          const info = data.point.updatedAt ? `✅ Titik tersimpan. Terakhir update: ${data.point.updatedAt} (Radius 50m)` : '';
           document.getElementById('lastPointInfo').textContent = info;
+        } else {
+          document.getElementById('lastPointInfo').textContent = '';
         }
       }catch(e){}
     }
@@ -1157,7 +1144,6 @@
         showAlert('gpsPointAlert', '❌ GPS tidak didukung di perangkat ini', 'error');
         return;
       }
-      // harus https
       if(location.protocol !== 'https:' && !location.hostname.includes('script.google.com')){
         showAlert('gpsPointAlert', '❌ GPS hanya bisa di HTTPS. Buka lewat Web App Apps Script.', 'error');
         return;
@@ -1178,9 +1164,9 @@
     }
 
     async function simpanTitikPresensi(){
+      // ✅ koma -> titik supaya aman
       const lat = String(document.getElementById('presensiLat').value || '').trim().replace(',', '.');
       const lng = String(document.getElementById('presensiLng').value || '').trim().replace(',', '.');
-      const radiusM = Number(document.getElementById('presensiRadius').value || 50);
 
       if(!lat || !lng){
         showAlert('gpsPointAlert','❌ Latitude & Longitude wajib diisi', 'error');
@@ -1192,15 +1178,15 @@
         const payload = {
           action: 'savePresensiPoint',
           username: currentUser,
-          lat, lng,
-          radiusM
+          lat, lng
+          // ✅ radius tidak dikirim -> server selalu 50m
         };
 
         const res = await fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(payload) });
         const data = await res.json();
 
         if(data.success){
-          showAlert('gpsPointAlert','✅ Titik presensi tersimpan (radius '+radiusM+'m)', 'success');
+          showAlert('gpsPointAlert','✅ Titik presensi tersimpan (radius 50m)', 'success');
           await loadTitikPresensiUI();
         }else{
           showAlert('gpsPointAlert','❌ ' + (data.message || 'Gagal menyimpan'), 'error');
@@ -1213,7 +1199,7 @@
     }
 
     // =========================
-    // ✅ PRESENSI SISWA (GPS + Selfie)
+    // ✅ PRESENSI SISWA (GPS + Selfie) 1x / hari
     // =========================
     function ambilLokasiSaya(){
       if(!navigator.geolocation){
@@ -1253,7 +1239,6 @@
       presensiSelfieFile = this.files[0];
       document.getElementById('selfieName').textContent = `✓ ${presensiSelfieFile.name} (Selfie)`;
 
-      // preview
       const reader = new FileReader();
       reader.onload = () => {
         document.getElementById('selfieImg').src = reader.result;
@@ -1362,6 +1347,7 @@
       }catch(e){}
     }
 
+    // ✅ FIX: Presensi semua per tanggal tidak error lagi
     async function loadPresensiAdminAll(auto=false){
       const list = document.getElementById('adminPresensiList');
       if(!auto) list.innerHTML = '<div class="loading">Memuat presensi...</div>';
@@ -1377,6 +1363,8 @@
 
         let items = data.presensi || [];
         const tgl = document.getElementById('adminFilterTanggal').value;
+
+        // ✅ tanggal selalu yyyy-MM-dd jadi match 100%
         if(tgl) items = items.filter(x => String(x.tanggal) === String(tgl));
 
         if(items.length===0){
@@ -1390,6 +1378,12 @@
             <p><b>Tanggal:</b> ${escapeHtml(x.tanggal)} | <b>Jam:</b> ${escapeHtml(x.jam)}</p>
             <p><b>Status:</b> ${escapeHtml(x.status)} | <b>Jarak:</b> ${Math.round(Number(x.distanceM||0))}m</p>
             ${x.photoId ? `<a class="file-link" target="_blank" href="https://drive.google.com/file/d/${escapeHtml(x.photoId)}/view">🤳 Lihat Selfie</a>` : ''}
+
+            <!-- ✅ ADMIN EDIT & DELETE -->
+            <div class="logbook-actions" style="margin-top:12px;">
+              <button class="btn-action btn-edit" onclick="adminEditPresensiStatus('${escapeHtml(x.id)}','${escapeHtml(x.status)}')">✏️ Edit Status</button>
+              <button class="btn-action btn-delete" onclick="adminDeletePresensi('${escapeHtml(x.id)}')">🗑️ Hapus</button>
+            </div>
           </div>
         `).join('');
 
@@ -1424,11 +1418,60 @@
             <p><b>Tanggal:</b> ${escapeHtml(x.tanggal)} | <b>Jam:</b> ${escapeHtml(x.jam)}</p>
             <p><b>Status:</b> ${escapeHtml(x.status)} | <b>Jarak:</b> ${Math.round(Number(x.distanceM||0))}m</p>
             ${x.photoId ? `<a class="file-link" target="_blank" href="https://drive.google.com/file/d/${escapeHtml(x.photoId)}/view">🤳 Lihat Selfie</a>` : ''}
+
+            <!-- ✅ ADMIN EDIT & DELETE -->
+            <div class="logbook-actions" style="margin-top:12px;">
+              <button class="btn-action btn-edit" onclick="adminEditPresensiStatus('${escapeHtml(x.id)}','${escapeHtml(x.status)}')">✏️ Edit Status</button>
+              <button class="btn-action btn-delete" onclick="adminDeletePresensi('${escapeHtml(x.id)}')">🗑️ Hapus</button>
+            </div>
           </div>
         `).join('');
 
       }catch(e){
         list.innerHTML = '<div class="alert alert-error">Gagal memuat presensi siswa</div>';
+      }
+    }
+
+    // ✅ ADMIN delete presensi
+    async function adminDeletePresensi(id){
+      if(!confirm('Hapus presensi ini?')) return;
+      try{
+        showGlobalLoading(true,'🔄 Menghapus presensi...');
+        const res = await fetch(`${SCRIPT_URL}?action=deletePresensi&id=${encodeURIComponent(id)}`);
+        const data = await res.json();
+        if(data.success){
+          showAlert('adminAlert','✅ Presensi berhasil dihapus', 'success');
+          await loadPresensiAdminAll();
+        }else{
+          showAlert('adminAlert','❌ ' + (data.message||'Gagal hapus'), 'error');
+        }
+      }catch(e){
+        showAlert('adminAlert','❌ Error: ' + e.message, 'error');
+      }finally{
+        showGlobalLoading(false);
+      }
+    }
+
+    // ✅ ADMIN edit status presensi
+    async function adminEditPresensiStatus(id, oldStatus){
+      const status = prompt('Masukkan status baru:', oldStatus || '');
+      if(!status) return;
+
+      try{
+        showGlobalLoading(true,'🔄 Mengupdate status...');
+        const payload = { action:'updatePresensiStatus', id, status };
+        const res = await fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(payload) });
+        const data = await res.json();
+        if(data.success){
+          showAlert('adminAlert','✅ Status presensi diupdate', 'success');
+          await loadPresensiAdminAll();
+        }else{
+          showAlert('adminAlert','❌ ' + (data.message||'Gagal update'), 'error');
+        }
+      }catch(e){
+        showAlert('adminAlert','❌ Error: ' + e.message, 'error');
+      }finally{
+        showGlobalLoading(false);
       }
     }
 
@@ -1646,34 +1689,33 @@
     }
 
     // =========================
-    // ADMIN
+    // ADMIN SISWA
     // =========================
     async function loadStudentsForAdmin() {
-    const listDiv = document.getElementById('studentsList');
-    listDiv.innerHTML = '<div class="loading">Memuat daftar siswa...</div>';
+      const listDiv = document.getElementById('studentsList');
+      listDiv.innerHTML = '<div class="loading">Memuat daftar siswa...</div>';
 
-    try {
-      const response = await fetch(`${SCRIPT_URL}?action=getStudents`);
-      const data = await response.json();
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents`);
+        const data = await response.json();
 
-      if (data.success && data.students && data.students.length > 0) {
-        listDiv.innerHTML = data.students.map(student => `
-          <div class="student-card" onclick="viewStudentDetail('${escapeHtml(student.username)}', '${escapeHtml(student.nama)}')">
-            <h3>👤 ${escapeHtml(student.nama)}</h3>
-            <p>Username: ${escapeHtml(student.username)}</p>
-            <p style="font-size: 12px; margin-top: 8px; color: #667eea;">Klik untuk melihat detail →</p>
-          </div>
-        `).join('');
-      } else {
-        listDiv.innerHTML = '<div class="alert alert-info">Belum ada siswa terdaftar.</div>';
+        if (data.success && data.students && data.students.length > 0) {
+          listDiv.innerHTML = data.students.map(student => `
+            <div class="student-card" onclick="viewStudentDetail('${escapeHtml(student.username)}', '${escapeHtml(student.nama)}')">
+              <h3>👤 ${escapeHtml(student.nama)}</h3>
+              <p>Username: ${escapeHtml(student.username)}</p>
+              <p style="font-size: 12px; margin-top: 8px; color: #667eea;">Klik untuk melihat detail →</p>
+            </div>
+          `).join('');
+        } else {
+          listDiv.innerHTML = '<div class="alert alert-info">Belum ada siswa terdaftar.</div>';
+        }
+
+      } catch (error) {
+        console.error(error);
+        listDiv.innerHTML = '<div class="alert alert-error">Gagal memuat daftar siswa.</div>';
       }
-
-    } catch (error) {
-      console.error(error);
-      listDiv.innerHTML = '<div class="alert alert-error">Gagal memuat daftar siswa.</div>';
     }
-  }
-
 
     async function viewStudentDetail(username, nama) {
       selectedStudent = username;
