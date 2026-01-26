@@ -273,12 +273,10 @@
       display: flex;
       margin-bottom: 20px;
       border-bottom: 2px solid #e0e0e0;
-      overflow-x: auto;
     }
 
     .tab {
       flex: 1;
-      min-width: 110px;
       padding: 12px;
       text-align: center;
       cursor: pointer;
@@ -286,7 +284,8 @@
       color: #666;
       transition: all 0.3s;
       user-select: none;
-      white-space: nowrap;
+      font-size: 12px;
+      line-height: 1.2;
     }
 
     .tab.active {
@@ -420,6 +419,34 @@
       font-weight: 600;
       color: #666;
     }
+
+    .mini-card {
+      background: #f8f9fa;
+      border-left: 4px solid #667eea;
+      padding: 14px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+    .mini-title {
+      font-weight: 800;
+      color: #667eea;
+      margin-bottom: 6px;
+    }
+    .mini-sub {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+    .badge-ok { background:#d4edda; color:#155724; }
+    .badge-bad { background:#f8d7da; color:#721c24; }
   </style>
 </head>
 
@@ -512,6 +539,25 @@
             <div class="form-group">
               <label>Alamat Tempat Magang <span class="required">*</span></label>
               <textarea id="alamatMagang" required placeholder="Alamat lengkap tempat magang"></textarea>
+            </div>
+
+            <!-- BARU: Lokasi Magang (GPS Patokan Presensi) -->
+            <div class="form-group">
+              <label>Lokasi Magang (GPS) <span class="required">*</span></label>
+
+              <div style="background:#f8f9fa; border:2px solid #e0e0e0; padding:12px; border-radius:10px;">
+                <div style="font-size:13px; color:#666;">Lat Magang: <b id="latMagangText">-</b></div>
+                <div style="font-size:13px; color:#666;">Lng Magang: <b id="lngMagangText">-</b></div>
+                <small style="display:block; margin-top:8px; color:#666;">
+                  Lokasi ini akan menjadi patokan presensi (radius otomatis 50m).
+                </small>
+              </div>
+
+              <input type="hidden" id="latMagang" value="">
+              <input type="hidden" id="lngMagang" value="">
+
+              <button type="button" class="btn btn-secondary" onclick="ambilLokasiMagang()"
+                style="margin-top:10px;">📍 Ambil Lokasi Magang</button>
             </div>
 
             <div class="form-group">
@@ -622,33 +668,27 @@
         <div id="presensiTab" class="hidden">
           <div id="presensiAlert"></div>
 
-          <div class="form-group">
-            <label>Tanggal Presensi</label>
-            <input type="date" id="presensiTanggal">
-          </div>
-
-          <div class="form-group">
-            <label>Lokasi GPS</label>
-            <div style="background:#f8f9fa; border:2px solid #e0e0e0; padding:12px; border-radius:10px;">
-              <div style="font-size:13px; color:#666;">Lat: <b id="latText">-</b></div>
-              <div style="font-size:13px; color:#666;">Lng: <b id="lngText">-</b></div>
-              <div style="font-size:13px; color:#666; margin-top:6px;">Jarak (m): <b id="jarakText">-</b></div>
-              <div style="font-size:13px; color:#666;">Radius: <b>50m</b></div>
+          <div class="mini-card">
+            <div class="mini-title">📍 Presensi Hari Ini</div>
+            <div style="font-size:13px; color:#666;">
+              Radius presensi otomatis <b>50 meter</b> dari lokasi magang pada Profil.
             </div>
+            <div class="mini-sub">
+              Pastikan GPS aktif & izin lokasi diaktifkan.
+            </div>
+
+            <div class="form-group" style="margin-top:12px;">
+              <label>Keterangan (Opsional)</label>
+              <input type="text" id="presensiKet" placeholder="Contoh: Datang lebih awal / Ada meeting">
+            </div>
+
+            <button class="btn btn-primary" id="btnPresensi" onclick="presensiSekarang()">📍 Presensi Sekarang</button>
           </div>
 
-          <div class="form-group">
-            <label>Keterangan (opsional)</label>
-            <input type="text" id="presensiKet" placeholder="Contoh: Datang tepat waktu">
+          <div class="mini-card">
+            <div class="mini-title">📋 Riwayat Presensi Saya</div>
+            <div id="myPresensiList" class="loading">Memuat presensi...</div>
           </div>
-
-          <button class="btn btn-secondary" type="button" onclick="ambilLokasi()">📍 Ambil Lokasi</button>
-          <button class="btn btn-primary" type="button" onclick="kirimPresensi()" id="btnKirimPresensi" disabled>✅ Presensi Sekarang</button>
-
-          <hr style="margin:20px 0; border:none; border-top:1px solid #eee;">
-
-          <div style="font-weight:700; color:#667eea; margin-bottom:10px;">Riwayat Presensi Saya</div>
-          <div id="riwayatPresensi" class="loading">Memuat data...</div>
         </div>
 
       </div>
@@ -673,18 +713,17 @@
 
         <div id="adminAlert"></div>
 
-        <!-- PANEL PRESENSI ADMIN (BARU) -->
-        <div style="margin-bottom:20px;">
-          <div style="font-weight:800; color:#667eea; margin-bottom:10px;">📍 Presensi Siswa (Per Tanggal)</div>
+        <!-- Admin Presensi Per Tanggal (BARU) -->
+        <div class="mini-card">
+          <div class="mini-title">📍 Lihat Presensi Semua (Per Tanggal)</div>
 
-          <div class="form-group">
+          <div class="form-group" style="margin-top:10px;">
             <label>Pilih Tanggal</label>
             <input type="date" id="adminPresensiTanggal">
           </div>
 
-          <button class="btn btn-primary" type="button" onclick="loadPresensiByDate()">🔎 Lihat Presensi</button>
-
-          <div id="adminPresensiList" class="loading" style="margin-top:15px;">Silakan pilih tanggal...</div>
+          <button class="btn btn-primary" style="margin-top:0;" onclick="loadPresensiByDate()">📋 Tampilkan Presensi</button>
+          <div id="adminPresensiList" class="loading" style="margin-top:10px;">Silakan pilih tanggal.</div>
         </div>
 
         <div id="studentsList"></div>
@@ -739,7 +778,7 @@
     // =========================
     // GANTI URL WEB APP KAMU
     // =========================
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzbNO3uYzSQh8CKo4_Q1zocytcOb-yCX6A-OwIIpBLpta3l3RhwrViyvLnwbnSp8hWymA/exec"; // <-- WAJIB GANTI
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxPM6gxAAYVNwrfLWa1TWGHS3WKkLKTtE0fj6B7MtIgx6olrYiOudWuJb-S4VWMnVb_/exec";
 
     let currentUser = null;
     let currentRole = null;
@@ -747,10 +786,6 @@
     let selectedStudent = null;
 
     let selectedImageFile = null;
-
-    // PRESENSI
-    let presensiLat = null;
-    let presensiLng = null;
 
     function showGlobalLoading(show, text) {
       const el = document.getElementById('globalLoading');
@@ -766,11 +801,9 @@
       const tanggalInput = document.getElementById('tanggal');
       if (tanggalInput) tanggalInput.value = today;
 
-      const presensiTanggal = document.getElementById('presensiTanggal');
-      if (presensiTanggal) presensiTanggal.value = today;
-
-      const adminPresensiTanggal = document.getElementById('adminPresensiTanggal');
-      if (adminPresensiTanggal) adminPresensiTanggal.value = today;
+      // Admin presensi default hari ini
+      const ap = document.getElementById('adminPresensiTanggal');
+      if (ap) ap.value = today;
 
       const remember = localStorage.getItem('logbook_remember') === '1';
       const u = localStorage.getItem('logbook_username');
@@ -797,6 +830,7 @@
           if (data.role === 'admin') {
             document.getElementById('adminPage').classList.remove('hidden');
             await loadStudentsForAdmin();
+            await loadPresensiByDate(); // refresh presensi admin default
           } else {
             document.getElementById('studentPage').classList.remove('hidden');
             document.getElementById('studentName').textContent = data.nama;
@@ -837,6 +871,8 @@
           } else {
             await loadProfile();
             await loadMyLogbook();
+            await loadMyPresensi();
+            showAlert('studentAlert', '🔄 Data diperbarui', 'info');
           }
           return;
         }
@@ -847,7 +883,8 @@
 
           if (adminVisible) {
             await loadStudentsForAdmin();
-            showAlert('adminAlert', '🔄 Daftar siswa diperbarui', 'info');
+            await loadPresensiByDate();
+            showAlert('adminAlert', '🔄 Dashboard diperbarui', 'info');
           } else if (detailVisible && selectedStudent) {
             const detailProfilVisible = !document.getElementById('detailProfilTab').classList.contains('hidden');
             const detailLogbookVisible = !document.getElementById('detailLogbookTab').classList.contains('hidden');
@@ -904,6 +941,7 @@
           if (data.role === 'admin') {
             document.getElementById('adminPage').classList.remove('hidden');
             await loadStudentsForAdmin();
+            await loadPresensiByDate();
           } else {
             document.getElementById('studentPage').classList.remove('hidden');
             document.getElementById('studentName').textContent = data.nama;
@@ -960,6 +998,36 @@
       });
     }
 
+    // BARU: ambil lokasi magang untuk profil
+    function ambilLokasiMagang() {
+      if (!navigator.geolocation) {
+        showAlert('profilAlert', '❌ Browser tidak mendukung GPS', 'error');
+        return;
+      }
+
+      showGlobalLoading(true, '📍 Mengambil lokasi magang...');
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = Number(pos.coords.latitude).toFixed(6).toString().replace(',', '.');
+          const lng = Number(pos.coords.longitude).toFixed(6).toString().replace(',', '.');
+
+          document.getElementById('latMagang').value = lat;
+          document.getElementById('lngMagang').value = lng;
+
+          document.getElementById('latMagangText').textContent = lat;
+          document.getElementById('lngMagangText').textContent = lng;
+
+          showAlert('profilAlert', '✅ Lokasi magang berhasil diambil!', 'success');
+          showGlobalLoading(false);
+        },
+        (err) => {
+          showGlobalLoading(false);
+          showAlert('profilAlert', '❌ Gagal ambil GPS: ' + err.message, 'error');
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+      );
+    }
+
     async function loadProfile() {
       try {
         const response = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(currentUser)}`);
@@ -983,6 +1051,12 @@
 
           document.getElementById('jamKerjaMulai').value = normalizeTime(p.jamKerjaMulai);
           document.getElementById('jamKerjaSelesai').value = normalizeTime(p.jamKerjaSelesai);
+
+          // BARU: lokasi magang
+          document.getElementById('latMagang').value = p.latMagang || '';
+          document.getElementById('lngMagang').value = p.lngMagang || '';
+          document.getElementById('latMagangText').textContent = p.latMagang || '-';
+          document.getElementById('lngMagangText').textContent = p.lngMagang || '-';
         }
       } catch (error) {
         console.error('Error loading profile:', error);
@@ -999,6 +1073,15 @@
       try {
         showGlobalLoading(true, '🔄 Menyimpan profil...');
 
+        // wajib GPS magang
+        if (!document.getElementById('latMagang').value || !document.getElementById('lngMagang').value) {
+          showAlert('profilAlert', '❌ Lokasi magang wajib diisi (ambil GPS dulu).', 'error');
+          showGlobalLoading(false);
+          saveBtn.disabled = false;
+          saveBtn.textContent = '💾 Simpan Profil';
+          return;
+        }
+
         const payload = {
           action: 'saveProfile',
           username: currentUser,
@@ -1012,10 +1095,15 @@
           pembimbing: document.getElementById('pembimbing').value,
           tanggalMulai: document.getElementById('tanggalMulai').value,
           tanggalSelesai: document.getElementById('tanggalSelesai').value,
+
           noHpMentor: document.getElementById('noHpMentor').value,
           hariKerja: getHariKerjaValue(),
           jamKerjaMulai: document.getElementById('jamKerjaMulai').value,
-          jamKerjaSelesai: document.getElementById('jamKerjaSelesai').value
+          jamKerjaSelesai: document.getElementById('jamKerjaSelesai').value,
+
+          // BARU
+          latMagang: document.getElementById('latMagang').value,
+          lngMagang: document.getElementById('lngMagang').value
         };
 
         const response = await fetch(SCRIPT_URL, {
@@ -1252,7 +1340,202 @@
     }
 
     // =========================
-    // ADMIN
+    // PRESENSI (BARU)
+    // =========================
+    async function presensiSekarang() {
+      try {
+        const btn = document.getElementById('btnPresensi');
+        btn.disabled = true;
+
+        // pastikan profil lokasi magang sudah ada
+        const latMag = document.getElementById('latMagang').value;
+        const lngMag = document.getElementById('lngMagang').value;
+        if (!latMag || !lngMag) {
+          showAlert('presensiAlert', '❌ Lokasi magang belum diisi di Profil. Isi dulu sebelum presensi.', 'error');
+          btn.disabled = false;
+          return;
+        }
+
+        if (!navigator.geolocation) {
+          showAlert('presensiAlert', '❌ Browser tidak mendukung GPS', 'error');
+          btn.disabled = false;
+          return;
+        }
+
+        showGlobalLoading(true, '📍 Mengambil lokasi presensi...');
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+          const lat = Number(pos.coords.latitude).toFixed(6).toString().replace(',', '.');
+          const lng = Number(pos.coords.longitude).toFixed(6).toString().replace(',', '.');
+
+          const tanggal = new Date().toISOString().split('T')[0];
+          const keterangan = document.getElementById('presensiKet').value || '';
+
+          const payload = {
+            action: 'addPresensi',
+            username: currentUser,
+            tanggal,
+            lat,
+            lng,
+            keterangan
+          };
+
+          const res = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+
+          const data = await res.json();
+
+          if (data.success) {
+            showAlert('presensiAlert', data.message || '✅ Presensi berhasil', 'success');
+            document.getElementById('presensiKet').value = '';
+            await loadMyPresensi();
+          } else {
+            showAlert('presensiAlert', '❌ ' + (data.message || 'Presensi gagal'), 'error');
+          }
+
+          showGlobalLoading(false);
+          btn.disabled = false;
+        }, (err) => {
+          showGlobalLoading(false);
+          showAlert('presensiAlert', '❌ Gagal ambil GPS: ' + err.message, 'error');
+          btn.disabled = false;
+        }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+
+      } catch (e) {
+        showGlobalLoading(false);
+        showAlert('presensiAlert', '❌ Error: ' + e.message, 'error');
+        document.getElementById('btnPresensi').disabled = false;
+      }
+    }
+
+    async function loadMyPresensi() {
+      const el = document.getElementById('myPresensiList');
+      if (!el) return;
+      el.innerHTML = '<div class="loading">Memuat presensi...</div>';
+
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getMyPresensi&username=${encodeURIComponent(currentUser)}`);
+        const data = await res.json();
+
+        if (data.success && data.presensi && data.presensi.length > 0) {
+          el.innerHTML = data.presensi.map(p => {
+            const ok = String(p.status || '').toLowerCase() === 'hadir';
+            return `
+              <div class="mini-card" style="margin-top:10px;">
+                <div class="mini-title">📅 ${escapeHtml(p.tanggal)} • ⏰ ${escapeHtml(p.jam || '-')}</div>
+                <div style="font-size:13px;color:#666;">Jarak: <b>${escapeHtml(p.jarak || '-')} m</b></div>
+                <div class="badge ${ok ? 'badge-ok' : 'badge-bad'}">${escapeHtml(p.status || '-')}</div>
+                <div class="mini-sub">Lat: ${escapeHtml(p.lat || '-')} | Lng: ${escapeHtml(p.lng || '-')}</div>
+                ${p.keterangan ? `<div class="mini-sub"><b>Ket:</b> ${escapeHtml(p.keterangan)}</div>` : ''}
+              </div>
+            `;
+          }).join('');
+        } else {
+          el.innerHTML = '<div class="alert alert-info">Belum ada presensi.</div>';
+        }
+      } catch (e) {
+        el.innerHTML = '<div class="alert alert-error">Gagal memuat presensi.</div>';
+      }
+    }
+
+    // =========================
+    // ADMIN: PRESENSI PER TANGGAL (BARU)
+    // =========================
+    async function loadPresensiByDate() {
+      const el = document.getElementById('adminPresensiList');
+      const tgl = document.getElementById('adminPresensiTanggal').value;
+      if (!tgl) {
+        el.innerHTML = '<div class="alert alert-info">Silakan pilih tanggal.</div>';
+        return;
+      }
+
+      el.innerHTML = '<div class="loading">Memuat presensi...</div>';
+
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getPresensiByDate&tanggal=${encodeURIComponent(tgl)}`);
+        const data = await res.json();
+
+        if (data.success && data.presensi && data.presensi.length > 0) {
+          el.innerHTML = data.presensi.map(p => {
+            const ok = String(p.status || '').toLowerCase() === 'hadir';
+            return `
+              <div class="mini-card">
+                <div class="mini-title">👤 ${escapeHtml(p.nama || p.username)} (${escapeHtml(p.username)})</div>
+                <div style="font-size:13px;color:#666;">⏰ ${escapeHtml(p.jam || '-')} • Jarak: <b>${escapeHtml(p.jarak || '-')} m</b></div>
+                <div class="badge ${ok ? 'badge-ok' : 'badge-bad'}">${escapeHtml(p.status || '-')}</div>
+
+                <div class="mini-sub">
+                  <b>GPS Presensi:</b> ${escapeHtml(p.lat || '-')} , ${escapeHtml(p.lng || '-')}
+                </div>
+                <div class="mini-sub">
+                  <b>GPS Magang:</b> ${escapeHtml(p.latMagang || '-')} , ${escapeHtml(p.lngMagang || '-')}
+                </div>
+
+                <div class="form-group" style="margin-top:10px;">
+                  <label style="margin-bottom:6px;">Edit Keterangan</label>
+                  <input type="text" id="ket_${escapeHtml(p.id)}" value="${escapeHtml(p.keterangan || '')}" placeholder="Keterangan...">
+                  <div style="display:flex; gap:8px; margin-top:8px;">
+                    <button class="btn-action btn-edit" onclick="adminUpdateKet('${escapeHtml(p.id)}')">💾 Simpan</button>
+                    <button class="btn-action btn-delete" onclick="adminDeletePresensi('${escapeHtml(p.id)}')">🗑️ Hapus</button>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        } else {
+          el.innerHTML = '<div class="alert alert-info">Tidak ada presensi pada tanggal ini.</div>';
+        }
+      } catch (e) {
+        el.innerHTML = '<div class="alert alert-error">Gagal memuat presensi per tanggal.</div>';
+      }
+    }
+
+    async function adminDeletePresensi(id) {
+      if (!confirm('Yakin ingin menghapus presensi ini?')) return;
+      try {
+        showGlobalLoading(true, '🗑️ Menghapus presensi...');
+        const res = await fetch(`${SCRIPT_URL}?action=deletePresensi&id=${encodeURIComponent(id)}`);
+        const data = await res.json();
+
+        if (data.success) {
+          showAlert('adminAlert', '✅ Presensi berhasil dihapus', 'success');
+          await loadPresensiByDate();
+        } else {
+          showAlert('adminAlert', '❌ ' + (data.message || 'Gagal menghapus'), 'error');
+        }
+      } catch (e) {
+        showAlert('adminAlert', '❌ Error: ' + e.message, 'error');
+      } finally {
+        showGlobalLoading(false);
+      }
+    }
+
+    async function adminUpdateKet(id) {
+      try {
+        showGlobalLoading(true, '💾 Menyimpan keterangan...');
+        const input = document.getElementById('ket_' + id);
+        const ket = input ? input.value : '';
+
+        const payload = { action: 'updatePresensi', id, keterangan: ket };
+        const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const data = await res.json();
+
+        if (data.success) {
+          showAlert('adminAlert', '✅ Keterangan berhasil disimpan', 'success');
+          await loadPresensiByDate();
+        } else {
+          showAlert('adminAlert', '❌ ' + (data.message || 'Gagal update'), 'error');
+        }
+      } catch (e) {
+        showAlert('adminAlert', '❌ Error: ' + e.message, 'error');
+      } finally {
+        showGlobalLoading(false);
+      }
+    }
+
+    // =========================
+    // ADMIN (SISWA)
     // =========================
     async function loadStudentsForAdmin() {
       const listDiv = document.getElementById('studentsList');
@@ -1355,6 +1638,10 @@
                 <span>${escapeHtml(p.alamatMagang || '-')}</span>
               </div>
               <div class="info-item full-width">
+                <label>Lokasi Magang (GPS)</label>
+                <span>${escapeHtml(p.latMagang || '-')} , ${escapeHtml(p.lngMagang || '-')}</span>
+              </div>
+              <div class="info-item full-width">
                 <label>Posisi</label>
                 <span>${escapeHtml(p.posisi || '-')}</span>
               </div>
@@ -1438,209 +1725,27 @@
     }
 
     // =========================
-    // PRESENSI (BARU)
-    // =========================
-    function ambilLokasi() {
-      if (!navigator.geolocation) {
-        showAlert('presensiAlert', '❌ Browser tidak mendukung GPS', 'error');
-        return;
-      }
-
-      showGlobalLoading(true, '📍 Mengambil lokasi GPS...');
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          presensiLat = Number(pos.coords.latitude).toFixed(6);
-          presensiLng = Number(pos.coords.longitude).toFixed(6);
-
-          presensiLat = String(presensiLat).replace(',', '.');
-          presensiLng = String(presensiLng).replace(',', '.');
-
-          document.getElementById('latText').textContent = presensiLat;
-          document.getElementById('lngText').textContent = presensiLng;
-
-          document.getElementById('btnKirimPresensi').disabled = false;
-          showAlert('presensiAlert', '✅ Lokasi berhasil diambil', 'success');
-
-          showGlobalLoading(false);
-        },
-        (err) => {
-          showGlobalLoading(false);
-          showAlert('presensiAlert', '❌ Gagal ambil lokasi: ' + err.message, 'error');
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-      );
-    }
-
-    async function kirimPresensi() {
-      try {
-        const tanggal = document.getElementById('presensiTanggal').value;
-        const ket = document.getElementById('presensiKet').value;
-
-        if (!presensiLat || !presensiLng) {
-          showAlert('presensiAlert', '❌ Ambil lokasi dulu', 'error');
-          return;
-        }
-
-        showGlobalLoading(true, '📍 Mengirim presensi...');
-
-        const payload = {
-          action: 'addPresensi',
-          username: currentUser,
-          tanggal,
-          lat: presensiLat,
-          lng: presensiLng,
-          keterangan: ket
-        };
-
-        const res = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        });
-
-        const data = await res.json();
-
-        if (data.success) {
-          document.getElementById('jarakText').textContent = (data.distance ?? '-') + " m";
-          showAlert('presensiAlert', data.message, 'success');
-          await loadMyPresensi();
-        } else {
-          showAlert('presensiAlert', data.message || '❌ Presensi gagal', 'error');
-        }
-      } catch (e) {
-        showAlert('presensiAlert', '❌ Error: ' + e.message, 'error');
-      } finally {
-        showGlobalLoading(false);
-      }
-    }
-
-    async function loadMyPresensi() {
-      const box = document.getElementById('riwayatPresensi');
-      box.innerHTML = '<div class="loading">Memuat data...</div>';
-
-      try {
-        const res = await fetch(`${SCRIPT_URL}?action=getMyPresensi&username=${encodeURIComponent(currentUser)}`);
-        const data = await res.json();
-
-        if (data.success && data.presensi && data.presensi.length > 0) {
-          box.innerHTML = data.presensi.map(p => `
-            <div class="logbook-item">
-              <h3>📍 ${escapeHtml(p.tanggal)} - ${escapeHtml(p.jam)}</h3>
-              <p><b>Status:</b> ${escapeHtml(p.status)} | <b>Jarak:</b> ${escapeHtml(p.jarak)}m</p>
-              <p><b>Lat:</b> ${escapeHtml(p.lat)} | <b>Lng:</b> ${escapeHtml(p.lng)}</p>
-              <p><b>Keterangan:</b> ${escapeHtml(p.keterangan || '-')}</p>
-              <p class="date">🕒 ${escapeHtml(p.timestamp || '')}</p>
-            </div>
-          `).join('');
-        } else {
-          box.innerHTML = '<div class="alert alert-info">Belum ada presensi.</div>';
-        }
-      } catch (e) {
-        box.innerHTML = '<div class="alert alert-error">Gagal memuat presensi.</div>';
-      }
-    }
-
-    async function loadPresensiByDate() {
-      const box = document.getElementById('adminPresensiList');
-      box.innerHTML = '<div class="loading">Memuat data...</div>';
-
-      try {
-        const tanggal = document.getElementById('adminPresensiTanggal').value;
-        if (!tanggal) {
-          box.innerHTML = '<div class="alert alert-error">Tanggal wajib diisi</div>';
-          return;
-        }
-
-        const res = await fetch(`${SCRIPT_URL}?action=getPresensiByDate&tanggal=${encodeURIComponent(tanggal)}`);
-        const data = await res.json();
-
-        if (data.success && data.presensi && data.presensi.length > 0) {
-          box.innerHTML = data.presensi.map(p => `
-            <div class="logbook-item">
-              <div class="logbook-actions">
-                <button class="btn-action btn-delete" onclick="hapusPresensiAdmin('${p.id}')">🗑️ Hapus</button>
-                <button class="btn-action btn-edit" onclick="editPresensiAdminPrompt('${p.id}', '${escapeHtml(p.keterangan || '')}')">✏️ Edit</button>
-              </div>
-              <h3>👤 ${escapeHtml(p.nama)} (${escapeHtml(p.username)})</h3>
-              <p>📍 ${escapeHtml(p.tanggal)} - ${escapeHtml(p.jam)}</p>
-              <p><b>Status:</b> ${escapeHtml(p.status)} | <b>Jarak:</b> ${escapeHtml(p.jarak)}m</p>
-              <p><b>Lat:</b> ${escapeHtml(p.lat)} | <b>Lng:</b> ${escapeHtml(p.lng)}</p>
-              <p><b>Keterangan:</b> ${escapeHtml(p.keterangan || '-')}</p>
-            </div>
-          `).join('');
-        } else {
-          box.innerHTML = '<div class="alert alert-info">Tidak ada presensi pada tanggal tersebut.</div>';
-        }
-      } catch (e) {
-        box.innerHTML = '<div class="alert alert-error">Gagal memuat presensi admin.</div>';
-      }
-    }
-
-    async function hapusPresensiAdmin(id) {
-      if (!confirm('Hapus data presensi ini?')) return;
-      try {
-        showGlobalLoading(true, '🗑️ Menghapus presensi...');
-        const res = await fetch(`${SCRIPT_URL}?action=deletePresensi&id=${encodeURIComponent(id)}`);
-        const data = await res.json();
-        if (data.success) {
-          alert('✅ Presensi dihapus');
-          loadPresensiByDate();
-        } else {
-          alert('❌ ' + (data.message || 'Gagal'));
-        }
-      } catch (e) {
-        alert('❌ Error: ' + e.message);
-      } finally {
-        showGlobalLoading(false);
-      }
-    }
-
-    async function editPresensiAdminPrompt(id, oldKet) {
-      const ket = prompt('Edit keterangan presensi:', oldKet || '');
-      if (ket === null) return;
-
-      try {
-        showGlobalLoading(true, '✏️ Mengupdate presensi...');
-        const payload = { action: 'updatePresensi', id, keterangan: ket };
-        const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-        const data = await res.json();
-        if (data.success) {
-          alert('✅ Berhasil update');
-          loadPresensiByDate();
-        } else {
-          alert('❌ ' + (data.message || 'Gagal'));
-        }
-      } catch (e) {
-        alert('❌ Error: ' + e.message);
-      } finally {
-        showGlobalLoading(false);
-      }
-    }
-
-    // =========================
     // HELPER UI
     // =========================
     function showStudentTab(tab) {
       document.querySelectorAll('#studentPage .tab').forEach(t => t.classList.remove('active'));
 
       const tabs = document.querySelectorAll('#studentPage .tab');
+
+      document.getElementById('profilTab').classList.add('hidden');
+      document.getElementById('addTab').classList.add('hidden');
+      document.getElementById('viewTab').classList.add('hidden');
+      document.getElementById('presensiTab').classList.add('hidden');
+
       if (tab === 'profil') {
         tabs[0].classList.add('active');
         document.getElementById('profilTab').classList.remove('hidden');
-        document.getElementById('addTab').classList.add('hidden');
-        document.getElementById('viewTab').classList.add('hidden');
-        document.getElementById('presensiTab').classList.add('hidden');
       } else if (tab === 'add') {
         tabs[1].classList.add('active');
-        document.getElementById('profilTab').classList.add('hidden');
         document.getElementById('addTab').classList.remove('hidden');
-        document.getElementById('viewTab').classList.add('hidden');
-        document.getElementById('presensiTab').classList.add('hidden');
       } else if (tab === 'view') {
         tabs[2].classList.add('active');
-        document.getElementById('profilTab').classList.add('hidden');
-        document.getElementById('addTab').classList.add('hidden');
         document.getElementById('viewTab').classList.remove('hidden');
-        document.getElementById('presensiTab').classList.add('hidden');
 
         editingLogbookNo = null;
         const submitBtn = document.getElementById('submitBtn');
@@ -1653,20 +1758,9 @@
         clearSelectedImage();
 
         loadMyLogbook();
-      } else if (tab === 'presensi') {
+      } else {
         tabs[3].classList.add('active');
-        document.getElementById('profilTab').classList.add('hidden');
-        document.getElementById('addTab').classList.add('hidden');
-        document.getElementById('viewTab').classList.add('hidden');
         document.getElementById('presensiTab').classList.remove('hidden');
-
-        // reset tombol presensi
-        document.getElementById('btnKirimPresensi').disabled = true;
-        presensiLat = null; presensiLng = null;
-        document.getElementById('latText').textContent = '-';
-        document.getElementById('lngText').textContent = '-';
-        document.getElementById('jarakText').textContent = '-';
-
         loadMyPresensi();
       }
     }
