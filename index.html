@@ -7,48 +7,42 @@
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:Segoe UI,Tahoma;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;padding:20px}
-    .container{max-width:520px;margin:0 auto;background:#fff;border-radius:20px;box-shadow:0 10px 40px rgba(0,0,0,.2);overflow:hidden}
-    .header{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:28px 20px;text-align:center;position:relative}
+    .container{max-width:560px;margin:0 auto;background:#fff;border-radius:20px;box-shadow:0 10px 40px rgba(0,0,0,.2);overflow:hidden}
+    .header{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:28px 20px;text-align:center}
     .header h1{font-size:22px;margin-top:8px}
     .header p{font-size:13px;opacity:.9;margin-top:4px}
-    .content{padding:22px 18px}
-    .form-group{margin-bottom:16px}
-    label{display:block;margin-bottom:8px;color:#333;font-weight:700;font-size:13px}
+    .content{padding:20px 16px}
+    .form-group{margin-bottom:14px}
+    label{display:block;margin-bottom:8px;color:#333;font-weight:800;font-size:13px}
     .required{color:#e74c3c}
     input,textarea,select{width:100%;padding:12px 14px;border:2px solid #e0e0e0;border-radius:10px;font-size:14px}
     textarea{min-height:95px;resize:vertical}
     input:focus,textarea:focus,select:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,.12)}
-    .btn{width:100%;padding:14px;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;margin-top:10px;transition:.2s}
+    .btn{width:100%;padding:14px;border:none;border-radius:10px;font-size:15px;font-weight:900;cursor:pointer;margin-top:8px;transition:.2s}
     .btn-primary{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff}
     .btn-secondary{background:#667eea;color:#fff}
     .btn:hover{transform:translateY(-1px)}
-    .btn:disabled{opacity:.6;cursor:not-allowed}
     .hidden{display:none}
-    .tabs{display:flex;gap:4px;margin:8px 0 14px;border-bottom:2px solid #eee;flex-wrap:wrap}
-    .tab{flex:1;min-width:120px;text-align:center;padding:10px 8px;font-weight:800;color:#666;cursor:pointer}
-    .tab.active{color:#667eea;border-bottom:3px solid #667eea;margin-bottom:-2px}
     .alert{padding:12px 14px;border-radius:10px;margin-bottom:14px;font-size:13px}
     .alert-success{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
     .alert-error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
     .alert-info{background:#d1ecf1;color:#0c5460;border:1px solid #bee5eb}
-    .user-info{display:flex;justify-content:space-between;gap:10px;align-items:center;background:#f8f9fa;padding:12px;border-radius:10px;margin-bottom:14px}
+    .tabs{display:flex;gap:6px;margin:10px 0 14px;border-bottom:2px solid #eee;flex-wrap:wrap}
+    .tab{flex:1;min-width:120px;text-align:center;padding:10px 8px;font-weight:900;color:#666;cursor:pointer}
+    .tab.active{color:#667eea;border-bottom:3px solid #667eea;margin-bottom:-2px}
+    .card{background:#f8f9fa;padding:14px;border-radius:12px;margin-bottom:12px;border-left:4px solid #667eea}
+    .card h3{color:#667eea;font-size:15px;margin-bottom:6px}
+    .card p{color:#555;font-size:13px;margin-bottom:4px}
+    .muted{font-size:12px;color:#888}
+    .user-info{display:flex;justify-content:space-between;gap:10px;align-items:center;background:#f8f9fa;padding:12px;border-radius:12px;margin-bottom:14px}
     .user-info span{font-weight:900;color:#667eea}
     .mini-actions{display:flex;gap:8px}
-    .mini-btn{padding:8px 12px;border:none;border-radius:8px;font-weight:800;background:#667eea;color:#fff;cursor:pointer}
-    .logbook-item{background:#f8f9fa;padding:14px;border-radius:10px;margin-bottom:12px;border-left:4px solid #667eea}
-    .logbook-item h3{color:#667eea;font-size:15px;margin-bottom:6px}
-    .logbook-item p{color:#666;font-size:13px;margin-bottom:4px}
-    .date{font-size:12px;color:#999}
-    .camera-box{border:2px solid #eee;border-radius:12px;padding:12px;background:#fafafa;text-align:center}
-    video,canvas{width:100%;border-radius:12px}
-    canvas{display:none}
-    .smallbtn{width:100%;padding:10px 12px;border:none;border-radius:10px;font-weight:900;margin-top:10px;cursor:pointer}
-    .small-blue{background:#3498db;color:#fff}
-    .small-gray{background:#999;color:#fff}
-    .hint{margin-top:8px;font-size:12px;color:#666}
+    .mini-btn{padding:8px 12px;border:none;border-radius:10px;font-weight:900;background:#667eea;color:#fff;cursor:pointer}
     .logo{width:62px;height:62px;border-radius:14px;object-fit:cover;background:rgba(255,255,255,.15);padding:6px}
     #globalLoading{display:none;position:fixed;inset:0;background:rgba(255,255,255,.75);z-index:99999;align-items:center;justify-content:center}
     #globalLoading .box{background:#fff;padding:16px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.12);font-weight:900;color:#667eea}
+    .split{display:flex;gap:8px}
+    .split > *{flex:1}
   </style>
 </head>
 
@@ -60,7 +54,7 @@
     <div class="header">
       <img id="logoImg" class="logo" alt="logo">
       <h1>Logbook Magang</h1>
-      <p>Sistem Pencatatan Kegiatan Magang</p>
+      <p>Login Siswa / Admin</p>
     </div>
 
     <div class="content">
@@ -90,154 +84,118 @@
   <!-- SISWA PAGE -->
   <div id="studentPage" class="hidden">
     <div class="header">
-      <img id="logoImg2" class="logo" alt="logo">
-      <h1>Logbook Saya</h1>
-      <p>Catat kegiatan & presensi magang Anda</p>
+      <img id="logoImgStudent" class="logo" alt="logo">
+      <h1>Halaman Siswa</h1>
+      <p>Logbook & Presensi</p>
     </div>
 
     <div class="content">
       <div class="user-info">
         <span id="studentName">Siswa</span>
         <div class="mini-actions">
-          <button class="mini-btn" onclick="refreshCurrentPage()">🔄</button>
+          <button class="mini-btn" onclick="location.reload()">🔄</button>
+          <button class="mini-btn" onclick="logout()">Keluar</button>
+        </div>
+      </div>
+
+      <div class="alert alert-info">✅ Halaman siswa tetap seperti sebelumnya. (Jika kamu mau versi siswa lengkap lagi, bilang ya)</div>
+    </div>
+  </div>
+
+  <!-- ADMIN PAGE -->
+  <div id="adminPage" class="hidden">
+    <div class="header">
+      <img id="logoImgAdmin" class="logo" alt="logo">
+      <h1>Halaman Admin</h1>
+      <p>Kelola & Monitor Magang</p>
+    </div>
+
+    <div class="content">
+      <div class="user-info">
+        <span id="adminName">Admin</span>
+        <div class="mini-actions">
+          <button class="mini-btn" onclick="refreshAdmin()">🔄</button>
           <button class="mini-btn" onclick="logout()">Keluar</button>
         </div>
       </div>
 
       <div class="tabs">
-        <div class="tab active" onclick="showStudentTab('profil')">👤 Profil</div>
-        <div class="tab" onclick="showStudentTab('presensi')">📍 Presensi</div>
-        <div class="tab" onclick="showStudentTab('logbook')">➕ Logbook</div>
-        <div class="tab" onclick="showStudentTab('lihat')">📋 Lihat</div>
+        <div class="tab active" onclick="showAdminTab('presensiAll')">📍 Presensi Semua</div>
+        <div class="tab" onclick="showAdminTab('logbookAll')">📋 Logbook Semua</div>
+        <div class="tab" onclick="showAdminTab('presensiSiswa')">🔎 Presensi Siswa</div>
+        <div class="tab" onclick="showAdminTab('logbookSiswa')">🔎 Logbook Siswa</div>
       </div>
 
-      <!-- TAB PROFIL -->
-      <div id="profilTab">
-        <div id="profilAlert"></div>
-
-        <form id="profilForm">
+      <!-- TAB PRESENSI ALL -->
+      <div id="adminPresensiAll">
+        <div class="card">
+          <h3>Filter Presensi (Per Tanggal)</h3>
           <div class="form-group">
-            <label>Nama Lengkap <span class="required">*</span></label>
-            <input id="namaLengkap" required placeholder="Nama lengkap">
+            <label>Pilih Tanggal</label>
+            <input type="date" id="filterTanggalPresensi">
           </div>
-
-          <div class="form-group">
-            <label>No Absen <span class="required">*</span></label>
-            <input id="noAbsen" required placeholder="Nomor absen">
-          </div>
-
-          <div class="form-group">
-            <label>Email <span class="required">*</span></label>
-            <input type="email" id="email" required placeholder="Email">
-          </div>
-
-          <div class="form-group">
-            <label>Telepon <span class="required">*</span></label>
-            <input id="telepon" required placeholder="08xxxxxxxxxx">
-          </div>
-
-          <div class="form-group">
-            <label>Tempat Magang <span class="required">*</span></label>
-            <input id="tempatMagang" required placeholder="Nama tempat magang">
-          </div>
-
-          <div class="form-group">
-            <label>Alamat Tempat Magang <span class="required">*</span></label>
-            <textarea id="alamatMagang" required placeholder="Alamat lengkap"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label>Posisi Magang <span class="required">*</span></label>
-            <input id="posisi" required placeholder="Contoh: Admin, Web Dev">
-          </div>
-
-          <button class="btn btn-primary" id="saveProfilBtn" type="submit">💾 Simpan Profil</button>
-        </form>
-
-        <hr style="margin:18px 0;border:none;border-top:2px solid #eee">
-
-        <!-- TITIK PRESENSI -->
-        <div id="presensiPointAlert"></div>
-
-        <div class="form-group">
-          <label style="font-size:15px;color:#667eea">📍 Titik Presensi (GPS)</label>
-          <div class="hint">Simpan lokasi kantor/tempat magang. Presensi valid maksimal radius 50 meter.</div>
+          <button class="btn btn-secondary" onclick="loadPresensiAll()">🔍 Tampilkan</button>
         </div>
 
-        <div class="form-group">
-          <label>Latitude (Lat) <span class="required">*</span></label>
-          <input id="presensiLat" inputmode="decimal" placeholder="-6.200000">
-        </div>
-
-        <div class="form-group">
-          <label>Longitude (Lng) <span class="required">*</span></label>
-          <input id="presensiLng" inputmode="decimal" placeholder="106.816666">
-        </div>
-
-        <button class="btn btn-secondary" onclick="ambilLokasiPresensi()">📡 Ambil Lokasi dari GPS</button>
-        <button class="btn btn-primary" onclick="simpanTitikPresensi()">✅ Simpan Titik Presensi</button>
-        <div class="hint" id="pointInfo"></div>
+        <div id="presensiAllList" class="alert alert-info">Memuat presensi...</div>
       </div>
 
-      <!-- TAB PRESENSI -->
-      <div id="presensiTab" class="hidden">
-        <div id="presensiAlert"></div>
-
-        <div class="logbook-item">
-          <h3>📡 Status Lokasi</h3>
-          <p id="gpsStatus">Belum dicek</p>
-          <p class="date" id="gpsDistance">Jarak: -</p>
+      <!-- TAB LOGBOOK ALL -->
+      <div id="adminLogbookAll" class="hidden">
+        <div class="card">
+          <h3>Filter Logbook</h3>
+          <div class="form-group">
+            <label>Cari Nama/Username/Judul</label>
+            <input id="searchLogbookAll" placeholder="contoh: siswa1 / budi / laporan">
+          </div>
+          <button class="btn btn-secondary" onclick="loadLogbookAll()">🔍 Cari</button>
         </div>
 
-        <div class="camera-box">
-          <video id="videoSelfie" autoplay playsinline></video>
-          <canvas id="canvasSelfie"></canvas>
+        <div id="logbookAllList" class="alert alert-info">Memuat logbook...</div>
+      </div>
 
-          <button class="smallbtn small-blue" onclick="startSelfieCamera()">📷 Nyalakan Kamera</button>
-          <button class="smallbtn small-blue" onclick="captureSelfie()">✅ Ambil Selfie</button>
-          <button class="smallbtn small-gray" onclick="resetSelfie()">🔄 Ulangi</button>
-          <div class="hint">Pastikan wajah terlihat jelas.</div>
+      <!-- TAB PRESENSI SISWA -->
+      <div id="adminPresensiSiswa" class="hidden">
+        <div class="card">
+          <h3>Presensi per Siswa</h3>
+          <div class="form-group">
+            <label>Pilih Siswa</label>
+            <select id="selectSiswaPresensi"></select>
+          </div>
+
+          <div class="form-group">
+            <label>Pilih Tanggal (opsional)</label>
+            <input type="date" id="filterTanggalPresensiSiswa">
+          </div>
+
+          <button class="btn btn-secondary" onclick="loadPresensiBySiswa()">🔍 Tampilkan Presensi</button>
         </div>
 
-        <button class="btn btn-primary" onclick="submitPresensi()">✅ Kirim Presensi</button>
+        <div id="presensiSiswaList" class="alert alert-info">Pilih siswa untuk melihat presensi</div>
       </div>
 
-      <!-- TAB LOGBOOK -->
-      <div id="logbookTab" class="hidden">
-        <div id="studentAlert"></div>
-
-        <form id="logbookForm">
+      <!-- TAB LOGBOOK SISWA -->
+      <div id="adminLogbookSiswa" class="hidden">
+        <div class="card">
+          <h3>Logbook per Siswa</h3>
           <div class="form-group">
-            <label>Tanggal <span class="required">*</span></label>
-            <input type="date" id="tanggal" required>
-          </div>
-          <div class="form-group">
-            <label>Judul <span class="required">*</span></label>
-            <input id="judul" required placeholder="Judul kegiatan">
-          </div>
-          <div class="form-group">
-            <label>Deskripsi <span class="required">*</span></label>
-            <textarea id="deskripsi" required placeholder="Deskripsi kegiatan"></textarea>
+            <label>Pilih Siswa</label>
+            <select id="selectSiswaLogbook"></select>
           </div>
 
           <div class="form-group">
-            <label>Upload Foto (Opsional)</label>
-            <input type="file" id="fileInput" accept="image/*">
-            <div class="hint" id="fileName"></div>
+            <label>Cari Judul/Deskripsi (opsional)</label>
+            <input id="searchLogbookSiswa" placeholder="contoh: desain / rapat / laporan">
           </div>
 
-          <button class="btn btn-primary" id="submitBtn" type="submit">Simpan Logbook</button>
-        </form>
-      </div>
+          <button class="btn btn-secondary" onclick="loadLogbookBySiswa()">🔍 Tampilkan Logbook</button>
+        </div>
 
-      <!-- TAB LIHAT -->
-      <div id="lihatTab" class="hidden">
-        <div id="logbookList" class="alert alert-info">Memuat data...</div>
+        <div id="logbookSiswaList" class="alert alert-info">Pilih siswa untuk melihat logbook</div>
       </div>
 
     </div>
   </div>
-
 </div>
 
 <div id="globalLoading">
@@ -248,49 +206,48 @@
   // ==============================
   // ✅ WAJIB DIISI
   // ==============================
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7jMeuDU6ehQHJupq0QVEIhWelQbZZeSy-lAAKQk5ueZTEF8JUQ27TnKyfJ34-VSOYiw/exec";
-  const LOGO_URL = "eagle.png";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw3s6New3PU7k5FjrqtU9Q_dcMsmG6xqelWQWbi0Fa5mLShBUv2X00QD_z5o_0dceu69w/exec";
+  const LOGO_URL   = "eagle.png";
 
   let currentUser = null;
   let currentRole = null;
+  let studentsCache = [];
 
-  // Presensi vars
-  let presensiTargetPoint = { lat: '', lng: '', radiusM: 50 };
-  let currentGPS = { lat: null, lng: null, accuracy: null };
-  let currentDistanceM = null;
-  let selfieDataURL = '';
-  let selfieStream = null;
-
-  function showGlobalLoading(show) {
+  function showGlobalLoading(show){
     document.getElementById('globalLoading').style.display = show ? 'flex' : 'none';
   }
 
-  function showAlert(id, msg, type) {
+  function showAlert(id, msg, type){
     const el = document.getElementById(id);
-    if (!el) return;
+    if(!el) return;
     el.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
     setTimeout(()=> el.innerHTML = '', 5000);
   }
 
-  // ==============================
-  // LOGO FIX
-  // ==============================
-  document.addEventListener("DOMContentLoaded", async () => {
+  function escapeHtml(s){
+    return String(s||"").replace(/[&<>"']/g,(m)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
+  }
+
+  document.addEventListener("DOMContentLoaded", async ()=>{
     document.getElementById("logoImg").src = LOGO_URL;
-    document.getElementById("logoImg2").src = LOGO_URL;
+    document.getElementById("logoImgStudent").src = LOGO_URL;
+    document.getElementById("logoImgAdmin").src = LOGO_URL;
 
+    // default date filter = hari ini
     const today = new Date().toISOString().split("T")[0];
-    document.getElementById("tanggal").value = today;
+    document.getElementById("filterTanggalPresensi").value = today;
+    document.getElementById("filterTanggalPresensiSiswa").value = today;
 
+    // auto login
     const remember = localStorage.getItem("logbook_remember") === "1";
-    if (remember) {
+    if(remember){
       const u = localStorage.getItem("logbook_username");
       const p = localStorage.getItem("logbook_password");
-      if (u && p) {
+      if(u && p){
         document.getElementById("rememberMe").checked = true;
         document.getElementById("username").value = u;
         document.getElementById("password").value = p;
-        await login(u, p, true);
+        await login(u,p,true);
       }
     }
   });
@@ -302,12 +259,13 @@
     e.preventDefault();
     const u = document.getElementById("username").value.trim();
     const p = document.getElementById("password").value.trim();
-    await login(u, p, false);
+    await login(u,p,false);
   });
 
-  async function login(username, password, isAuto){
+  async function login(username,password,isAuto){
     try{
       showGlobalLoading(true);
+
       const res = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
       const data = await res.json();
 
@@ -319,6 +277,7 @@
       currentUser = data.user;
       currentRole = data.role;
 
+      // remember
       if(document.getElementById("rememberMe").checked){
         localStorage.setItem("logbook_remember","1");
         localStorage.setItem("logbook_username", username);
@@ -329,14 +288,24 @@
         localStorage.removeItem("logbook_password");
       }
 
+      // hide login
       document.getElementById("loginPage").classList.add("hidden");
-      document.getElementById("studentPage").classList.remove("hidden");
 
-      document.getElementById("studentName").textContent = data.nama || "Siswa";
+      // ✅ arahkan sesuai role
+      if(currentRole === "admin"){
+        document.getElementById("adminPage").classList.remove("hidden");
+        document.getElementById("studentPage").classList.add("hidden");
+        document.getElementById("adminName").textContent = data.nama || "Admin";
 
-      await loadProfile();
-      await loadPresensiPoint();   // ✅ FIX ERROR: sekarang fungsi ini ADA
-      showStudentTab("profil");
+        await preloadStudentsForAdmin();
+        await loadPresensiAll();
+        await loadLogbookAll();
+
+      }else{
+        document.getElementById("studentPage").classList.remove("hidden");
+        document.getElementById("adminPage").classList.add("hidden");
+        document.getElementById("studentName").textContent = data.nama || "Siswa";
+      }
 
     }catch(err){
       showAlert("loginAlert", "Gagal login: " + err.message, "error");
@@ -345,404 +314,248 @@
     }
   }
 
-  // ==============================
-  // TAB SWITCH
-  // ==============================
-  function showStudentTab(tab){
-    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-
-    document.getElementById("profilTab").classList.add("hidden");
-    document.getElementById("presensiTab").classList.add("hidden");
-    document.getElementById("logbookTab").classList.add("hidden");
-    document.getElementById("lihatTab").classList.add("hidden");
-
-    if(tab==="profil"){
-      document.querySelectorAll(".tab")[0].classList.add("active");
-      document.getElementById("profilTab").classList.remove("hidden");
-    }
-    if(tab==="presensi"){
-      document.querySelectorAll(".tab")[1].classList.add("active");
-      document.getElementById("presensiTab").classList.remove("hidden");
-      checkGPSDistance();
-    }
-    if(tab==="logbook"){
-      document.querySelectorAll(".tab")[2].classList.add("active");
-      document.getElementById("logbookTab").classList.remove("hidden");
-    }
-    if(tab==="lihat"){
-      document.querySelectorAll(".tab")[3].classList.add("active");
-      document.getElementById("lihatTab").classList.remove("hidden");
-      loadMyLogbook();
-    }
-  }
-
-  // ==============================
-  // PROFILE
-  // ==============================
-  async function loadProfile(){
-    try{
-      const res = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(currentUser)}`);
-      const data = await res.json();
-      if(data.success && data.profile){
-        const p = data.profile;
-        document.getElementById("namaLengkap").value = p.namaLengkap || "";
-        document.getElementById("noAbsen").value = p.noAbsen || "";
-        document.getElementById("email").value = p.email || "";
-        document.getElementById("telepon").value = p.telepon || "";
-        document.getElementById("tempatMagang").value = p.tempatMagang || "";
-        document.getElementById("alamatMagang").value = p.alamatMagang || "";
-        document.getElementById("posisi").value = p.posisi || "";
-      }
-    }catch(e){}
-  }
-
-  document.getElementById("profilForm").addEventListener("submit", async (e)=>{
-    e.preventDefault();
-    try{
-      showGlobalLoading(true);
-      const payload = {
-        action:"saveProfile",
-        username: currentUser,
-        namaLengkap: document.getElementById("namaLengkap").value,
-        noAbsen: document.getElementById("noAbsen").value,
-        email: document.getElementById("email").value,
-        telepon: document.getElementById("telepon").value,
-        tempatMagang: document.getElementById("tempatMagang").value,
-        alamatMagang: document.getElementById("alamatMagang").value,
-        posisi: document.getElementById("posisi").value
-      };
-      const res = await fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify(payload)});
-      const data = await res.json();
-      if(data.success) showAlert("profilAlert","✅ Profil berhasil disimpan","success");
-      else showAlert("profilAlert","❌ "+(data.message||"Gagal"),"error");
-    }catch(err){
-      showAlert("profilAlert","❌ "+err.message,"error");
-    }finally{
-      showGlobalLoading(false);
-    }
-  });
-
-  // ==============================
-  // ✅ FIX: loadPresensiPoint (sekarang DEFINISI ADA)
-  // ==============================
-  async function loadPresensiPoint(){
-    try{
-      const res = await fetch(`${SCRIPT_URL}?action=getPresensiPoint&username=${encodeURIComponent(currentUser)}`);
-      const data = await res.json();
-
-      if(data.success && data.point){
-        presensiTargetPoint = data.point;
-
-        document.getElementById("presensiLat").value = (data.point.lat||"").replace(",",".");
-        document.getElementById("presensiLng").value = (data.point.lng||"").replace(",",".");
-        document.getElementById("pointInfo").innerHTML = data.point.updatedAt
-          ? `✅ Titik tersimpan. Terakhir update: <b>${data.point.updatedAt}</b>`
-          : `⚠️ Titik presensi belum disimpan.`;
-      }
-    }catch(e){}
-  }
-
-  async function ambilLokasiPresensi(){
-    if(!navigator.geolocation){
-      showAlert("presensiPointAlert","Browser tidak mendukung GPS","error");
-      return;
-    }
-    showAlert("presensiPointAlert","📡 Mengambil lokasi... pastikan GPS aktif","info");
-
-    navigator.geolocation.getCurrentPosition((pos)=>{
-      const lat = pos.coords.latitude.toFixed(7);
-      const lng = pos.coords.longitude.toFixed(7);
-      document.getElementById("presensiLat").value = lat;
-      document.getElementById("presensiLng").value = lng;
-      showAlert("presensiPointAlert","✅ Lokasi berhasil diambil","success");
-    },(err)=>{
-      showAlert("presensiPointAlert","❌ Gagal ambil lokasi: "+err.message,"error");
-    },{enableHighAccuracy:true,timeout:15000});
-  }
-
-  async function simpanTitikPresensi(){
-    let lat = document.getElementById("presensiLat").value.trim();
-    let lng = document.getElementById("presensiLng").value.trim();
-
-    if(!lat || !lng){
-      showAlert("presensiPointAlert","❌ Lat/Lng wajib diisi","error");
-      return;
-    }
-
-    // ✅ normalize koma -> titik
-    lat = lat.replace(",",".");
-    lng = lng.replace(",",".");
-    document.getElementById("presensiLat").value = lat;
-    document.getElementById("presensiLng").value = lng;
-
-    if(isNaN(Number(lat)) || isNaN(Number(lng))){
-      showAlert("presensiPointAlert","❌ Lat/Lng harus angka desimal","error");
-      return;
-    }
-
-    try{
-      showGlobalLoading(true);
-      const payload = { action:"savePresensiPoint", username: currentUser, lat, lng, radiusM:50 };
-      const res = await fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify(payload)});
-      const data = await res.json();
-      if(data.success){
-        showAlert("presensiPointAlert","✅ Titik presensi tersimpan (radius 50m)","success");
-        await loadPresensiPoint();
-      }else{
-        showAlert("presensiPointAlert","❌ "+(data.message||"Gagal simpan"),"error");
-      }
-    }catch(err){
-      showAlert("presensiPointAlert","❌ "+err.message,"error");
-    }finally{
-      showGlobalLoading(false);
-    }
-  }
-
-  // ==============================
-  // CHECK GPS DISTANCE
-  // ==============================
-  function haversineM(lat1, lon1, lat2, lon2){
-    const R = 6371000;
-    const toRad = x => x*Math.PI/180;
-    const dLat = toRad(lat2-lat1);
-    const dLon = toRad(lon2-lon1);
-    const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
-    const c = 2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R*c;
-  }
-
-  async function checkGPSDistance(){
-    await loadPresensiPoint();
-
-    const tLat = Number(presensiTargetPoint.lat);
-    const tLng = Number(presensiTargetPoint.lng);
-
-    if(isNaN(tLat) || isNaN(tLng)){
-      document.getElementById("gpsStatus").innerHTML="⚠️ Titik presensi belum disimpan.";
-      document.getElementById("gpsDistance").innerHTML="Jarak: -";
-      currentDistanceM = null;
-      return;
-    }
-
-    if(!navigator.geolocation){
-      document.getElementById("gpsStatus").innerHTML="❌ Browser tidak mendukung GPS.";
-      return;
-    }
-
-    document.getElementById("gpsStatus").innerHTML="📡 Mengambil lokasi...";
-    navigator.geolocation.getCurrentPosition((pos)=>{
-      currentGPS.lat = pos.coords.latitude;
-      currentGPS.lng = pos.coords.longitude;
-      currentGPS.accuracy = pos.coords.accuracy;
-
-      const d = haversineM(currentGPS.lat,currentGPS.lng,tLat,tLng);
-      currentDistanceM = d;
-
-      const ok = d <= 50;
-      document.getElementById("gpsStatus").innerHTML = ok
-        ? `✅ Lokasi valid (akurasi ±${Math.round(currentGPS.accuracy)}m)`
-        : `❌ Di luar area (akurasi ±${Math.round(currentGPS.accuracy)}m)`;
-
-      document.getElementById("gpsDistance").innerHTML = `Jarak: <b>${Math.round(d)} meter</b> (maks 50m)`;
-    },(err)=>{
-      document.getElementById("gpsStatus").innerHTML="❌ Gagal ambil lokasi: "+err.message;
-      currentDistanceM = null;
-    },{enableHighAccuracy:true,timeout:15000});
-  }
-
-  // ==============================
-  // CAMERA SELFIE
-  // ==============================
-  async function startSelfieCamera(){
-    try{
-      const video=document.getElementById("videoSelfie");
-      const canvas=document.getElementById("canvasSelfie");
-      canvas.style.display="none";
-      video.style.display="block";
-      selfieDataURL="";
-
-      if(selfieStream){
-        selfieStream.getTracks().forEach(t=>t.stop());
-        selfieStream=null;
-      }
-
-      selfieStream = await navigator.mediaDevices.getUserMedia({
-        video:{facingMode:"user"},
-        audio:false
-      });
-      video.srcObject=selfieStream;
-      showAlert("presensiAlert","📷 Kamera aktif. Silakan ambil selfie.","info");
-    }catch(err){
-      showAlert("presensiAlert","❌ Kamera tidak bisa dibuka: "+err.message,"error");
-    }
-  }
-
-  function captureSelfie(){
-    const video=document.getElementById("videoSelfie");
-    const canvas=document.getElementById("canvasSelfie");
-
-    if(!video.srcObject){
-      showAlert("presensiAlert","⚠️ Kamera belum aktif. Klik 'Nyalakan Kamera' dulu.","error");
-      return;
-    }
-
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
-
-    const ctx=canvas.getContext("2d");
-    ctx.drawImage(video,0,0,canvas.width,canvas.height);
-
-    selfieDataURL = canvas.toDataURL("image/jpeg",0.92);
-
-    canvas.style.display="block";
-    video.style.display="none";
-    showAlert("presensiAlert","✅ Selfie berhasil diambil.","success");
-  }
-
-  function resetSelfie(){
-    selfieDataURL="";
-    document.getElementById("canvasSelfie").style.display="none";
-    document.getElementById("videoSelfie").style.display="block";
-    showAlert("presensiAlert","🔄 Silakan ambil ulang selfie.","info");
-  }
-
-  async function submitPresensi(){
-    try{
-      showGlobalLoading(true);
-      await checkGPSDistance();
-
-      if(currentDistanceM===null){
-        showAlert("presensiAlert","❌ GPS belum valid. Aktifkan izin lokasi.","error");
-        return;
-      }
-      if(currentDistanceM>50){
-        showAlert("presensiAlert",`❌ Anda berada ${Math.round(currentDistanceM)}m dari titik presensi.`,"error");
-        return;
-      }
-      if(!selfieDataURL || selfieDataURL.length<100){
-        showAlert("presensiAlert","❌ Selfie wajib diambil.","error");
-        return;
-      }
-
-      const payload={
-        action:"addPresensi",
-        username: currentUser,
-        nama: document.getElementById("namaLengkap").value || document.getElementById("studentName").textContent,
-        lat: currentGPS.lat,
-        lng: currentGPS.lng,
-        photoData: selfieDataURL
-      };
-
-      const res = await fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify(payload)});
-      const data = await res.json();
-
-      if(data.success){
-        showAlert("presensiAlert",`✅ Presensi berhasil! Jarak: ${Math.round(data.distanceM)}m`,"success");
-      }else{
-        showAlert("presensiAlert","❌ "+(data.message||"Gagal presensi"),"error");
-      }
-    }catch(err){
-      showAlert("presensiAlert","❌ "+err.message,"error");
-    }finally{
-      showGlobalLoading(false);
-    }
-  }
-
-  // ==============================
-  // LOGBOOK
-  // ==============================
-  let selectedImageFile = null;
-  document.getElementById("fileInput").addEventListener("change", function(){
-    selectedImageFile = this.files?.[0] || null;
-    document.getElementById("fileName").textContent = selectedImageFile ? `✓ ${selectedImageFile.name}` : "";
-  });
-
-  document.getElementById("logbookForm").addEventListener("submit", async (e)=>{
-    e.preventDefault();
-    try{
-      showGlobalLoading(true);
-
-      const tanggal=document.getElementById("tanggal").value;
-      const judul=document.getElementById("judul").value;
-      const deskripsi=document.getElementById("deskripsi").value;
-
-      let fileData="", fileName="";
-      if(selectedImageFile){
-        fileName = selectedImageFile.name;
-        fileData = await readAsDataURL(selectedImageFile);
-      }
-
-      const payload={action:"addLogbook",username:currentUser,tanggal,judul,deskripsi,fileData,fileName};
-      const res=await fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify(payload)});
-      const data=await res.json();
-
-      if(data.success){
-        showAlert("studentAlert","✅ Logbook tersimpan!","success");
-        document.getElementById("logbookForm").reset();
-        document.getElementById("tanggal").value = new Date().toISOString().split("T")[0];
-        selectedImageFile=null;
-      }else{
-        showAlert("studentAlert","❌ "+(data.message||"Gagal"),"error");
-      }
-    }catch(err){
-      showAlert("studentAlert","❌ "+err.message,"error");
-    }finally{
-      showGlobalLoading(false);
-    }
-  });
-
-  async function loadMyLogbook(){
-    const list=document.getElementById("logbookList");
-    list.innerHTML=`<div class="alert alert-info">Memuat data...</div>`;
-    try{
-      const res=await fetch(`${SCRIPT_URL}?action=getLogbook&username=${encodeURIComponent(currentUser)}`);
-      const data=await res.json();
-
-      if(data.success && data.logbook && data.logbook.length){
-        list.innerHTML = data.logbook.map(x=>`
-          <div class="logbook-item">
-            <h3>${escapeHtml(x.judul||"")}</h3>
-            <p>${escapeHtml(x.deskripsi||"")}</p>
-            <p class="date">📅 ${escapeHtml(x.tanggal||"")}</p>
-          </div>
-        `).join("");
-      }else{
-        list.innerHTML=`<div class="alert alert-info">Belum ada logbook.</div>`;
-      }
-    }catch(e){
-      list.innerHTML=`<div class="alert alert-error">Gagal memuat.</div>`;
-    }
-  }
-
-  function escapeHtml(s){
-    return String(s||"").replace(/[&<>"']/g,(m)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
-  }
-
-  function readAsDataURL(file){
-    return new Promise((resolve,reject)=>{
-      const r=new FileReader();
-      r.onload=()=>resolve(r.result);
-      r.onerror=reject;
-      r.readAsDataURL(file);
-    });
-  }
-
-  function refreshCurrentPage(){
-    location.reload();
-  }
-
   function logout(){
-    try{
-      if(selfieStream){ selfieStream.getTracks().forEach(t=>t.stop()); selfieStream=null; }
-    }catch(e){}
     currentUser=null;
+    currentRole=null;
+
     localStorage.removeItem("logbook_remember");
     localStorage.removeItem("logbook_username");
     localStorage.removeItem("logbook_password");
 
+    document.getElementById("adminPage").classList.add("hidden");
     document.getElementById("studentPage").classList.add("hidden");
     document.getElementById("loginPage").classList.remove("hidden");
     document.getElementById("loginForm").reset();
+  }
+
+  // ==============================
+  // ADMIN UI
+  // ==============================
+  function showAdminTab(tab){
+    document.querySelectorAll("#adminPage .tab").forEach(t=>t.classList.remove("active"));
+
+    document.getElementById("adminPresensiAll").classList.add("hidden");
+    document.getElementById("adminLogbookAll").classList.add("hidden");
+    document.getElementById("adminPresensiSiswa").classList.add("hidden");
+    document.getElementById("adminLogbookSiswa").classList.add("hidden");
+
+    if(tab==="presensiAll"){
+      document.querySelectorAll("#adminPage .tab")[0].classList.add("active");
+      document.getElementById("adminPresensiAll").classList.remove("hidden");
+    }
+    if(tab==="logbookAll"){
+      document.querySelectorAll("#adminPage .tab")[1].classList.add("active");
+      document.getElementById("adminLogbookAll").classList.remove("hidden");
+    }
+    if(tab==="presensiSiswa"){
+      document.querySelectorAll("#adminPage .tab")[2].classList.add("active");
+      document.getElementById("adminPresensiSiswa").classList.remove("hidden");
+    }
+    if(tab==="logbookSiswa"){
+      document.querySelectorAll("#adminPage .tab")[3].classList.add("active");
+      document.getElementById("adminLogbookSiswa").classList.remove("hidden");
+    }
+  }
+
+  async function refreshAdmin(){
+    await preloadStudentsForAdmin();
+    await loadPresensiAll();
+    await loadLogbookAll();
+  }
+
+  async function preloadStudentsForAdmin(){
+    try{
+      const res = await fetch(`${SCRIPT_URL}?action=getStudents`);
+      const data = await res.json();
+      studentsCache = data.students || [];
+
+      const opt = (s)=> `<option value="${escapeHtml(s.username)}">${escapeHtml(s.nama)} (${escapeHtml(s.username)})</option>`;
+
+      const selP = document.getElementById("selectSiswaPresensi");
+      const selL = document.getElementById("selectSiswaLogbook");
+
+      selP.innerHTML = studentsCache.map(opt).join("");
+      selL.innerHTML = studentsCache.map(opt).join("");
+
+    }catch(e){}
+  }
+
+  // ==============================
+  // ✅ ADMIN PRESENSI ALL (filter tanggal)
+  // ==============================
+  async function loadPresensiAll(){
+    const list = document.getElementById("presensiAllList");
+    list.innerHTML = `<div class="alert alert-info">Memuat presensi...</div>`;
+
+    try{
+      const res = await fetch(`${SCRIPT_URL}?action=getPresensiList`);
+      const data = await res.json();
+
+      if(!data.success){
+        list.innerHTML = `<div class="alert alert-error">${escapeHtml(data.message||"Gagal memuat presensi")}</div>`;
+        return;
+      }
+
+      let items = data.presensi || [];
+
+      const tanggal = document.getElementById("filterTanggalPresensi").value;
+      if(tanggal){
+        items = items.filter(x => String(x.tanggal) === String(tanggal));
+      }
+
+      if(items.length===0){
+        list.innerHTML = `<div class="alert alert-info">Tidak ada presensi pada tanggal tersebut.</div>`;
+        return;
+      }
+
+      list.innerHTML = items.map(x=>`
+        <div class="card">
+          <h3>📍 ${escapeHtml(x.nama)} (${escapeHtml(x.username)})</h3>
+          <p><b>Tanggal:</b> ${escapeHtml(x.tanggal)} | <b>Jam:</b> ${escapeHtml(x.jam)}</p>
+          <p><b>Status:</b> ${escapeHtml(x.status)} | <b>Jarak:</b> ${Math.round(Number(x.distanceM||0))}m</p>
+          <p class="muted">Lat: ${escapeHtml(x.lat)} | Lng: ${escapeHtml(x.lng)}</p>
+        </div>
+      `).join("");
+
+    }catch(err){
+      list.innerHTML = `<div class="alert alert-error">Gagal memuat: ${escapeHtml(err.message)}</div>`;
+    }
+  }
+
+  // ==============================
+  // ✅ ADMIN LOGBOOK ALL (search)
+  // ==============================
+  async function loadLogbookAll(){
+    const list = document.getElementById("logbookAllList");
+    list.innerHTML = `<div class="alert alert-info">Memuat logbook...</div>`;
+
+    try{
+      const q = document.getElementById("searchLogbookAll").value.trim().toLowerCase();
+
+      const res = await fetch(`${SCRIPT_URL}?action=getAllLogbooks&requester=${encodeURIComponent(currentUser)}`);
+      const data = await res.json();
+
+      if(!data.success){
+        list.innerHTML = `<div class="alert alert-error">${escapeHtml(data.message||"Gagal memuat logbook")}</div>`;
+        return;
+      }
+
+      let items = data.logbooks || [];
+
+      if(q){
+        items = items.filter(x =>
+          String(x.username||"").toLowerCase().includes(q) ||
+          String(x.nama||"").toLowerCase().includes(q) ||
+          String(x.judul||"").toLowerCase().includes(q) ||
+          String(x.deskripsi||"").toLowerCase().includes(q)
+        );
+      }
+
+      if(items.length===0){
+        list.innerHTML = `<div class="alert alert-info">Tidak ada logbook sesuai pencarian.</div>`;
+        return;
+      }
+
+      list.innerHTML = items.map(x=>`
+        <div class="card">
+          <h3>📋 ${escapeHtml(x.nama)} (${escapeHtml(x.username)})</h3>
+          <p><b>Tanggal:</b> ${escapeHtml(x.tanggal)}</p>
+          <p><b>Judul:</b> ${escapeHtml(x.judul)}</p>
+          <p>${escapeHtml(x.deskripsi)}</p>
+          <p class="muted">Update: ${escapeHtml(x.timestamp)}</p>
+        </div>
+      `).join("");
+
+    }catch(err){
+      list.innerHTML = `<div class="alert alert-error">Gagal memuat: ${escapeHtml(err.message)}</div>`;
+    }
+  }
+
+  // ==============================
+  // ✅ ADMIN PRESENSI BY SISWA (pisah)
+  // ==============================
+  async function loadPresensiBySiswa(){
+    const list = document.getElementById("presensiSiswaList");
+    list.innerHTML = `<div class="alert alert-info">Memuat presensi siswa...</div>`;
+
+    try{
+      const u = document.getElementById("selectSiswaPresensi").value;
+      const t = document.getElementById("filterTanggalPresensiSiswa").value;
+
+      const res = await fetch(`${SCRIPT_URL}?action=getPresensiByStudent&username=${encodeURIComponent(u)}`);
+      const data = await res.json();
+
+      if(!data.success){
+        list.innerHTML = `<div class="alert alert-error">${escapeHtml(data.message||"Gagal memuat")}</div>`;
+        return;
+      }
+
+      let items = data.presensi || [];
+      if(t) items = items.filter(x => String(x.tanggal) === String(t));
+
+      if(items.length===0){
+        list.innerHTML = `<div class="alert alert-info">Tidak ada presensi untuk siswa ini pada tanggal tersebut.</div>`;
+        return;
+      }
+
+      list.innerHTML = items.map(x=>`
+        <div class="card">
+          <h3>📍 ${escapeHtml(x.nama)} (${escapeHtml(x.username)})</h3>
+          <p><b>Tanggal:</b> ${escapeHtml(x.tanggal)} | <b>Jam:</b> ${escapeHtml(x.jam)}</p>
+          <p><b>Status:</b> ${escapeHtml(x.status)} | <b>Jarak:</b> ${Math.round(Number(x.distanceM||0))}m</p>
+          <p class="muted">Lat: ${escapeHtml(x.lat)} | Lng: ${escapeHtml(x.lng)}</p>
+        </div>
+      `).join("");
+
+    }catch(err){
+      list.innerHTML = `<div class="alert alert-error">Gagal memuat: ${escapeHtml(err.message)}</div>`;
+    }
+  }
+
+  // ==============================
+  // ✅ ADMIN LOGBOOK BY SISWA (pisah)
+  // ==============================
+  async function loadLogbookBySiswa(){
+    const list = document.getElementById("logbookSiswaList");
+    list.innerHTML = `<div class="alert alert-info">Memuat logbook siswa...</div>`;
+
+    try{
+      const u = document.getElementById("selectSiswaLogbook").value;
+      const q = document.getElementById("searchLogbookSiswa").value.trim().toLowerCase();
+
+      const res = await fetch(`${SCRIPT_URL}?action=getLogbook&username=${encodeURIComponent(u)}`);
+      const data = await res.json();
+
+      if(!data.success){
+        list.innerHTML = `<div class="alert alert-error">${escapeHtml(data.message||"Gagal memuat")}</div>`;
+        return;
+      }
+
+      let items = data.logbook || [];
+      if(q){
+        items = items.filter(x =>
+          String(x.judul||"").toLowerCase().includes(q) ||
+          String(x.deskripsi||"").toLowerCase().includes(q)
+        );
+      }
+
+      if(items.length===0){
+        list.innerHTML = `<div class="alert alert-info">Tidak ada logbook sesuai filter.</div>`;
+        return;
+      }
+
+      list.innerHTML = items.map(x=>`
+        <div class="card">
+          <h3>📋 ${escapeHtml(x.judul)}</h3>
+          <p><b>Tanggal:</b> ${escapeHtml(x.tanggal)}</p>
+          <p>${escapeHtml(x.deskripsi)}</p>
+          <p class="muted">Update: ${escapeHtml(x.timestamp||"-")}</p>
+        </div>
+      `).join("");
+
+    }catch(err){
+      list.innerHTML = `<div class="alert alert-error">Gagal memuat: ${escapeHtml(err.message)}</div>`;
+    }
   }
 </script>
 </body>
