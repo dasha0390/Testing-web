@@ -743,7 +743,7 @@
     // =====================================================
     // SCRIPT_URL OTOMATIS dari Apps Script (HTTPS Web App)
     // =====================================================
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzODysmWnPMDr0MB03cpCZ-qXSt2XzwZmRkASlRCkYKZ8d7HrBT-FLPgRzmMd4cjJw_Qg/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz9r1iob2fB69dN2IcLYq4F5oS8wud7Rz8hQNVW5aUK4bCj9kNaJpQqUz2emMlyQ8Dlyw/exec";
 
     let currentUser = null;
     let currentRole = null;
@@ -1037,20 +1037,57 @@
     // =========================
     // TITIK PRESENSI (GPS) - FIX Secure Origin
     // =========================
-    async function loadPresensiPoint(){
-      try{
-        const res = await fetch(`${SCRIPT_URL}?action=getPresensiPoint&username=${encodeURIComponent(currentUser)}`);
-        const data = await res.json();
-        if(data.success && data.point){
-          presensiTargetPoint = data.point;
-          document.getElementById('presensiLat').value = data.point.lat || '';
-          document.getElementById('presensiLng').value = data.point.lng || '';
-          document.getElementById('pointInfo').innerHTML = data.point.updatedAt
-            ? `✅ Titik tersimpan. Terakhir update: <b>${escapeHtml(data.point.updatedAt)}</b>`
-            : `⚠️ Titik presensi belum disimpan.`;
-        }
-      }catch(e){}
+      async function simpanTitikPresensi() {
+    let lat = document.getElementById('presensiLat').value.trim();
+    let lng = document.getElementById('presensiLng').value.trim();
+
+    if (!lat || !lng) {
+      showAlert('presensiPointAlert', '❌ Lat/Lng wajib diisi', 'error');
+      return;
     }
+
+    // ✅ normalize koma jadi titik
+    lat = lat.replace(',', '.');
+    lng = lng.replace(',', '.');
+
+    // ✅ validasi
+    if (isNaN(Number(lat)) || isNaN(Number(lng))) {
+      showAlert('presensiPointAlert', '❌ Lat/Lng harus berupa angka desimal', 'error');
+      return;
+    }
+
+    // ✅ tampilkan balik yang benar (biar tidak berubah)
+    document.getElementById('presensiLat').value = lat;
+    document.getElementById('presensiLng').value = lng;
+
+    try {
+      showGlobalLoading(true, '🔄 Menyimpan titik presensi...');
+
+      const payload = {
+        action: 'savePresensiPoint',
+        username: currentUser,
+        lat: lat,
+        lng: lng,
+        radiusM: 50
+      };
+
+      const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+      const data = await res.json();
+
+      if (data.success) {
+        showAlert('presensiPointAlert', '✅ Titik presensi tersimpan (radius 50m)', 'success');
+        await loadPresensiPoint();
+      } else {
+        showAlert('presensiPointAlert', '❌ ' + (data.message || 'Gagal simpan'), 'error');
+      }
+
+    } catch (e) {
+      showAlert('presensiPointAlert', '❌ Error: ' + e.message, 'error');
+    } finally {
+      showGlobalLoading(false);
+    }
+  }
+
 
     async function ambilLokasiPresensi(){
       const isSecure = window.isSecureContext || location.hostname === 'localhost';
