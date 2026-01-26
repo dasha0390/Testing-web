@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logbook Magang</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+
+    .header {
+      position: relative;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .header h1 { font-size: 24px; margin-bottom: 5px; }
+    .header p { font-size: 14px; opacity: 0.9; }
+
+    .content { padding: 30px 20px; }
+
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .required { color: #e74c3c; }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-group textarea { resize: vertical; min-height: 100px; }
+
+    .btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #667eea;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .logbook-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      border-left: 4px solid #667eea;
+      position: relative;
+    }
+
+    .logbook-item h3 {
+      color: #667eea;
+      font-size: 16px;
+      margin-bottom: 8px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .logbook-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      margin-bottom: 8px;
+    }
+
+    .btn-action {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .btn-edit { background: #3498db; color: white; }
+    .btn-edit:hover { background: #2980b9; }
+
+    .btn-delete { background: #e74c3c; color: white; }
+    .btn-delete:hover { background: #c0392b; }
+
+    .logbook-item p { color: #666; font-size: 14px; margin-bottom: 5px; }
+    .logbook-item .date { color: #999; font-size: 12px; }
+
+    .logbook-image { margin-top: 10px; border-radius: 8px; overflow: hidden; max-width: 100%; }
+    .logbook-image img { width: 100%; height: auto; display: block; cursor: pointer; transition: transform 0.3s; }
+    .logbook-image img:hover { transform: scale(1.02); }
+
+    .image-placeholder {
+      width: 100%;
+      height: 200px;
+      background: #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      color: #999;
+      font-size: 14px;
+    }
+
+    .image-modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.9);
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .image-modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 90%;
+      max-height: 90%;
+    }
+
+    .image-modal-content img { width: 100%; height: auto; border-radius: 10px; }
+
+    .image-modal-close {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: white;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10000;
+    }
+
+    .image-modal-close:hover { color: #667eea; }
+
+    .file-link {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 6px 12px;
+      background: #667eea;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 12px;
+    }
+
+    .file-link:hover { background: #5568d3; }
+
+    .alert {
+      padding: 12px 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .alert-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
+    .hidden { display: none; }
+
+    .user-info {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-info span { font-weight: 600; color: #667eea; }
+
+    .loading { text-align: center; padding: 20px; color: #667eea; }
+
+    .file-upload {
+      border: 2px dashed #e0e0e0;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      cursor: default;
+      transition: all 0.3s;
+    }
+
+    .file-upload:hover { border-color: #667eea; background: #f8f9fa; }
+
+    .file-upload input[type="file"] { display: none; }
+
+    .file-name { margin-top: 10px; font-size: 14px; color: #667eea; }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e0e0e0;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 600;
+      color: #666;
+      transition: all 0.3s;
+      user-select: none;
+      min-width: 120px;
+    }
+
+    .tab.active {
+      color: #667eea;
+      border-bottom: 3px solid #667eea;
+      margin-bottom: -2px;
+    }
+
+    .profile-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .profile-card h2 { font-size: 20px; margin-bottom: 5px; }
+    .profile-card p { font-size: 14px; opacity: 0.9; }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    @media (max-width: 600px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    .student-card {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border-left: 4px solid #667eea;
+    }
+
+    .student-card:hover {
+      transform: translateX(5px);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    .student-card h3 { color: #667eea; font-size: 16px; margin-bottom: 5px; }
+    .student-card p { color: #666; font-size: 13px; }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .info-item { background: white; padding: 10px; border-radius: 8px; }
+    .info-item label { font-size: 11px; color: #999; display: block; margin-bottom: 5px; }
+    .info-item span { font-size: 13px; color: #333; font-weight: 600; word-wrap: break-word; overflow-wrap: break-word; display: block; }
+    .info-item.full-width { grid-column: 1 / -1; }
+
+    @media (max-width: 600px) {
+      .info-grid { grid-template-columns: 1fr; gap: 8px; }
+      .info-item { padding: 12px; }
+      .info-item label { font-size: 12px; }
+      .info-item span { font-size: 14px; }
+    }
+
+    .refresh-mini {
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      padding: 8px 12px;
+      width: auto;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: rgba(255,255,255,0.18);
+      color: white;
+      font-weight: 700;
+      transition: all 0.2s;
+    }
+    .refresh-mini:hover { background: rgba(255,255,255,0.3); }
+
+    #globalLoading {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.75);
+      z-index: 99999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    #globalLoading .box {
+      background: white;
+      border-radius: 14px;
+      padding: 16px 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      font-weight: 700;
+      color: #667eea;
+      text-align: center;
+      min-width: 240px;
+    }
+    #globalLoading .small {
+      margin-top: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #666;
+    }
+
+    /* Camera Presensi */
+    .camera-box{
+      border:2px solid #e0e0e0;
+      border-radius:12px;
+      padding:12px;
+      background:#fafafa;
+      text-align:center;
+    }
+    video{ width:100%; border-radius:12px; }
+    canvas{ width:100%; border-radius:12px; display:none; }
+    .mini{
+      padding:10px 12px;
+      border-radius:10px;
+      border:none;
+      cursor:pointer;
+      font-weight:700;
+      margin-top:10px;
+      width:100%;
+    }
+    .mini-blue{ background:#3498db; color:white; }
+    .mini-gray{ background:#999; color:white; }
+    .hint{ font-size:12px; color:#666; margin-top:8px; }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- Login Page -->
+    <div id="loginPage">
+      <div class="header">
+        <button class="refresh-mini" onclick="refreshCurrentPage()" title="Refresh">🔄</button>
+        <h1>Logbook Magang</h1>
+        <p>Sistem Pencatatan Kegiatan Magang</p>
+      </div>
+      <div class="content">
+        <div id="loginAlert"></div>
+        <form id="loginForm">
+          <div class="form-group">
+            <label>Username <span class="required">*</span></label>
+            <input type="text" id="username" required placeholder="Masukkan username">
+          </div>
+          <div class="form-group">
+            <label>Password <span class="required">*</span></label>
+            <input type="password" id="password" required placeholder="Masukkan password">
+          </div>
+          <div class="form-group" style="margin-bottom: 10px;">
+            <label style="display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+              <input type="checkbox" id="rememberMe" style="width: auto; margin-right: 8px;">
+              <span style="font-size: 14px;">Ingat saya</span>
+            </label>
+          </div>
+          <button type="submit" class="btn btn-primary" id="loginBtn">Masuk</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Student Page -->
+    <div id="studentPage" class="hidden">
+      <div class="header">
+        <button class="refresh-mini" onclick="refreshCurrentPage()" title="Refresh">🔄</button>
+        <h1>Logbook Saya</h1>
+        <p>Catat kegiatan & presensi magang Anda</p>
+      </div>
+      <div class="content">
+        <div class="user-info">
+          <span id="studentName">Siswa</span>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-secondary" onclick="refreshCurrentPage()" style="padding: 8px 12px; width: auto; border-radius: 6px;">🔄 Refresh</button>
+            <button class="btn-secondary" onclick="logout()" style="padding: 8px 12px; width: auto; border-radius: 6px;">Keluar</button>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <div class="tab active" onclick="showStudentTab('profil')">👤 Profil</div>
+          <div class="tab" onclick="showStudentTab('presensi')">📍 Presensi</div>
+          <div class="tab" onclick="showStudentTab('add')">➕ Logbook</div>
+          <div class="tab" onclick="showStudentTab('view')">📋 Lihat</div>
+        </div>
+
+        <!-- Tab Profil -->
+        <div id="profilTab">
+          <div id="profilAlert"></div>
+
+          <form id="profilForm">
+            <div class="form-group">
+              <label>Nama Lengkap <span class="required">*</span></label>
+              <input type="text" id="namaLengkap" required placeholder="Nama lengkap">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>No Absen <span class="required">*</span></label>
+                <input type="text" id="noAbsen" required placeholder="Nomor absen">
+              </div>
+              <div class="form-group">
+                <label>Telepon <span class="required">*</span></label>
+                <input type="tel" id="telepon" required placeholder="Nomor telepon">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Email <span class="required">*</span></label>
+              <input type="email" id="email" required placeholder="Email">
+            </div>
+
+            <div class="form-group">
+              <label>Tempat Magang <span class="required">*</span></label>
+              <input type="text" id="tempatMagang" required placeholder="Nama perusahaan/instansi">
+            </div>
+
+            <div class="form-group">
+              <label>Alamat Tempat Magang <span class="required">*</span></label>
+              <textarea id="alamatMagang" required placeholder="Alamat lengkap tempat magang"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Posisi Magang <span class="required">*</span></label>
+              <input type="text" id="posisi" required placeholder="Contoh: Web Developer, Designer">
+            </div>
+
+            <div class="form-group">
+              <label>Nama Pembimbing</label>
+              <input type="text" id="pembimbing" placeholder="Nama pembimbing di tempat magang">
+            </div>
+
+            <div class="form-group">
+              <label>No HP Mentor</label>
+              <input type="tel" id="noHpMentor" placeholder="Contoh: 08xxxxxxxxxx">
+            </div>
+
+            <div class="form-group">
+              <label>Hari Kerja <span class="required">*</span></label>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; padding:10px; border:2px solid #e0e0e0; border-radius:10px;">
+                <label style="display:flex; gap:8px; align-items:center;"><input type="checkbox" class="hariKerja" value="Senin"> Senin</label>
+                <label style="display:flex; gap:8px; align-items:center;"><input type="checkbox" class="hariKerja" value="Selasa"> Selasa</label>
+                <label style="display:flex; gap:8px; align-items:center;"><input type="checkbox" class="hariKerja" value="Rabu"> Rabu</label>
+                <label style="display:flex; gap:8px; align-items:center;"><input type="checkbox" class="hariKerja" value="Kamis"> Kamis</label>
+                <label style="display:flex; gap:8px; align-items:center;"><input type="checkbox" class="hariKerja" value="Jumat"> Jumat</label>
+                <label style="display:flex; gap:8px; align-items:center;"><input type="checkbox" class="hariKerja" value="Sabtu"> Sabtu</label>
+                <label style="display:flex; gap:8px; align-items:center;"><input type="checkbox" class="hariKerja" value="Minggu"> Minggu</label>
+              </div>
+              <small style="display:block; margin-top:8px; color:#666;">Centang hari kerja magang kamu.</small>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Jam Kerja Mulai <span class="required">*</span></label>
+                <input type="time" id="jamKerjaMulai" required>
+              </div>
+              <div class="form-group">
+                <label>Jam Kerja Selesai <span class="required">*</span></label>
+                <input type="time" id="jamKerjaSelesai" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Tanggal Mulai <span class="required">*</span></label>
+                <input type="date" id="tanggalMulai" required>
+              </div>
+              <div class="form-group">
+                <label>Tanggal Selesai <span class="required">*</span></label>
+                <input type="date" id="tanggalSelesai" required>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="saveProfilBtn">💾 Simpan Profil</button>
+          </form>
+
+          <hr style="margin:20px 0; border:none; border-top:2px solid #eee;">
+
+          <!-- TITIK PRESENSI -->
+          <div id="presensiPointAlert"></div>
+          <div class="form-group">
+            <label style="font-size:16px;color:#667eea;font-weight:800;">📍 Titik Presensi (GPS)</label>
+            <div class="hint">Simpan lokasi kantor/tempat magang. Presensi valid maksimal radius 50 meter.</div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Latitude (Lat) <span class="required">*</span></label>
+              <input type="text" id="presensiLat" placeholder="-6.200000">
+            </div>
+            <div class="form-group">
+              <label>Longitude (Lng) <span class="required">*</span></label>
+              <input type="text" id="presensiLng" placeholder="106.816666">
+            </div>
+          </div>
+
+          <button class="btn btn-secondary" onclick="ambilLokasiPresensi()" style="margin-top:0;">📡 Ambil Lokasi dari GPS</button>
+          <button class="btn btn-primary" onclick="simpanTitikPresensi()">✅ Simpan Titik Presensi</button>
+
+          <div class="hint" id="pointInfo" style="margin-top:10px;"></div>
+        </div>
+
+        <!-- Tab Presensi -->
+        <div id="presensiTab" class="hidden">
+          <div id="presensiAlert"></div>
+
+          <div class="form-group">
+            <label style="font-size:16px;color:#667eea;font-weight:800;">📍 Presensi Selfie + GPS</label>
+            <div class="hint">
+              Syarat presensi:
+              <br>✅ Lokasi ≤ 50 meter dari titik presensi
+              <br>✅ Ambil selfie (kamera depan)
+            </div>
+          </div>
+
+          <div class="logbook-item">
+            <h3>📡 Status Lokasi</h3>
+            <p id="gpsStatus">Belum dicek</p>
+            <p class="date" id="gpsDistance">Jarak: -</p>
+          </div>
+
+          <div class="camera-box">
+            <video id="videoSelfie" autoplay playsinline></video>
+            <canvas id="canvasSelfie"></canvas>
+
+            <button class="mini mini-blue" onclick="startSelfieCamera()">📷 Nyalakan Kamera</button>
+            <button class="mini mini-blue" onclick="captureSelfie()">✅ Ambil Selfie</button>
+            <button class="mini mini-gray" onclick="resetSelfie()">🔄 Ulangi</button>
+
+            <div class="hint">Pastikan wajah terlihat jelas.</div>
+          </div>
+
+          <button class="btn btn-primary" id="btnPresensi" onclick="submitPresensi()">✅ Kirim Presensi</button>
+        </div>
+
+        <!-- Tab Tambah Logbook -->
+        <div id="addTab" class="hidden">
+          <div id="studentAlert"></div>
+          <form id="logbookForm">
+            <div class="form-group">
+              <label>Tanggal <span class="required">*</span></label>
+              <input type="date" id="tanggal" required>
+            </div>
+            <div class="form-group">
+              <label>Judul Kegiatan <span class="required">*</span></label>
+              <input type="text" id="judul" required placeholder="Contoh: Membuat video promosi">
+            </div>
+            <div class="form-group">
+              <label>Deskripsi <span class="required">*</span></label>
+              <textarea id="deskripsi" required placeholder="Jelaskan kegiatan yang dilakukan"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Upload Foto (Opsional)</label>
+              <div class="file-upload">
+                <p>📷 Pilih sumber foto</p>
+                <p style="font-size: 12px; color: #999;">Otomatis dikompres max 2MB</p>
+
+                <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:10px;">
+                  <button type="button" class="btn-secondary" onclick="pickCamera()"
+                    style="padding: 10px 14px; width:auto; border-radius:8px;">📷 Kamera</button>
+                  <button type="button" class="btn-secondary" onclick="pickGallery()"
+                    style="padding: 10px 14px; width:auto; border-radius:8px;">🖼️ Galeri</button>
+                  <button type="button" class="btn-secondary" onclick="clearSelectedImage()"
+                    style="padding: 10px 14px; width:auto; border-radius:8px; background:#999;">✖ Hapus</button>
+                </div>
+
+                <input type="file" id="fileInputCamera" accept="image/*" capture="environment">
+                <input type="file" id="fileInputGallery" accept="image/*">
+
+                <div id="fileName" class="file-name"></div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="submitBtn">Simpan Logbook</button>
+            <button type="button" class="btn btn-secondary hidden" id="cancelBtn" onclick="cancelEdit()">Batal Edit</button>
+          </form>
+        </div>
+
+        <div id="viewTab" class="hidden">
+          <div id="logbookList" class="loading">Memuat data...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Page -->
+    <div id="adminPage" class="hidden">
+      <div class="header">
+        <button class="refresh-mini" onclick="refreshCurrentPage()" title="Refresh">🔄</button>
+        <h1>Dashboard Admin</h1>
+        <p>Kelola dan pantau logbook + presensi siswa</p>
+      </div>
+      <div class="content">
+        <div class="user-info">
+          <span>Administrator</span>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-secondary" onclick="refreshCurrentPage()" style="padding: 8px 12px; width: auto; border-radius: 6px;">🔄 Refresh</button>
+            <button class="btn-secondary" onclick="logout()" style="padding: 8px 12px; width: auto; border-radius: 6px;">Keluar</button>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <div class="tab active" onclick="showAdminTab('siswa')">👥 Siswa</div>
+          <div class="tab" onclick="showAdminTab('presensi')">📍 Presensi</div>
+        </div>
+
+        <div id="adminAlert"></div>
+
+        <div id="adminSiswaTab">
+          <div id="studentsList"></div>
+        </div>
+
+        <div id="adminPresensiTab" class="hidden">
+          <div id="presensiAdminList" class="loading">Memuat presensi...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail Siswa (Admin) -->
+    <div id="studentDetailPage" class="hidden">
+      <div class="header">
+        <button class="refresh-mini" onclick="refreshCurrentPage()" title="Refresh">🔄</button>
+        <h1 id="detailStudentName">Detail Siswa</h1>
+        <p>Profil, Logbook & Presensi</p>
+      </div>
+      <div class="content">
+        <div style="display:flex; gap:10px; margin-bottom: 20px;">
+          <button class="btn btn-secondary" onclick="backToAdmin()" style="margin:0;">← Kembali</button>
+          <button class="btn btn-secondary" onclick="refreshCurrentPage()" style="margin:0;">🔄 Refresh</button>
+        </div>
+
+        <div class="tabs">
+          <div class="tab active" onclick="showDetailTab('profil')">👤 Profil</div>
+          <div class="tab" onclick="showDetailTab('logbook')">📋 Logbook</div>
+          <div class="tab" onclick="showDetailTab('presensi')">📍 Presensi</div>
+        </div>
+
+        <div id="detailProfilTab">
+          <div id="studentProfileDisplay" class="loading">Memuat profil...</div>
+        </div>
+
+        <div id="detailLogbookTab" class="hidden">
+          <div id="adminLogbookList" class="loading">Memuat logbook...</div>
+        </div>
+
+        <div id="detailPresensiTab" class="hidden">
+          <div id="adminPresensiStudentList" class="loading">Memuat presensi...</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="imageModal" class="image-modal" onclick="closeImageModal()">
+    <span class="image-modal-close">&times;</span>
+    <div class="image-modal-content">
+      <img id="modalImage" src="" alt="Preview">
+    </div>
+  </div>
+
+  <div id="globalLoading">
+    <div class="box">
+      🔄 Memproses...
+      <div class="small">Mohon tunggu sebentar</div>
+    </div>
+  </div>
+
+  <script>
+    // =====================================================
+    // SCRIPT_URL OTOMATIS dari Apps Script (HTTPS Web App)
+    // =====================================================
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzODysmWnPMDr0MB03cpCZ-qXSt2XzwZmRkASlRCkYKZ8d7HrBT-FLPgRzmMd4cjJw_Qg/exec";
+
+    let currentUser = null;
+    let currentRole = null;
+    let editingLogbookNo = null;
+    let selectedStudent = null;
+
+    let selectedImageFile = null;
+
+    // Presensi vars
+    let presensiTargetPoint = { lat: '', lng: '', radiusM: 50 };
+    let currentGPS = { lat: null, lng: null, accuracy: null };
+    let currentDistanceM = null;
+    let selfieDataURL = '';
+    let selfieStream = null;
+
+    function showGlobalLoading(show, text) {
+      const el = document.getElementById('globalLoading');
+      if (text) {
+        const box = el.querySelector('.box');
+        if (box) box.childNodes[0].textContent = text;
+      }
+      el.style.display = show ? 'flex' : 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', async function() {
+      const today = new Date().toISOString().split('T')[0];
+      const tanggalInput = document.getElementById('tanggal');
+      if (tanggalInput) tanggalInput.value = today;
+
+      const remember = localStorage.getItem('logbook_remember') === '1';
+      const u = localStorage.getItem('logbook_username');
+      const p = localStorage.getItem('logbook_password');
+      if (remember && u && p) {
+        document.getElementById('rememberMe').checked = true;
+        document.getElementById('username').value = u;
+        document.getElementById('password').value = p;
+        await autoLogin(u, p);
+      }
+    });
+
+    async function autoLogin(username, password) {
+      try {
+        showGlobalLoading(true, '🔄 Memulihkan sesi login...');
+        const response = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
+        const data = await response.json();
+        if (data.success) {
+          currentUser = data.user;
+          currentRole = data.role;
+
+          document.getElementById('loginPage').classList.add('hidden');
+
+          if (data.role === 'admin') {
+            document.getElementById('adminPage').classList.remove('hidden');
+            await loadStudentsForAdmin();
+            await loadPresensiAdminList();
+          } else {
+            document.getElementById('studentPage').classList.remove('hidden');
+            document.getElementById('studentName').textContent = data.nama;
+            await loadProfile();
+            await loadPresensiPoint();
+            showStudentTab('profil');
+          }
+        }
+      } catch (e) {
+      } finally {
+        showGlobalLoading(false);
+      }
+    }
+
+    async function refreshCurrentPage() {
+      try {
+        showGlobalLoading(true, '🔄 Memperbarui data...');
+
+        if (!currentUser) {
+          document.getElementById('loginForm').reset();
+          showAlert('loginAlert', '🔄 Halaman login diperbarui', 'info');
+          return;
+        }
+
+        if (currentRole === 'siswa') {
+          const profilVisible = !document.getElementById('profilTab').classList.contains('hidden');
+          const viewVisible = !document.getElementById('viewTab').classList.contains('hidden');
+          const presensiVisible = !document.getElementById('presensiTab').classList.contains('hidden');
+
+          if (profilVisible) {
+            await loadProfile();
+            await loadPresensiPoint();
+            showAlert('profilAlert', '🔄 Profil diperbarui', 'info');
+          } else if (viewVisible) {
+            await loadMyLogbook();
+            showAlert('studentAlert', '🔄 Logbook diperbarui', 'info');
+          } else if (presensiVisible) {
+            await loadPresensiPoint();
+            await checkGPSDistance();
+            showAlert('presensiAlert', '🔄 Presensi diperbarui', 'info');
+          } else {
+            await loadProfile();
+            await loadPresensiPoint();
+            await loadMyLogbook();
+          }
+          return;
+        }
+
+        if (currentRole === 'admin') {
+          const adminVisible = !document.getElementById('adminPage').classList.contains('hidden');
+          const detailVisible = !document.getElementById('studentDetailPage').classList.contains('hidden');
+
+          if (adminVisible) {
+            await loadStudentsForAdmin();
+            await loadPresensiAdminList();
+            showAlert('adminAlert', '🔄 Data admin diperbarui', 'info');
+          } else if (detailVisible && selectedStudent) {
+            const detailProfilVisible = !document.getElementById('detailProfilTab').classList.contains('hidden');
+            const detailLogbookVisible = !document.getElementById('detailLogbookTab').classList.contains('hidden');
+            const detailPresensiVisible = !document.getElementById('detailPresensiTab').classList.contains('hidden');
+
+            if (detailProfilVisible) await loadStudentProfile(selectedStudent);
+            else if (detailLogbookVisible) await loadStudentLogbook(selectedStudent);
+            else if (detailPresensiVisible) await loadPresensiByStudent(selectedStudent);
+          }
+        }
+      } catch (err) {
+        alert('Gagal refresh: ' + err.message);
+      } finally {
+        showGlobalLoading(false);
+      }
+    }
+
+    // =========================
+    // LOGIN
+    // =========================
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const loginBtn = document.getElementById('loginBtn');
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Memproses...';
+
+      try {
+        showGlobalLoading(true, '🔄 Memproses login...');
+        const response = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
+        const data = await response.json();
+
+        if (data.success) {
+          currentUser = data.user;
+          currentRole = data.role;
+
+          const remember = document.getElementById('rememberMe').checked;
+          if (remember) {
+            localStorage.setItem('logbook_remember', '1');
+            localStorage.setItem('logbook_username', username);
+            localStorage.setItem('logbook_password', password);
+          } else {
+            localStorage.removeItem('logbook_remember');
+            localStorage.removeItem('logbook_username');
+            localStorage.removeItem('logbook_password');
+          }
+
+          document.getElementById('loginPage').classList.add('hidden');
+
+          if (data.role === 'admin') {
+            document.getElementById('adminPage').classList.remove('hidden');
+            await loadStudentsForAdmin();
+            await loadPresensiAdminList();
+          } else {
+            document.getElementById('studentPage').classList.remove('hidden');
+            document.getElementById('studentName').textContent = data.nama;
+            await loadProfile();
+            await loadPresensiPoint();
+            showStudentTab('profil');
+          }
+        } else {
+          showAlert('loginAlert', data.message || 'Username atau password salah', 'error');
+        }
+      } catch (error) {
+        showAlert('loginAlert', 'Gagal login: ' + error.message, 'error');
+      } finally {
+        showGlobalLoading(false);
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Masuk';
+      }
+    });
+
+    // =========================
+    // FIX TIME
+    // =========================
+    function normalizeTime(val) {
+      if (!val) return '';
+      if (typeof val === 'string' && /^\d{2}:\d{2}(:\d{2})?$/.test(val.trim())) return val.trim().slice(0, 5);
+      if (typeof val === 'string' && val.includes('T')) {
+        const d = new Date(val);
+        if (!isNaN(d.getTime())) {
+          const hh = String(d.getHours()).padStart(2, '0');
+          const mm = String(d.getMinutes()).padStart(2, '0');
+          return `${hh}:${mm}`;
+        }
+        const m = val.match(/T(\d{2}):(\d{2})/);
+        if (m) return `${m[1]}:${m[2]}`;
+      }
+      return String(val);
+    }
+
+    // =========================
+    // PROFIL
+    // =========================
+    function getHariKerjaValue() {
+      const checked = Array.from(document.querySelectorAll('.hariKerja:checked')).map(x => x.value);
+      return checked.join(',');
+    }
+    function setHariKerjaValue(value) {
+      const set = new Set(String(value || '').split(',').map(s => s.trim()).filter(Boolean));
+      document.querySelectorAll('.hariKerja').forEach(cb => cb.checked = set.has(cb.value));
+    }
+
+    async function loadProfile() {
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(currentUser)}`);
+        const data = await response.json();
+
+        if (data.success && data.profile) {
+          const p = data.profile;
+          document.getElementById('namaLengkap').value = p.namaLengkap || '';
+          document.getElementById('noAbsen').value = p.noAbsen || '';
+          document.getElementById('email').value = p.email || '';
+          document.getElementById('telepon').value = p.telepon || '';
+          document.getElementById('tempatMagang').value = p.tempatMagang || '';
+          document.getElementById('alamatMagang').value = p.alamatMagang || '';
+          document.getElementById('posisi').value = p.posisi || '';
+          document.getElementById('pembimbing').value = p.pembimbing || '';
+          document.getElementById('tanggalMulai').value = convertDateToInput(p.tanggalMulai) || '';
+          document.getElementById('tanggalSelesai').value = convertDateToInput(p.tanggalSelesai) || '';
+          document.getElementById('noHpMentor').value = p.noHpMentor || '';
+          setHariKerjaValue(p.hariKerja || '');
+          document.getElementById('jamKerjaMulai').value = normalizeTime(p.jamKerjaMulai);
+          document.getElementById('jamKerjaSelesai').value = normalizeTime(p.jamKerjaSelesai);
+        }
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    }
+
+    document.getElementById('profilForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const saveBtn = document.getElementById('saveProfilBtn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = '💾 Menyimpan...';
+
+      try {
+        showGlobalLoading(true, '🔄 Menyimpan profil...');
+
+        const payload = {
+          action: 'saveProfile',
+          username: currentUser,
+          namaLengkap: document.getElementById('namaLengkap').value,
+          noAbsen: document.getElementById('noAbsen').value,
+          email: document.getElementById('email').value,
+          telepon: document.getElementById('telepon').value,
+          tempatMagang: document.getElementById('tempatMagang').value,
+          alamatMagang: document.getElementById('alamatMagang').value,
+          posisi: document.getElementById('posisi').value,
+          pembimbing: document.getElementById('pembimbing').value,
+          tanggalMulai: document.getElementById('tanggalMulai').value,
+          tanggalSelesai: document.getElementById('tanggalSelesai').value,
+          noHpMentor: document.getElementById('noHpMentor').value,
+          hariKerja: getHariKerjaValue(),
+          jamKerjaMulai: document.getElementById('jamKerjaMulai').value,
+          jamKerjaSelesai: document.getElementById('jamKerjaSelesai').value
+        };
+
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        if (data.success) showAlert('profilAlert', '✅ Profil berhasil disimpan!', 'success');
+        else showAlert('profilAlert', '❌ ' + (data.message || 'Gagal menyimpan'), 'error');
+
+      } catch (error) {
+        showAlert('profilAlert', '❌ Gagal menyimpan: ' + error.message, 'error');
+      } finally {
+        showGlobalLoading(false);
+        saveBtn.disabled = false;
+        saveBtn.textContent = '💾 Simpan Profil';
+      }
+    });
+
+    // =========================
+    // TITIK PRESENSI (GPS) - FIX Secure Origin
+    // =========================
+    async function loadPresensiPoint(){
+      try{
+        const res = await fetch(`${SCRIPT_URL}?action=getPresensiPoint&username=${encodeURIComponent(currentUser)}`);
+        const data = await res.json();
+        if(data.success && data.point){
+          presensiTargetPoint = data.point;
+          document.getElementById('presensiLat').value = data.point.lat || '';
+          document.getElementById('presensiLng').value = data.point.lng || '';
+          document.getElementById('pointInfo').innerHTML = data.point.updatedAt
+            ? `✅ Titik tersimpan. Terakhir update: <b>${escapeHtml(data.point.updatedAt)}</b>`
+            : `⚠️ Titik presensi belum disimpan.`;
+        }
+      }catch(e){}
+    }
+
+    async function ambilLokasiPresensi(){
+      const isSecure = window.isSecureContext || location.hostname === 'localhost';
+      if(!isSecure){
+        showAlert('presensiPointAlert',
+          '❌ GPS hanya bisa digunakan jika halaman dibuka via HTTPS. Buka dari Web App Apps Script (https://...).',
+          'error'
+        );
+        return;
+      }
+
+      if(!navigator.geolocation){
+        showAlert('presensiPointAlert','❌ Browser tidak mendukung GPS','error');
+        return;
+      }
+
+      showAlert('presensiPointAlert','📡 Mengambil lokasi... pastikan GPS aktif','info');
+
+      navigator.geolocation.getCurrentPosition((pos)=>{
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        document.getElementById('presensiLat').value = lat;
+        document.getElementById('presensiLng').value = lng;
+        showAlert('presensiPointAlert','✅ Lokasi berhasil diambil','success');
+      }, (err)=>{
+        showAlert('presensiPointAlert','❌ Gagal ambil lokasi: ' + err.message,'error');
+      }, { enableHighAccuracy:true, timeout:15000 });
+    }
+
+    async function simpanTitikPresensi(){
+      const lat = document.getElementById('presensiLat').value.trim();
+      const lng = document.getElementById('presensiLng').value.trim();
+
+      if(!lat || !lng){
+        showAlert('presensiPointAlert','❌ Lat/Lng wajib diisi','error');
+        return;
+      }
+
+      try{
+        showGlobalLoading(true,'🔄 Menyimpan titik presensi...');
+        const payload = {
+          action:'savePresensiPoint',
+          username: currentUser,
+          lat: lat,
+          lng: lng,
+          radiusM: 50
+        };
+        const res = await fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(payload) });
+        const data = await res.json();
+        if(data.success){
+          showAlert('presensiPointAlert','✅ Titik presensi tersimpan (radius 50m)','success');
+          await loadPresensiPoint();
+        }else{
+          showAlert('presensiPointAlert','❌ ' + (data.message || 'Gagal simpan'),'error');
+        }
+      }catch(e){
+        showAlert('presensiPointAlert','❌ Error: ' + e.message,'error');
+      }finally{
+        showGlobalLoading(false);
+      }
+    }
+
+    // =========================
+    // PRESENSI - GPS CHECK
+    // =========================
+    async function checkGPSDistance(){
+      try{
+        await loadPresensiPoint();
+        const tLat = Number(presensiTargetPoint.lat);
+        const tLng = Number(presensiTargetPoint.lng);
+
+        if(isNaN(tLat) || isNaN(tLng)){
+          document.getElementById('gpsStatus').innerHTML = '⚠️ Titik presensi belum diatur. Isi di Profil dulu.';
+          document.getElementById('gpsDistance').innerHTML = 'Jarak: -';
+          currentDistanceM = null;
+          return;
+        }
+
+        const isSecure = window.isSecureContext || location.hostname === 'localhost';
+        if(!isSecure){
+          document.getElementById('gpsStatus').innerHTML = '❌ GPS butuh HTTPS. Buka dari Web App.';
+          currentDistanceM = null;
+          return;
+        }
+
+        if(!navigator.geolocation){
+          document.getElementById('gpsStatus').innerHTML = '❌ Browser tidak mendukung GPS.';
+          return;
+        }
+
+        document.getElementById('gpsStatus').innerHTML = '📡 Mengambil lokasi...';
+
+        await new Promise((resolve, reject)=>{
+          navigator.geolocation.getCurrentPosition((pos)=>{
+            currentGPS.lat = pos.coords.latitude;
+            currentGPS.lng = pos.coords.longitude;
+            currentGPS.accuracy = pos.coords.accuracy;
+
+            const d = haversineM(currentGPS.lat, currentGPS.lng, tLat, tLng);
+            currentDistanceM = d;
+
+            const ok = d <= 50;
+            document.getElementById('gpsStatus').innerHTML =
+              ok ? `✅ Lokasi valid (akurasi ±${Math.round(currentGPS.accuracy)}m)`
+                 : `❌ Lokasi di luar area (akurasi ±${Math.round(currentGPS.accuracy)}m)`;
+
+            document.getElementById('gpsDistance').innerHTML = `Jarak: <b>${Math.round(d)} meter</b> (maks 50m)`;
+            resolve();
+          }, (err)=>{
+            document.getElementById('gpsStatus').innerHTML = '❌ Gagal ambil lokasi: ' + err.message;
+            document.getElementById('gpsDistance').innerHTML = 'Jarak: -';
+            currentDistanceM = null;
+            reject(err);
+          }, { enableHighAccuracy:true, timeout:15000 });
+        });
+
+      }catch(e){}
+    }
+
+    // =========================
+    // PRESENSI - SELFIE CAMERA (FIX)
+    // =========================
+    async function startSelfieCamera(){
+      try{
+        const isSecure = window.isSecureContext || location.hostname === 'localhost';
+        if(!isSecure){
+          showAlert('presensiAlert',
+            '❌ Kamera hanya bisa digunakan jika halaman dibuka via HTTPS. Buka dari Web App Apps Script.',
+            'error'
+          );
+          return;
+        }
+
+        if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+          showAlert('presensiAlert',
+            '❌ Browser tidak mendukung kamera (getUserMedia tidak tersedia). Gunakan Chrome terbaru.',
+            'error'
+          );
+          return;
+        }
+
+        const video = document.getElementById('videoSelfie');
+        const canvas = document.getElementById('canvasSelfie');
+        canvas.style.display = 'none';
+        video.style.display = 'block';
+        selfieDataURL = '';
+
+        if(selfieStream){
+          selfieStream.getTracks().forEach(t=>t.stop());
+          selfieStream = null;
+        }
+
+        selfieStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user" },
+          audio: false
+        });
+
+        video.srcObject = selfieStream;
+        showAlert('presensiAlert','📷 Kamera aktif. Silakan ambil selfie.','info');
+      }catch(e){
+        showAlert('presensiAlert','❌ Tidak bisa membuka kamera: ' + e.message,'error');
+      }
+    }
+
+    function captureSelfie(){
+      const video = document.getElementById('videoSelfie');
+      const canvas = document.getElementById('canvasSelfie');
+      const ctx = canvas.getContext('2d');
+
+      if(!video.srcObject){
+        showAlert('presensiAlert','⚠️ Kamera belum aktif. Klik "Nyalakan Kamera" dulu.','error');
+        return;
+      }
+
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      selfieDataURL = canvas.toDataURL('image/jpeg', 0.92);
+
+      canvas.style.display = 'block';
+      video.style.display = 'none';
+
+      showAlert('presensiAlert','✅ Selfie berhasil diambil.','success');
+    }
+
+    function resetSelfie(){
+      selfieDataURL = '';
+      const video = document.getElementById('videoSelfie');
+      const canvas = document.getElementById('canvasSelfie');
+      canvas.style.display = 'none';
+      video.style.display = 'block';
+      showAlert('presensiAlert','🔄 Silakan ambil ulang selfie.','info');
+    }
+
+    async function submitPresensi(){
+      try{
+        showGlobalLoading(true,'🔄 Mengecek GPS & mengirim presensi...');
+
+        await checkGPSDistance();
+
+        if(currentDistanceM === null){
+          showAlert('presensiAlert','❌ GPS belum valid. Pastikan izin lokasi aktif.','error');
+          return;
+        }
+
+        if(currentDistanceM > 50){
+          showAlert('presensiAlert',`❌ Anda berada ${Math.round(currentDistanceM)}m dari titik presensi. Maks 50m.`,`error`);
+          return;
+        }
+
+        if(!selfieDataURL || selfieDataURL.length < 100){
+          showAlert('presensiAlert','❌ Selfie wajib diambil.','error');
+          return;
+        }
+
+        const nama = document.getElementById('namaLengkap').value || document.getElementById('studentName').textContent;
+
+        const payload = {
+          action: 'addPresensi',
+          username: currentUser,
+          nama: nama,
+          lat: currentGPS.lat,
+          lng: currentGPS.lng,
+          photoData: selfieDataURL
+        };
+
+        const res = await fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(payload) });
+        const data = await res.json();
+
+        if(data.success){
+          showAlert('presensiAlert',`✅ Presensi berhasil! Jarak: ${Math.round(data.distanceM)}m`,`success`);
+          stopSelfieCamera();
+          selfieDataURL = '';
+        }else{
+          showAlert('presensiAlert','❌ ' + (data.message || 'Gagal presensi'),'error');
+        }
+
+      }catch(e){
+        showAlert('presensiAlert','❌ Error: ' + e.message,'error');
+      }finally{
+        showGlobalLoading(false);
+      }
+    }
+
+    function stopSelfieCamera(){
+      try{
+        if(selfieStream){
+          selfieStream.getTracks().forEach(t=>t.stop());
+          selfieStream = null;
+        }
+      }catch(e){}
+    }
+
+    // =========================
+    // UPLOAD FOTO LOGBOOK
+    // =========================
+    function pickCamera() { const input = document.getElementById('fileInputCamera'); input.value = ''; input.click(); }
+    function pickGallery() { const input = document.getElementById('fileInputGallery'); input.value = ''; input.click(); }
+
+    function clearSelectedImage() {
+      selectedImageFile = null;
+      const cam = document.getElementById('fileInputCamera');
+      const gal = document.getElementById('fileInputGallery');
+      if (cam) cam.value = '';
+      if (gal) gal.value = '';
+      document.getElementById('fileName').textContent = '';
+    }
+
+    document.getElementById('fileInputCamera').addEventListener('change', function() {
+      if (!this.files || this.files.length === 0) return;
+      selectedImageFile = this.files[0];
+      document.getElementById('fileName').textContent = `✓ ${selectedImageFile.name} (Kamera)`;
+    });
+
+    document.getElementById('fileInputGallery').addEventListener('change', function() {
+      if (!this.files || this.files.length === 0) return;
+      selectedImageFile = this.files[0];
+      document.getElementById('fileName').textContent = `✓ ${selectedImageFile.name} (Galeri)`;
+    });
+
+    // =========================
+    // LOGBOOK
+    // =========================
+    document.getElementById('logbookForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+
+      const isEditing = editingLogbookNo !== null;
+      submitBtn.textContent = isEditing ? 'Mengupdate...' : 'Menyimpan...';
+
+      const tanggal = document.getElementById('tanggal').value;
+      const judul = document.getElementById('judul').value;
+      const deskripsi = document.getElementById('deskripsi').value;
+
+      let fileData = '';
+      let fileName = '';
+
+      try {
+        showGlobalLoading(true, isEditing ? '🔄 Mengupdate logbook...' : '🔄 Menyimpan logbook...');
+
+        if (selectedImageFile) {
+          fileName = selectedImageFile.name || '';
+          fileData = await compressImageToDataURL(selectedImageFile, 2 * 1024 * 1024);
+        }
+
+        const payload = {
+          action: isEditing ? 'updateLogbook' : 'addLogbook',
+          username: currentUser,
+          tanggal,
+          judul,
+          deskripsi,
+          fileData,
+          fileName
+        };
+        if (isEditing) payload.no = editingLogbookNo;
+
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showAlert('studentAlert', isEditing ? '✅ Logbook berhasil diupdate!' : '✅ Logbook berhasil disimpan!', 'success');
+
+          document.getElementById('logbookForm').reset();
+          document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
+
+          editingLogbookNo = null;
+          submitBtn.textContent = 'Simpan Logbook';
+          submitBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+          document.getElementById('cancelBtn').classList.add('hidden');
+
+          clearSelectedImage();
+          await loadMyLogbook();
+        } else {
+          showAlert('studentAlert', '❌ ' + (data.message || 'Gagal menyimpan'), 'error');
+        }
+      } catch (error) {
+        showAlert('studentAlert', '❌ Gagal menyimpan: ' + error.message, 'error');
+      } finally {
+        showGlobalLoading(false);
+        submitBtn.disabled = false;
+        if (!isEditing) submitBtn.textContent = 'Simpan Logbook';
+      }
+    });
+
+    async function loadMyLogbook() {
+      const listDiv = document.getElementById('logbookList');
+      listDiv.innerHTML = '<div class="loading">Memuat data...</div>';
+
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=getLogbook&username=${encodeURIComponent(currentUser)}`);
+        const data = await response.json();
+
+        if (data.success && data.logbook && data.logbook.length > 0) {
+          listDiv.innerHTML = data.logbook.map(log => {
+            let imageHtml = '';
+
+            if (log.fileId) {
+              const thumbnailUrl = `https://drive.google.com/thumbnail?id=${log.fileId}&sz=w400`;
+              const fullImageUrl = `https://drive.google.com/uc?id=${log.fileId}`;
+              imageHtml = `
+                <div class="logbook-image">
+                  <img src="${thumbnailUrl}"
+                       alt="Foto kegiatan"
+                       onclick="openImageModal('${fullImageUrl}')"
+                       onerror="this.parentElement.innerHTML='<div class=image-placeholder>📷 Foto tidak dapat dimuat</div>'">
+                </div>
+              `;
+            } else if (log.berkas && String(log.berkas).includes('drive.google.com')) {
+              imageHtml = `<a href="${log.berkas}" target="_blank" class="file-link">📷 Lihat Foto</a>`;
+            }
+
+            return `
+              <div class="logbook-item">
+                <div class="logbook-actions">
+                  <button class="btn-action btn-edit"
+                    onclick="editLogbook(${log.no}, '${escapeHtml(log.tanggal)}', '${escapeHtml(log.judul)}', '${escapeHtml(log.deskripsi)}')">✏️ Edit</button>
+                  <button class="btn-action btn-delete" onclick="deleteLogbook(${log.no})">🗑️ Hapus</button>
+                </div>
+                <h3>${escapeHtml(log.judul || '')}</h3>
+                <p>${escapeHtml(log.deskripsi || '')}</p>
+                <p class="date">📅 ${escapeHtml(log.tanggal || '')}</p>
+                ${imageHtml}
+              </div>
+            `;
+          }).join('');
+        } else {
+          listDiv.innerHTML = '<div class="alert alert-info">Belum ada logbook. Mulai tambahkan kegiatan Anda!</div>';
+        }
+      } catch (error) {
+        listDiv.innerHTML = '<div class="alert alert-error">Gagal memuat logbook.</div>';
+      }
+    }
+
+    function editLogbook(no, tanggal, judul, deskripsi) {
+      editingLogbookNo = no;
+
+      const dateParts = String(tanggal).split('/');
+      const formattedDate = dateParts.length === 3 ? `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}` : tanggal;
+
+      document.getElementById('tanggal').value = formattedDate;
+      document.getElementById('judul').value = judul;
+      document.getElementById('deskripsi').value = deskripsi;
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.textContent = 'Update Logbook';
+      submitBtn.style.background = 'linear-gradient(135deg, #3498db 0%, #2980b9 100%)';
+
+      document.getElementById('cancelBtn').classList.remove('hidden');
+
+      showStudentTab('add');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showAlert('studentAlert', '📝 Mode edit: Ubah data dan klik "Update Logbook"', 'info');
+    }
+
+    function cancelEdit() {
+      editingLogbookNo = null;
+      document.getElementById('logbookForm').reset();
+      document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.textContent = 'Simpan Logbook';
+      submitBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+
+      document.getElementById('cancelBtn').classList.add('hidden');
+      document.getElementById('studentAlert').innerHTML = '';
+
+      clearSelectedImage();
+    }
+
+    async function deleteLogbook(no) {
+      if (!confirm('Apakah Anda yakin ingin menghapus logbook ini?')) return;
+
+      try {
+        showGlobalLoading(true, '🔄 Menghapus logbook...');
+        const response = await fetch(`${SCRIPT_URL}?action=deleteLogbook&username=${encodeURIComponent(currentUser)}&no=${encodeURIComponent(no)}`);
+        const data = await response.json();
+
+        if (data.success) {
+          showAlert('studentAlert', '✅ Logbook berhasil dihapus!', 'success');
+          await loadMyLogbook();
+        } else {
+          showAlert('studentAlert', '❌ ' + (data.message || 'Gagal menghapus'), 'error');
+        }
+      } catch (error) {
+        showAlert('studentAlert', '❌ Gagal menghapus: ' + error.message, 'error');
+      } finally {
+        showGlobalLoading(false);
+      }
+    }
+
+    // =========================
+    // ADMIN
+    // =========================
+    function showAdminTab(tab){
+      document.querySelectorAll('#adminPage .tab').forEach(t => t.classList.remove('active'));
+      const tabs = document.querySelectorAll('#adminPage .tab');
+      if(tab === 'siswa'){
+        tabs[0].classList.add('active');
+        document.getElementById('adminSiswaTab').classList.remove('hidden');
+        document.getElementById('adminPresensiTab').classList.add('hidden');
+      }else{
+        tabs[1].classList.add('active');
+        document.getElementById('adminSiswaTab').classList.add('hidden');
+        document.getElementById('adminPresensiTab').classList.remove('hidden');
+        loadPresensiAdminList();
+      }
+    }
+
+    async function loadStudentsForAdmin() {
+      const listDiv = document.getElementById('studentsList');
+      listDiv.innerHTML = '<div class="loading">Memuat daftar siswa...</div>';
+
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents`);
+        const data = await response.json();
+
+        if (data.success && data.students && data.students.length > 0) {
+          listDiv.innerHTML = data.students.map(student => `
+            <div class="student-card" onclick="viewStudentDetail('${escapeHtml(student.username)}', '${escapeHtml(student.nama)}')">
+              <h3>👤 ${escapeHtml(student.nama)}</h3>
+              <p>Username: ${escapeHtml(student.username)}</p>
+              <p style="font-size: 12px; margin-top: 8px; color: #667eea;">Klik untuk melihat detail →</p>
+            </div>
+          `).join('');
+        } else {
+          listDiv.innerHTML = '<div class="alert alert-info">Belum ada siswa terdaftar.</div>';
+        }
+      } catch (error) {
+        listDiv.innerHTML = '<div class="alert alert-error">Gagal memuat daftar siswa.</div>';
+      }
+    }
+
+    async function loadPresensiAdminList(){
+      const div = document.getElementById('presensiAdminList');
+      div.innerHTML = '<div class="loading">Memuat presensi...</div>';
+
+      try{
+        const res = await fetch(`${SCRIPT_URL}?action=getPresensiList`);
+        const data = await res.json();
+        if(data.success && data.presensi && data.presensi.length){
+          div.innerHTML = data.presensi.map(p=>{
+            const thumb = p.photoId ? `https://drive.google.com/thumbnail?id=${p.photoId}&sz=w400` : '';
+            const imgHtml = p.photoId ? `
+              <div class="logbook-image">
+                <img src="${thumb}" onclick="window.open('https://drive.google.com/file/d/${p.photoId}/view','_blank')"
+                 onerror="this.parentElement.innerHTML='<div class=image-placeholder>📷 Foto tidak dapat dimuat</div>'">
+              </div>` : '';
+            return `
+              <div class="logbook-item">
+                <h3>✅ ${escapeHtml(p.nama)} (${escapeHtml(p.username)})</h3>
+                <p>📅 ${escapeHtml(p.tanggal)} • ⏰ ${escapeHtml(p.jam)}</p>
+                <p>📍 Jarak: <b>${escapeHtml(p.distanceM)}m</b> (radius ${escapeHtml(p.radiusM)}m)</p>
+                ${imgHtml}
+              </div>
+            `;
+          }).join('');
+        }else{
+          div.innerHTML = '<div class="alert alert-info">Belum ada presensi.</div>';
+        }
+      }catch(e){
+        div.innerHTML = '<div class="alert alert-error">Gagal memuat presensi.</div>';
+      }
+    }
+
+    async function viewStudentDetail(username, nama) {
+      selectedStudent = username;
+      document.getElementById('detailStudentName').textContent = nama;
+
+      document.getElementById('adminPage').classList.add('hidden');
+      document.getElementById('studentDetailPage').classList.remove('hidden');
+
+      await showDetailTab('profil');
+    }
+
+    function backToAdmin() {
+      document.getElementById('studentDetailPage').classList.add('hidden');
+      document.getElementById('adminPage').classList.remove('hidden');
+      selectedStudent = null;
+    }
+
+    async function showDetailTab(tab) {
+      document.querySelectorAll('#studentDetailPage .tab').forEach(t => t.classList.remove('active'));
+
+      if (tab === 'profil') {
+        document.querySelectorAll('#studentDetailPage .tab')[0].classList.add('active');
+        document.getElementById('detailProfilTab').classList.remove('hidden');
+        document.getElementById('detailLogbookTab').classList.add('hidden');
+        document.getElementById('detailPresensiTab').classList.add('hidden');
+        await loadStudentProfile(selectedStudent);
+      } else if(tab === 'logbook') {
+        document.querySelectorAll('#studentDetailPage .tab')[1].classList.add('active');
+        document.getElementById('detailProfilTab').classList.add('hidden');
+        document.getElementById('detailLogbookTab').classList.remove('hidden');
+        document.getElementById('detailPresensiTab').classList.add('hidden');
+        await loadStudentLogbook(selectedStudent);
+      } else {
+        document.querySelectorAll('#studentDetailPage .tab')[2].classList.add('active');
+        document.getElementById('detailProfilTab').classList.add('hidden');
+        document.getElementById('detailLogbookTab').classList.add('hidden');
+        document.getElementById('detailPresensiTab').classList.remove('hidden');
+        await loadPresensiByStudent(selectedStudent);
+      }
+    }
+
+    async function loadStudentProfile(username) {
+      const displayDiv = document.getElementById('studentProfileDisplay');
+      displayDiv.innerHTML = '<div class="loading">Memuat profil...</div>';
+
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`);
+        const data = await response.json();
+
+        if (data.success && data.profile) {
+          const p = data.profile;
+          const hasData = p.namaLengkap || p.tempatMagang || p.noAbsen;
+
+          if (!hasData) {
+            displayDiv.innerHTML = '<div class="alert alert-info">Siswa belum melengkapi profil.</div>';
+            return;
+          }
+
+          const jamMulai = normalizeTime(p.jamKerjaMulai);
+          const jamSelesai = normalizeTime(p.jamKerjaSelesai);
+          const jamKerjaText = (jamMulai || jamSelesai) ? `${escapeHtml(jamMulai || '-') } - ${escapeHtml(jamSelesai || '-')}` : '-';
+
+          displayDiv.innerHTML = `
+            <div class="profile-card">
+              <h2>${escapeHtml(p.namaLengkap || '-')}</h2>
+              <p>No Absen: ${escapeHtml(p.noAbsen || '-')}</p>
+            </div>
+
+            <div class="info-grid">
+              <div class="info-item full-width">
+                <label>Email</label>
+                <span>${escapeHtml(p.email || '-')}</span>
+              </div>
+              <div class="info-item full-width">
+                <label>Telepon</label>
+                <span>${escapeHtml(p.telepon || '-')}</span>
+              </div>
+              <div class="info-item full-width">
+                <label>Tempat Magang</label>
+                <span>${escapeHtml(p.tempatMagang || '-')}</span>
+              </div>
+              <div class="info-item full-width">
+                <label>Alamat Tempat Magang</label>
+                <span>${escapeHtml(p.alamatMagang || '-')}</span>
+              </div>
+              <div class="info-item full-width">
+                <label>Posisi</label>
+                <span>${escapeHtml(p.posisi || '-')}</span>
+              </div>
+              <div class="info-item full-width">
+                <label>Pembimbing</label>
+                <span>${escapeHtml(p.pembimbing || '-')}</span>
+              </div>
+
+              <div class="info-item full-width">
+                <label>No HP Mentor</label>
+                <span>${escapeHtml(p.noHpMentor || '-')}</span>
+              </div>
+              <div class="info-item full-width">
+                <label>Hari Kerja</label>
+                <span>${escapeHtml(p.hariKerja || '-')}</span>
+              </div>
+              <div class="info-item full-width">
+                <label>Jam Kerja</label>
+                <span>${jamKerjaText}</span>
+              </div>
+
+              <div class="info-item">
+                <label>Tanggal Mulai</label>
+                <span>${escapeHtml(p.tanggalMulai || '-')}</span>
+              </div>
+              <div class="info-item">
+                <label>Tanggal Selesai</label>
+                <span>${escapeHtml(p.tanggalSelesai || '-')}</span>
+              </div>
+            </div>
+          `;
+        } else {
+          displayDiv.innerHTML = '<div class="alert alert-error">Gagal memuat profil.</div>';
+        }
+      } catch (error) {
+        displayDiv.innerHTML = '<div class="alert alert-error">Gagal memuat profil.</div>';
+      }
+    }
+
+    async function loadStudentLogbook(username) {
+      const listDiv = document.getElementById('adminLogbookList');
+      listDiv.innerHTML = '<div class="loading">Memuat logbook...</div>';
+
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=getLogbook&username=${encodeURIComponent(username)}`);
+        const data = await response.json();
+
+        if (data.success && data.logbook && data.logbook.length > 0) {
+          listDiv.innerHTML = data.logbook.map(log => {
+            let imageHtml = '';
+
+            if (log.fileId) {
+              const thumbnailUrl = `https://drive.google.com/thumbnail?id=${log.fileId}&sz=w400`;
+              imageHtml = `
+                <div class="logbook-image">
+                  <img src="${thumbnailUrl}"
+                       alt="Foto kegiatan"
+                       onclick="window.open('https://drive.google.com/file/d/${log.fileId}/view', '_blank')"
+                       onerror="this.parentElement.innerHTML='<div class=image-placeholder>📷 Foto tidak dapat dimuat</div>'">
+                </div>
+              `;
+            } else if (log.berkas && String(log.berkas).includes('drive.google.com')) {
+              imageHtml = `<a href="${log.berkas}" target="_blank" class="file-link">📷 Lihat Foto</a>`;
+            }
+
+            return `
+              <div class="logbook-item">
+                <h3>${escapeHtml(log.judul || '')}</h3>
+                <p>${escapeHtml(log.deskripsi || '')}</p>
+                <p class="date">📅 ${escapeHtml(log.tanggal || '')}</p>
+                ${imageHtml}
+              </div>
+            `;
+          }).join('');
+        } else {
+          listDiv.innerHTML = '<div class="alert alert-info">Belum ada logbook untuk siswa ini.</div>';
+        }
+      } catch (error) {
+        listDiv.innerHTML = '<div class="alert alert-error">Gagal memuat logbook.</div>';
+      }
+    }
+
+    async function loadPresensiByStudent(username){
+      const div = document.getElementById('adminPresensiStudentList');
+      div.innerHTML = '<div class="loading">Memuat presensi...</div>';
+
+      try{
+        const res = await fetch(`${SCRIPT_URL}?action=getPresensiByStudent&username=${encodeURIComponent(username)}`);
+        const data = await res.json();
+        if(data.success && data.presensi && data.presensi.length){
+          div.innerHTML = data.presensi.map(p=>{
+            const thumb = p.photoId ? `https://drive.google.com/thumbnail?id=${p.photoId}&sz=w400` : '';
+            const imgHtml = p.photoId ? `
+              <div class="logbook-image">
+                <img src="${thumb}" onclick="window.open('https://drive.google.com/file/d/${p.photoId}/view','_blank')"
+                 onerror="this.parentElement.innerHTML='<div class=image-placeholder>📷 Foto tidak dapat dimuat</div>'">
+              </div>` : '';
+            return `
+              <div class="logbook-item">
+                <h3>✅ ${escapeHtml(p.tanggal)} • ${escapeHtml(p.jam)}</h3>
+                <p>📍 Jarak: <b>${escapeHtml(p.distanceM)}m</b> (radius ${escapeHtml(p.radiusM)}m)</p>
+                ${imgHtml}
+              </div>
+            `;
+          }).join('');
+        }else{
+          div.innerHTML = '<div class="alert alert-info">Belum ada presensi untuk siswa ini.</div>';
+        }
+      }catch(e){
+        div.innerHTML = '<div class="alert alert-error">Gagal memuat presensi.</div>';
+      }
+    }
+
+    // =========================
+    // TAB SWITCH
+    // =========================
+    function showStudentTab(tab) {
+      document.querySelectorAll('#studentPage .tab').forEach(t => t.classList.remove('active'));
+
+      const tabs = document.querySelectorAll('#studentPage .tab');
+      if (tab === 'profil') {
+        tabs[0].classList.add('active');
+        document.getElementById('profilTab').classList.remove('hidden');
+        document.getElementById('presensiTab').classList.add('hidden');
+        document.getElementById('addTab').classList.add('hidden');
+        document.getElementById('viewTab').classList.add('hidden');
+      } else if (tab === 'presensi') {
+        tabs[1].classList.add('active');
+        document.getElementById('profilTab').classList.add('hidden');
+        document.getElementById('presensiTab').classList.remove('hidden');
+        document.getElementById('addTab').classList.add('hidden');
+        document.getElementById('viewTab').classList.add('hidden');
+        checkGPSDistance();
+      } else if (tab === 'add') {
+        tabs[2].classList.add('active');
+        document.getElementById('profilTab').classList.add('hidden');
+        document.getElementById('presensiTab').classList.add('hidden');
+        document.getElementById('addTab').classList.remove('hidden');
+        document.getElementById('viewTab').classList.add('hidden');
+      } else {
+        tabs[3].classList.add('active');
+        document.getElementById('profilTab').classList.add('hidden');
+        document.getElementById('presensiTab').classList.add('hidden');
+        document.getElementById('addTab').classList.add('hidden');
+        document.getElementById('viewTab').classList.remove('hidden');
+
+        editingLogbookNo = null;
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.textContent = 'Simpan Logbook';
+        submitBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        document.getElementById('cancelBtn').classList.add('hidden');
+
+        document.getElementById('logbookForm').reset();
+        document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
+        clearSelectedImage();
+
+        loadMyLogbook();
+      }
+    }
+
+    // =========================
+    // UI HELPERS
+    // =========================
+    function showAlert(elementId, message, type) {
+      const alertDiv = document.getElementById(elementId);
+      if (!alertDiv) return;
+      alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+      setTimeout(() => alertDiv.innerHTML = '', 5000);
+    }
+
+    function convertDateToInput(dateStr) {
+      if (!dateStr) return '';
+      const parts = String(dateStr).split('/');
+      if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
+      return dateStr;
+    }
+
+    function escapeHtml(text) {
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;',
+        '\n': ' ',
+        '\r': ''
+      };
+      return String(text ?? '').replace(/[&<>"'\n\r]/g, m => map[m]);
+    }
+
+    function logout() {
+      stopSelfieCamera();
+
+      currentUser = null;
+      currentRole = null;
+      selectedStudent = null;
+      editingLogbookNo = null;
+
+      localStorage.removeItem('logbook_remember');
+      localStorage.removeItem('logbook_username');
+      localStorage.removeItem('logbook_password');
+
+      document.getElementById('loginPage').classList.remove('hidden');
+      document.getElementById('studentPage').classList.add('hidden');
+      document.getElementById('adminPage').classList.add('hidden');
+      document.getElementById('studentDetailPage').classList.add('hidden');
+
+      document.getElementById('loginForm').reset();
+      document.getElementById('rememberMe').checked = false;
+      clearSelectedImage();
+    }
+
+    function openImageModal(imageUrl) {
+      const modal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImage');
+      modal.style.display = 'block';
+      modalImg.src = imageUrl;
+    }
+
+    function closeImageModal() {
+      document.getElementById('imageModal').style.display = 'none';
+    }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') closeImageModal();
+    });
+
+    // =========================
+    // KOMPRES FOTO MAX 2MB
+    // =========================
+    function readFileAsDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+    }
+
+    function loadImageFromDataURL(dataURL) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = dataURL;
+      });
+    }
+
+    async function compressImageToDataURL(file, maxBytes = 2 * 1024 * 1024) {
+      const originalDataURL = await readFileAsDataURL(file);
+      const img = await loadImageFromDataURL(originalDataURL);
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      let quality = 0.86;
+      let scale = 1.0;
+
+      const encode = () => {
+        const w = Math.max(1, Math.round(img.width * scale));
+        const h = Math.max(1, Math.round(img.height * scale));
+        canvas.width = w;
+        canvas.height = h;
+        ctx.clearRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        return canvas.toDataURL('image/jpeg', quality);
+      };
+
+      for (let i = 0; i < 12; i++) {
+        const dataUrl = encode();
+        const base64 = (dataUrl.split(',')[1] || '');
+        const approxBytes = Math.floor(base64.length * 0.75);
+
+        if (approxBytes <= maxBytes) return dataUrl;
+
+        if (quality > 0.55) quality -= 0.08;
+        else scale -= 0.12;
+
+        if (scale < 0.3) break;
+      }
+
+      throw new Error('Gambar terlalu besar walau sudah dikompres. Coba foto lain.');
+    }
+
+    // =========================
+    // DISTANCE (Haversine)
+    // =========================
+    function haversineM(lat1, lon1, lat2, lon2){
+      const R = 6371000;
+      const toRad = x => x * Math.PI/180;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a = Math.sin(dLat/2)*Math.sin(dLat/2) +
+                Math.cos(toRad(lat1))*Math.cos(toRad(lat2)) *
+                Math.sin(dLon/2)*Math.sin(dLon/2);
+      const c = 2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R*c;
+    }
+  </script>
+</body>
+</html>
