@@ -6,14 +6,12 @@
   <title>Logbook Magang</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
       padding: 20px;
     }
-
     .container {
       max-width: 500px;
       margin: 0 auto;
@@ -22,7 +20,6 @@
       box-shadow: 0 10px 40px rgba(0,0,0,0.2);
       overflow: hidden;
     }
-
     .header {
       position: relative;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -30,10 +27,8 @@
       padding: 30px 20px;
       text-align: center;
     }
-
     .header h1 { font-size: 24px; margin-bottom: 5px; }
     .header p { font-size: 14px; opacity: 0.9; }
-
     .content { padding: 30px 20px; }
 
     .form-group { margin-bottom: 20px; }
@@ -44,7 +39,6 @@
       font-weight: 600;
       font-size: 14px;
     }
-
     .required { color: #e74c3c; }
 
     .form-group input,
@@ -57,7 +51,6 @@
       font-size: 14px;
       transition: all 0.3s;
     }
-
     .form-group input:focus,
     .form-group textarea:focus,
     .form-group select:focus {
@@ -65,7 +58,6 @@
       border-color: #667eea;
       box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
-
     .form-group textarea { resize: vertical; min-height: 100px; }
 
     .btn {
@@ -79,23 +71,19 @@
       transition: all 0.3s;
       margin-top: 10px;
     }
-
     .btn-primary {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
     }
-
     .btn-primary:hover {
       transform: translateY(-2px);
       box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
     }
-
     .btn-secondary {
       background: #667eea;
       color: white;
       font-family: 'Poppins', sans-serif;
     }
-
     .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .logbook-item {
@@ -106,23 +94,19 @@
       border-left: 4px solid #667eea;
       position: relative;
     }
-
     .logbook-item h3 {
       color: #667eea;
       font-size: 16px;
       margin-bottom: 8px;
-      padding-right: 0;
       word-wrap: break-word;
       overflow-wrap: break-word;
     }
-
     .logbook-actions {
       display: flex;
       gap: 8px;
       margin-top: 12px;
       margin-bottom: 8px;
     }
-
     .btn-action {
       padding: 6px 12px;
       border: none;
@@ -132,13 +116,10 @@
       font-weight: 600;
       transition: all 0.3s;
     }
-
     .btn-edit { background: #3498db; color: white; }
     .btn-edit:hover { background: #2980b9; }
-
     .btn-delete { background: #e74c3c; color: white; }
     .btn-delete:hover { background: #c0392b; }
-
     .logbook-item p { color: #666; font-size: 14px; margin-bottom: 5px; }
     .logbook-item .date { color: #999; font-size: 12px; }
 
@@ -148,7 +129,6 @@
       overflow: hidden;
       max-width: 100%;
     }
-
     .logbook-image img {
       width: 100%;
       height: auto;
@@ -156,7 +136,6 @@
       cursor: pointer;
       transition: transform 0.3s;
     }
-
     .logbook-image img:hover { transform: scale(1.02); }
 
     .image-placeholder {
@@ -182,7 +161,6 @@
       background-color: rgba(0,0,0,0.9);
       animation: fadeIn 0.3s;
     }
-
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
     .image-modal-content {
@@ -193,13 +171,11 @@
       max-width: 90%;
       max-height: 90%;
     }
-
     .image-modal-content img {
       width: 100%;
       height: auto;
       border-radius: 10px;
     }
-
     .image-modal-close {
       position: absolute;
       top: 20px;
@@ -210,7 +186,6 @@
       cursor: pointer;
       z-index: 10000;
     }
-
     .image-modal-close:hover { color: #667eea; }
 
     .file-link {
@@ -223,7 +198,6 @@
       border-radius: 5px;
       font-size: 12px;
     }
-
     .file-link:hover { background: #5568d3; }
 
     .alert {
@@ -232,7 +206,6 @@
       margin-bottom: 20px;
       font-size: 14px;
     }
-
     .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
     .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
     .alert-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
@@ -249,7 +222,6 @@
       align-items: center;
       gap: 10px;
     }
-
     .user-info span { font-weight: 600; color: #667eea; }
 
     .loading { text-align: center; padding: 20px; color: #667eea; }
@@ -262,11 +234,8 @@
       cursor: default;
       transition: all 0.3s;
     }
-
     .file-upload:hover { border-color: #667eea; background: #f8f9fa; }
-
     .file-upload input[type="file"] { display: none; }
-
     .file-name { margin-top: 10px; font-size: 14px; color: #667eea; }
 
     .tabs {
@@ -274,7 +243,6 @@
       margin-bottom: 20px;
       border-bottom: 2px solid #e0e0e0;
     }
-
     .tab {
       flex: 1;
       padding: 12px;
@@ -284,10 +252,7 @@
       color: #666;
       transition: all 0.3s;
       user-select: none;
-      font-size: 12px;
-      line-height: 1.2;
     }
-
     .tab.active {
       color: #667eea;
       border-bottom: 3px solid #667eea;
@@ -302,7 +267,6 @@
       margin-bottom: 20px;
       text-align: center;
     }
-
     .profile-card h2 { font-size: 20px; margin-bottom: 5px; }
     .profile-card p { font-size: 14px; opacity: 0.9; }
 
@@ -311,10 +275,7 @@
       grid-template-columns: 1fr 1fr;
       gap: 15px;
     }
-
-    @media (max-width: 600px) {
-      .form-row { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
 
     .student-card {
       background: #f8f9fa;
@@ -325,18 +286,11 @@
       transition: all 0.3s;
       border-left: 4px solid #667eea;
     }
-
     .student-card:hover {
       transform: translateX(5px);
       box-shadow: 0 3px 10px rgba(0,0,0,0.1);
     }
-
-    .student-card h3 {
-      color: #667eea;
-      font-size: 16px;
-      margin-bottom: 5px;
-    }
-
+    .student-card h3 { color: #667eea; font-size: 16px; margin-bottom: 5px; }
     .student-card p { color: #666; font-size: 13px; }
 
     .info-grid {
@@ -345,20 +299,17 @@
       gap: 10px;
       margin-top: 10px;
     }
-
     .info-item {
       background: white;
       padding: 10px;
       border-radius: 8px;
     }
-
     .info-item label {
       font-size: 11px;
       color: #999;
       display: block;
       margin-bottom: 5px;
     }
-
     .info-item span {
       font-size: 13px;
       color: #333;
@@ -367,15 +318,7 @@
       overflow-wrap: break-word;
       display: block;
     }
-
     .info-item.full-width { grid-column: 1 / -1; }
-
-    @media (max-width: 600px) {
-      .info-grid { grid-template-columns: 1fr; gap: 8px; }
-      .info-item { padding: 12px; }
-      .info-item label { font-size: 12px; }
-      .info-item span { font-size: 14px; }
-    }
 
     .refresh-mini {
       position: absolute;
@@ -420,33 +363,19 @@
       color: #666;
     }
 
-    .mini-card {
-      background: #f8f9fa;
-      border-left: 4px solid #667eea;
-      padding: 14px;
-      border-radius: 10px;
-      margin-bottom: 12px;
+    .mini-card{
+      background:#f8f9fa;
+      padding:15px;
+      border-radius:12px;
+      border-left:4px solid #667eea;
+      margin-bottom:15px;
     }
-    .mini-title {
-      font-weight: 800;
-      color: #667eea;
-      margin-bottom: 6px;
+    .mini-title{
+      font-weight:800;
+      color:#667eea;
+      margin-bottom:8px;
+      font-size:16px;
     }
-    .mini-sub {
-      font-size: 12px;
-      color: #666;
-      margin-top: 5px;
-    }
-    .badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      margin-top: 8px;
-    }
-    .badge-ok { background:#d4edda; color:#155724; }
-    .badge-bad { background:#f8d7da; color:#721c24; }
   </style>
 </head>
 
@@ -501,9 +430,9 @@
 
         <div class="tabs">
           <div class="tab active" onclick="showStudentTab('profil')">👤 Profil</div>
+          <div class="tab" onclick="showStudentTab('presensi')">📍 Presensi</div>
           <div class="tab" onclick="showStudentTab('add')">➕ Tambah</div>
           <div class="tab" onclick="showStudentTab('view')">📋 Lihat</div>
-          <div class="tab" onclick="showStudentTab('presensi')">📍 Presensi</div>
         </div>
 
         <!-- Tab Profil -->
@@ -539,25 +468,6 @@
             <div class="form-group">
               <label>Alamat Tempat Magang <span class="required">*</span></label>
               <textarea id="alamatMagang" required placeholder="Alamat lengkap tempat magang"></textarea>
-            </div>
-
-            <!-- BARU: Lokasi Magang (GPS Patokan Presensi) -->
-            <div class="form-group">
-              <label>Lokasi Magang (GPS) <span class="required">*</span></label>
-
-              <div style="background:#f8f9fa; border:2px solid #e0e0e0; padding:12px; border-radius:10px;">
-                <div style="font-size:13px; color:#666;">Lat Magang: <b id="latMagangText">-</b></div>
-                <div style="font-size:13px; color:#666;">Lng Magang: <b id="lngMagangText">-</b></div>
-                <small style="display:block; margin-top:8px; color:#666;">
-                  Lokasi ini akan menjadi patokan presensi (radius otomatis 50m).
-                </small>
-              </div>
-
-              <input type="hidden" id="latMagang" value="">
-              <input type="hidden" id="lngMagang" value="">
-
-              <button type="button" class="btn btn-secondary" onclick="ambilLokasiMagang()"
-                style="margin-top:10px;">📍 Ambil Lokasi Magang</button>
             </div>
 
             <div class="form-group">
@@ -611,8 +521,78 @@
               </div>
             </div>
 
+            <!-- GPS LOKASI MAGANG -->
+            <div class="mini-card">
+              <div class="mini-title">📍 Lokasi Magang (GPS Patokan Presensi)</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Latitude <span class="required">*</span></label>
+                  <input type="text" id="latMagang" placeholder="-6.200000" readonly>
+                </div>
+                <div class="form-group">
+                  <label>Longitude <span class="required">*</span></label>
+                  <input type="text" id="lngMagang" placeholder="106.816666" readonly>
+                </div>
+              </div>
+              <button type="button" class="btn btn-secondary" onclick="ambilLokasiMagang()" style="margin-top:0;">📍 Ambil Lokasi Magang</button>
+              <small style="display:block; margin-top:8px; color:#666;">Lokasi ini menjadi patokan presensi (radius 50m).</small>
+            </div>
+
             <button type="submit" class="btn btn-primary" id="saveProfilBtn">💾 Simpan Profil</button>
           </form>
+        </div>
+
+        <!-- Tab Presensi (Siswa) -->
+        <div id="presensiTab" class="hidden">
+          <div id="presensiAlert"></div>
+
+          <div class="mini-card">
+            <div class="mini-title">📍 Presensi Hari Ini</div>
+
+            <div class="form-group">
+              <label>Tanggal</label>
+              <input type="date" id="presensiTanggal" disabled>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Latitude (GPS)</label>
+                <input type="text" id="presensiLat" readonly placeholder="Ambil lokasi">
+              </div>
+              <div class="form-group">
+                <label>Longitude (GPS)</label>
+                <input type="text" id="presensiLng" readonly placeholder="Ambil lokasi">
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-secondary" onclick="ambilLokasiPresensi()" style="margin-top:0;">📍 Ambil Lokasi Sekarang</button>
+
+            <div class="form-group" style="margin-top:15px;">
+              <label>Selfie Presensi <span class="required">*</span></label>
+              <div class="file-upload">
+                <p>🤳 Ambil selfie (kamera depan)</p>
+                <p style="font-size: 12px; color: #999;">Otomatis dikompres max 2MB</p>
+
+                <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:10px;">
+                  <button type="button" class="btn-secondary" onclick="pickSelfie()"
+                    style="padding: 10px 14px; width:auto; border-radius:8px;">🤳 Selfie</button>
+                  <button type="button" class="btn-secondary" onclick="clearSelfie()"
+                    style="padding: 10px 14px; width:auto; border-radius:8px; background:#999;">✖ Hapus</button>
+                </div>
+
+                <input type="file" id="selfieInput" accept="image/*" capture="user">
+                <div id="selfieName" class="file-name"></div>
+              </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="submitPresensi()">✅ Presensi Sekarang</button>
+            <small style="display:block; margin-top:8px; color:#666;">Aturan: 1x presensi per hari, radius fix 50m dari lokasi magang.</small>
+          </div>
+
+          <div class="mini-card">
+            <div class="mini-title">📋 Riwayat Presensi Saya</div>
+            <div id="myPresensiList" class="loading">Memuat presensi...</div>
+          </div>
         </div>
 
         <!-- Tab Tambah Logbook -->
@@ -649,7 +629,6 @@
 
                 <input type="file" id="fileInputCamera" accept="image/*" capture="environment">
                 <input type="file" id="fileInputGallery" accept="image/*">
-
                 <div id="fileName" class="file-name"></div>
               </div>
             </div>
@@ -659,38 +638,9 @@
           </form>
         </div>
 
-        <!-- Tab Lihat Logbook -->
         <div id="viewTab" class="hidden">
           <div id="logbookList" class="loading">Memuat data...</div>
         </div>
-
-        <!-- Tab Presensi (BARU) -->
-        <div id="presensiTab" class="hidden">
-          <div id="presensiAlert"></div>
-
-          <div class="mini-card">
-            <div class="mini-title">📍 Presensi Hari Ini</div>
-            <div style="font-size:13px; color:#666;">
-              Radius presensi otomatis <b>50 meter</b> dari lokasi magang pada Profil.
-            </div>
-            <div class="mini-sub">
-              Pastikan GPS aktif & izin lokasi diaktifkan.
-            </div>
-
-            <div class="form-group" style="margin-top:12px;">
-              <label>Keterangan (Opsional)</label>
-              <input type="text" id="presensiKet" placeholder="Contoh: Datang lebih awal / Ada meeting">
-            </div>
-
-            <button class="btn btn-primary" id="btnPresensi" onclick="presensiSekarang()">📍 Presensi Sekarang</button>
-          </div>
-
-          <div class="mini-card">
-            <div class="mini-title">📋 Riwayat Presensi Saya</div>
-            <div id="myPresensiList" class="loading">Memuat presensi...</div>
-          </div>
-        </div>
-
       </div>
     </div>
 
@@ -713,20 +663,26 @@
 
         <div id="adminAlert"></div>
 
-        <!-- Admin Presensi Per Tanggal (BARU) -->
-        <div class="mini-card">
-          <div class="mini-title">📍 Lihat Presensi Semua (Per Tanggal)</div>
-
-          <div class="form-group" style="margin-top:10px;">
-            <label>Pilih Tanggal</label>
-            <input type="date" id="adminPresensiTanggal">
-          </div>
-
-          <button class="btn btn-primary" style="margin-top:0;" onclick="loadPresensiByDate()">📋 Tampilkan Presensi</button>
-          <div id="adminPresensiList" class="loading" style="margin-top:10px;">Silakan pilih tanggal.</div>
+        <div class="tabs">
+          <div class="tab active" onclick="showAdminTab('logbook')">📚 Logbook</div>
+          <div class="tab" onclick="showAdminTab('presensi')">📍 Presensi</div>
         </div>
 
-        <div id="studentsList"></div>
+        <div id="adminLogbookTab">
+          <div id="studentsList" class="loading">Memuat daftar siswa...</div>
+        </div>
+
+        <div id="adminPresensiTab" class="hidden">
+          <div class="mini-card">
+            <div class="mini-title">📍 Lihat Presensi Semua (Per Tanggal)</div>
+            <div class="form-group">
+              <label>Pilih Tanggal</label>
+              <input type="date" id="adminPresensiTanggal">
+            </div>
+            <button class="btn btn-primary" onclick="loadPresensiByDate()" style="margin-top:0;">📋 Tampilkan Presensi</button>
+            <div id="adminPresensiList" class="loading" style="margin-top:10px;">Silakan pilih tanggal.</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -778,7 +734,7 @@
     // =========================
     // GANTI URL WEB APP KAMU
     // =========================
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxPM6gxAAYVNwrfLWa1TWGHS3WKkLKTtE0fj6B7MtIgx6olrYiOudWuJb-S4VWMnVb_/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw9IPcan9wolsVSBEYYgqjbn9j1FmOmDiPqOqduE4p2qg_NQFhDVB77WBcJUdYg6oFOyg/exec";
 
     let currentUser = null;
     let currentRole = null;
@@ -786,6 +742,9 @@
     let selectedStudent = null;
 
     let selectedImageFile = null;
+
+    // presensi
+    let presensiSelfieFile = null;
 
     function showGlobalLoading(show, text) {
       const el = document.getElementById('globalLoading');
@@ -801,9 +760,11 @@
       const tanggalInput = document.getElementById('tanggal');
       if (tanggalInput) tanggalInput.value = today;
 
-      // Admin presensi default hari ini
-      const ap = document.getElementById('adminPresensiTanggal');
-      if (ap) ap.value = today;
+      const presTgl = document.getElementById('presensiTanggal');
+      if (presTgl) presTgl.value = today;
+
+      const adminTgl = document.getElementById('adminPresensiTanggal');
+      if (adminTgl) adminTgl.value = today;
 
       const remember = localStorage.getItem('logbook_remember') === '1';
       const u = localStorage.getItem('logbook_username');
@@ -829,8 +790,7 @@
 
           if (data.role === 'admin') {
             document.getElementById('adminPage').classList.remove('hidden');
-            await loadStudentsForAdmin();
-            await loadPresensiByDate(); // refresh presensi admin default
+            showAdminTab('logbook');
           } else {
             document.getElementById('studentPage').classList.remove('hidden');
             document.getElementById('studentName').textContent = data.nama;
@@ -856,23 +816,22 @@
 
         if (currentRole === 'siswa') {
           const profilVisible = !document.getElementById('profilTab').classList.contains('hidden');
-          const viewVisible = !document.getElementById('viewTab').classList.contains('hidden');
           const presensiVisible = !document.getElementById('presensiTab').classList.contains('hidden');
+          const viewVisible = !document.getElementById('viewTab').classList.contains('hidden');
 
           if (profilVisible) {
             await loadProfile();
             showAlert('profilAlert', '🔄 Profil diperbarui', 'info');
-          } else if (viewVisible) {
-            await loadMyLogbook();
-            showAlert('studentAlert', '🔄 Logbook diperbarui', 'info');
           } else if (presensiVisible) {
             await loadMyPresensi();
             showAlert('presensiAlert', '🔄 Presensi diperbarui', 'info');
+          } else if (viewVisible) {
+            await loadMyLogbook();
+            showAlert('studentAlert', '🔄 Logbook diperbarui', 'info');
           } else {
             await loadProfile();
             await loadMyLogbook();
             await loadMyPresensi();
-            showAlert('studentAlert', '🔄 Data diperbarui', 'info');
           }
           return;
         }
@@ -882,13 +841,12 @@
           const detailVisible = !document.getElementById('studentDetailPage').classList.contains('hidden');
 
           if (adminVisible) {
-            await loadStudentsForAdmin();
-            await loadPresensiByDate();
-            showAlert('adminAlert', '🔄 Dashboard diperbarui', 'info');
+            const isPresensiTab = !document.getElementById('adminPresensiTab').classList.contains('hidden');
+            if (isPresensiTab) await loadPresensiByDate();
+            else await loadStudentsForAdmin();
           } else if (detailVisible && selectedStudent) {
             const detailProfilVisible = !document.getElementById('detailProfilTab').classList.contains('hidden');
             const detailLogbookVisible = !document.getElementById('detailLogbookTab').classList.contains('hidden');
-
             if (detailProfilVisible) await loadStudentProfile(selectedStudent);
             else if (detailLogbookVisible) await loadStudentLogbook(selectedStudent);
             else {
@@ -940,8 +898,7 @@
 
           if (data.role === 'admin') {
             document.getElementById('adminPage').classList.remove('hidden');
-            await loadStudentsForAdmin();
-            await loadPresensiByDate();
+            showAdminTab('logbook');
           } else {
             document.getElementById('studentPage').classList.remove('hidden');
             document.getElementById('studentName').textContent = data.nama;
@@ -961,15 +918,11 @@
     });
 
     // =========================
-    // FIX: JAM ISO 1899 -> HH:mm
+    // FIX: JAM ISO -> HH:mm
     // =========================
     function normalizeTime(val) {
       if (!val) return '';
-
-      if (typeof val === 'string' && /^\d{2}:\d{2}(:\d{2})?$/.test(val.trim())) {
-        return val.trim().slice(0, 5);
-      }
-
+      if (typeof val === 'string' && /^\d{2}:\d{2}(:\d{2})?$/.test(val.trim())) return val.trim().slice(0, 5);
       if (typeof val === 'string' && val.includes('T')) {
         const d = new Date(val);
         if (!isNaN(d.getTime())) {
@@ -977,10 +930,7 @@
           const mm = String(d.getMinutes()).padStart(2, '0');
           return `${hh}:${mm}`;
         }
-        const m = val.match(/T(\d{2}):(\d{2})/);
-        if (m) return `${m[1]}:${m[2]}`;
       }
-
       return String(val);
     }
 
@@ -993,39 +943,7 @@
     }
     function setHariKerjaValue(value) {
       const set = new Set(String(value || '').split(',').map(s => s.trim()).filter(Boolean));
-      document.querySelectorAll('.hariKerja').forEach(cb => {
-        cb.checked = set.has(cb.value);
-      });
-    }
-
-    // BARU: ambil lokasi magang untuk profil
-    function ambilLokasiMagang() {
-      if (!navigator.geolocation) {
-        showAlert('profilAlert', '❌ Browser tidak mendukung GPS', 'error');
-        return;
-      }
-
-      showGlobalLoading(true, '📍 Mengambil lokasi magang...');
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const lat = Number(pos.coords.latitude).toFixed(6).toString().replace(',', '.');
-          const lng = Number(pos.coords.longitude).toFixed(6).toString().replace(',', '.');
-
-          document.getElementById('latMagang').value = lat;
-          document.getElementById('lngMagang').value = lng;
-
-          document.getElementById('latMagangText').textContent = lat;
-          document.getElementById('lngMagangText').textContent = lng;
-
-          showAlert('profilAlert', '✅ Lokasi magang berhasil diambil!', 'success');
-          showGlobalLoading(false);
-        },
-        (err) => {
-          showGlobalLoading(false);
-          showAlert('profilAlert', '❌ Gagal ambil GPS: ' + err.message, 'error');
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-      );
+      document.querySelectorAll('.hariKerja').forEach(cb => cb.checked = set.has(cb.value));
     }
 
     async function loadProfile() {
@@ -1045,18 +963,14 @@
           document.getElementById('pembimbing').value = p.pembimbing || '';
           document.getElementById('tanggalMulai').value = convertDateToInput(p.tanggalMulai) || '';
           document.getElementById('tanggalSelesai').value = convertDateToInput(p.tanggalSelesai) || '';
-
           document.getElementById('noHpMentor').value = p.noHpMentor || '';
           setHariKerjaValue(p.hariKerja || '');
-
           document.getElementById('jamKerjaMulai').value = normalizeTime(p.jamKerjaMulai);
           document.getElementById('jamKerjaSelesai').value = normalizeTime(p.jamKerjaSelesai);
 
-          // BARU: lokasi magang
+          // GPS magang
           document.getElementById('latMagang').value = p.latMagang || '';
           document.getElementById('lngMagang').value = p.lngMagang || '';
-          document.getElementById('latMagangText').textContent = p.latMagang || '-';
-          document.getElementById('lngMagangText').textContent = p.lngMagang || '-';
         }
       } catch (error) {
         console.error('Error loading profile:', error);
@@ -1073,15 +987,6 @@
       try {
         showGlobalLoading(true, '🔄 Menyimpan profil...');
 
-        // wajib GPS magang
-        if (!document.getElementById('latMagang').value || !document.getElementById('lngMagang').value) {
-          showAlert('profilAlert', '❌ Lokasi magang wajib diisi (ambil GPS dulu).', 'error');
-          showGlobalLoading(false);
-          saveBtn.disabled = false;
-          saveBtn.textContent = '💾 Simpan Profil';
-          return;
-        }
-
         const payload = {
           action: 'saveProfile',
           username: currentUser,
@@ -1095,28 +1000,20 @@
           pembimbing: document.getElementById('pembimbing').value,
           tanggalMulai: document.getElementById('tanggalMulai').value,
           tanggalSelesai: document.getElementById('tanggalSelesai').value,
-
           noHpMentor: document.getElementById('noHpMentor').value,
           hariKerja: getHariKerjaValue(),
           jamKerjaMulai: document.getElementById('jamKerjaMulai').value,
           jamKerjaSelesai: document.getElementById('jamKerjaSelesai').value,
-
-          // BARU
           latMagang: document.getElementById('latMagang').value,
           lngMagang: document.getElementById('lngMagang').value
         };
 
-        const response = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        });
-
+        const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
         const data = await response.json();
-        if (data.success) {
-          showAlert('profilAlert', '✅ Profil berhasil disimpan!', 'success');
-        } else {
-          showAlert('profilAlert', '❌ ' + (data.message || 'Gagal menyimpan'), 'error');
-        }
+
+        if (data.success) showAlert('profilAlert', '✅ Profil berhasil disimpan!', 'success');
+        else showAlert('profilAlert', '❌ ' + (data.message || 'Gagal menyimpan'), 'error');
+
       } catch (error) {
         showAlert('profilAlert', '❌ Gagal menyimpan: ' + error.message, 'error');
       } finally {
@@ -1126,36 +1023,159 @@
       }
     });
 
+    // ambil lokasi magang (patokan)
+    function ambilLokasiMagang() {
+      if (!navigator.geolocation) {
+        showAlert('profilAlert', 'GPS tidak didukung di perangkat ini', 'error');
+        return;
+      }
+      showGlobalLoading(true, '📍 Mengambil lokasi magang...');
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        document.getElementById('latMagang').value = Number(lat).toFixed(6);
+        document.getElementById('lngMagang').value = Number(lng).toFixed(6);
+        showAlert('profilAlert', '✅ Lokasi magang berhasil diambil. Jangan lupa simpan profil!', 'success');
+        showGlobalLoading(false);
+      }, (err) => {
+        showAlert('profilAlert', '❌ Gagal ambil GPS: ' + err.message, 'error');
+        showGlobalLoading(false);
+      }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+    }
+
     // =========================
-    // UPLOAD FOTO
+    // PRESENSI (SISWA)
     // =========================
-    function pickCamera() {
-      const input = document.getElementById('fileInputCamera');
+    function ambilLokasiPresensi() {
+      if (!navigator.geolocation) {
+        showAlert('presensiAlert', 'GPS tidak didukung di perangkat ini', 'error');
+        return;
+      }
+      showGlobalLoading(true, '📍 Mengambil lokasi presensi...');
+      navigator.geolocation.getCurrentPosition((pos) => {
+        document.getElementById('presensiLat').value = Number(pos.coords.latitude).toFixed(6);
+        document.getElementById('presensiLng').value = Number(pos.coords.longitude).toFixed(6);
+        showAlert('presensiAlert', '✅ Lokasi presensi berhasil diambil', 'success');
+        showGlobalLoading(false);
+      }, (err) => {
+        showAlert('presensiAlert', '❌ Gagal ambil GPS: ' + err.message, 'error');
+        showGlobalLoading(false);
+      }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+    }
+
+    function pickSelfie() {
+      const input = document.getElementById('selfieInput');
       input.value = '';
       input.click();
     }
+    function clearSelfie() {
+      presensiSelfieFile = null;
+      document.getElementById('selfieInput').value = '';
+      document.getElementById('selfieName').textContent = '';
+    }
+    document.getElementById('selfieInput').addEventListener('change', function() {
+      if (!this.files || this.files.length === 0) return;
+      presensiSelfieFile = this.files[0];
+      document.getElementById('selfieName').textContent = `✓ ${presensiSelfieFile.name}`;
+    });
 
-    function pickGallery() {
-      const input = document.getElementById('fileInputGallery');
-      input.value = '';
-      input.click();
+    async function submitPresensi() {
+      try {
+        showGlobalLoading(true, '🔄 Mengirim presensi...');
+
+        const tgl = document.getElementById('presensiTanggal').value;
+        const lat = document.getElementById('presensiLat').value.trim();
+        const lng = document.getElementById('presensiLng').value.trim();
+
+        if (!lat || !lng) {
+          showAlert('presensiAlert', '❌ Ambil lokasi presensi dulu', 'error');
+          return;
+        }
+        if (!presensiSelfieFile) {
+          showAlert('presensiAlert', '❌ Selfie wajib saat presensi', 'error');
+          return;
+        }
+
+        const selfieName = presensiSelfieFile.name || 'selfie.jpg';
+        const selfieData = await compressImageToDataURL(presensiSelfieFile, 2 * 1024 * 1024);
+
+        const payload = {
+          action: 'addPresensi',
+          username: currentUser,
+          tanggalISO: tgl,
+          lat, lng,
+          selfieData,
+          selfieName
+        };
+
+        const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const data = await res.json();
+
+        if (data.success) {
+          showAlert('presensiAlert', '✅ Presensi berhasil!', 'success');
+          clearSelfie();
+          await loadMyPresensi();
+        } else {
+          showAlert('presensiAlert', '❌ ' + (data.message || 'Gagal presensi'), 'error');
+        }
+
+      } catch (err) {
+        showAlert('presensiAlert', '❌ Error: ' + err.message, 'error');
+      } finally {
+        showGlobalLoading(false);
+      }
     }
 
+    async function loadMyPresensi() {
+      const el = document.getElementById('myPresensiList');
+      el.innerHTML = '<div class="loading">Memuat presensi...</div>';
+
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getMyPresensi&username=${encodeURIComponent(currentUser)}`);
+        const data = await res.json();
+
+        if (data.success && data.presensi && data.presensi.length) {
+          el.innerHTML = data.presensi.map(p => {
+            const thumb = p.selfieFileId ? `https://drive.google.com/thumbnail?id=${p.selfieFileId}&sz=w400` : '';
+            const img = p.selfieFileId ? `
+              <div class="logbook-image">
+                <img src="${thumb}" onclick="openImageModal('https://drive.google.com/uc?id=${p.selfieFileId}')"
+                  onerror="this.parentElement.innerHTML='<div class=image-placeholder>🤳 Selfie tidak dapat dimuat</div>'">
+              </div>` : '';
+            return `
+              <div class="logbook-item">
+                <h3>✅ ${escapeHtml(p.status || 'Hadir')}</h3>
+                <p class="date">📅 ${escapeHtml(p.tanggal || p.tanggalISO)} | ⏰ ${escapeHtml(p.jam || '-')}</p>
+                <p>📍 ${escapeHtml(p.lat || '-')}, ${escapeHtml(p.lng || '-')} | 🧭 ${escapeHtml(p.distanceM || '-')} m</p>
+                ${p.catatan ? `<p>📝 ${escapeHtml(p.catatan)}</p>` : ''}
+                ${img}
+              </div>
+            `;
+          }).join('');
+        } else {
+          el.innerHTML = '<div class="alert alert-info">Belum ada presensi.</div>';
+        }
+      } catch (e) {
+        el.innerHTML = '<div class="alert alert-error">Gagal memuat presensi.</div>';
+      }
+    }
+
+    // =========================
+    // UPLOAD FOTO LOGBOOK
+    // =========================
+    function pickCamera() { const input = document.getElementById('fileInputCamera'); input.value=''; input.click(); }
+    function pickGallery() { const input = document.getElementById('fileInputGallery'); input.value=''; input.click(); }
     function clearSelectedImage() {
       selectedImageFile = null;
-      const cam = document.getElementById('fileInputCamera');
-      const gal = document.getElementById('fileInputGallery');
-      if (cam) cam.value = '';
-      if (gal) gal.value = '';
+      document.getElementById('fileInputCamera').value = '';
+      document.getElementById('fileInputGallery').value = '';
       document.getElementById('fileName').textContent = '';
     }
-
     document.getElementById('fileInputCamera').addEventListener('change', function() {
       if (!this.files || this.files.length === 0) return;
       selectedImageFile = this.files[0];
       document.getElementById('fileName').textContent = `✓ ${selectedImageFile.name} (Kamera)`;
     });
-
     document.getElementById('fileInputGallery').addEventListener('change', function() {
       if (!this.files || this.files.length === 0) return;
       selectedImageFile = this.files[0];
@@ -1200,11 +1220,7 @@
         };
         if (isEditing) payload.no = editingLogbookNo;
 
-        const response = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        });
-
+        const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
         const data = await response.json();
 
         if (data.success) {
@@ -1277,14 +1293,12 @@
           listDiv.innerHTML = '<div class="alert alert-info">Belum ada logbook. Mulai tambahkan kegiatan Anda!</div>';
         }
       } catch (error) {
-        console.error('Error loading logbook:', error);
         listDiv.innerHTML = '<div class="alert alert-error">Gagal memuat logbook.</div>';
       }
     }
 
     function editLogbook(no, tanggal, judul, deskripsi) {
       editingLogbookNo = no;
-
       const dateParts = String(tanggal).split('/');
       const formattedDate = dateParts.length === 3 ? `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}` : tanggal;
 
@@ -1340,203 +1354,26 @@
     }
 
     // =========================
-    // PRESENSI (BARU)
+    // ADMIN TABS + LOGBOOK DETAIL
     // =========================
-    async function presensiSekarang() {
-      try {
-        const btn = document.getElementById('btnPresensi');
-        btn.disabled = true;
+    function showAdminTab(tab) {
+      const tabs = document.querySelectorAll('#adminPage .tab');
+      tabs.forEach(t => t.classList.remove('active'));
 
-        // pastikan profil lokasi magang sudah ada
-        const latMag = document.getElementById('latMagang').value;
-        const lngMag = document.getElementById('lngMagang').value;
-        if (!latMag || !lngMag) {
-          showAlert('presensiAlert', '❌ Lokasi magang belum diisi di Profil. Isi dulu sebelum presensi.', 'error');
-          btn.disabled = false;
-          return;
-        }
+      document.getElementById('adminLogbookTab').classList.add('hidden');
+      document.getElementById('adminPresensiTab').classList.add('hidden');
 
-        if (!navigator.geolocation) {
-          showAlert('presensiAlert', '❌ Browser tidak mendukung GPS', 'error');
-          btn.disabled = false;
-          return;
-        }
-
-        showGlobalLoading(true, '📍 Mengambil lokasi presensi...');
-        navigator.geolocation.getCurrentPosition(async (pos) => {
-          const lat = Number(pos.coords.latitude).toFixed(6).toString().replace(',', '.');
-          const lng = Number(pos.coords.longitude).toFixed(6).toString().replace(',', '.');
-
-          const tanggal = new Date().toISOString().split('T')[0];
-          const keterangan = document.getElementById('presensiKet').value || '';
-
-          const payload = {
-            action: 'addPresensi',
-            username: currentUser,
-            tanggal,
-            lat,
-            lng,
-            keterangan
-          };
-
-          const res = await fetch(SCRIPT_URL, {
-            method: 'POST',
-            body: JSON.stringify(payload)
-          });
-
-          const data = await res.json();
-
-          if (data.success) {
-            showAlert('presensiAlert', data.message || '✅ Presensi berhasil', 'success');
-            document.getElementById('presensiKet').value = '';
-            await loadMyPresensi();
-          } else {
-            showAlert('presensiAlert', '❌ ' + (data.message || 'Presensi gagal'), 'error');
-          }
-
-          showGlobalLoading(false);
-          btn.disabled = false;
-        }, (err) => {
-          showGlobalLoading(false);
-          showAlert('presensiAlert', '❌ Gagal ambil GPS: ' + err.message, 'error');
-          btn.disabled = false;
-        }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
-
-      } catch (e) {
-        showGlobalLoading(false);
-        showAlert('presensiAlert', '❌ Error: ' + e.message, 'error');
-        document.getElementById('btnPresensi').disabled = false;
+      if (tab === 'logbook') {
+        tabs[0].classList.add('active');
+        document.getElementById('adminLogbookTab').classList.remove('hidden');
+        loadStudentsForAdmin();
+      } else {
+        tabs[1].classList.add('active');
+        document.getElementById('adminPresensiTab').classList.remove('hidden');
+        loadPresensiByDate();
       }
     }
 
-    async function loadMyPresensi() {
-      const el = document.getElementById('myPresensiList');
-      if (!el) return;
-      el.innerHTML = '<div class="loading">Memuat presensi...</div>';
-
-      try {
-        const res = await fetch(`${SCRIPT_URL}?action=getMyPresensi&username=${encodeURIComponent(currentUser)}`);
-        const data = await res.json();
-
-        if (data.success && data.presensi && data.presensi.length > 0) {
-          el.innerHTML = data.presensi.map(p => {
-            const ok = String(p.status || '').toLowerCase() === 'hadir';
-            return `
-              <div class="mini-card" style="margin-top:10px;">
-                <div class="mini-title">📅 ${escapeHtml(p.tanggal)} • ⏰ ${escapeHtml(p.jam || '-')}</div>
-                <div style="font-size:13px;color:#666;">Jarak: <b>${escapeHtml(p.jarak || '-')} m</b></div>
-                <div class="badge ${ok ? 'badge-ok' : 'badge-bad'}">${escapeHtml(p.status || '-')}</div>
-                <div class="mini-sub">Lat: ${escapeHtml(p.lat || '-')} | Lng: ${escapeHtml(p.lng || '-')}</div>
-                ${p.keterangan ? `<div class="mini-sub"><b>Ket:</b> ${escapeHtml(p.keterangan)}</div>` : ''}
-              </div>
-            `;
-          }).join('');
-        } else {
-          el.innerHTML = '<div class="alert alert-info">Belum ada presensi.</div>';
-        }
-      } catch (e) {
-        el.innerHTML = '<div class="alert alert-error">Gagal memuat presensi.</div>';
-      }
-    }
-
-    // =========================
-    // ADMIN: PRESENSI PER TANGGAL (BARU)
-    // =========================
-    async function loadPresensiByDate() {
-      const el = document.getElementById('adminPresensiList');
-      const tgl = document.getElementById('adminPresensiTanggal').value;
-      if (!tgl) {
-        el.innerHTML = '<div class="alert alert-info">Silakan pilih tanggal.</div>';
-        return;
-      }
-
-      el.innerHTML = '<div class="loading">Memuat presensi...</div>';
-
-      try {
-        const res = await fetch(`${SCRIPT_URL}?action=getPresensiByDate&tanggal=${encodeURIComponent(tgl)}`);
-        const data = await res.json();
-
-        if (data.success && data.presensi && data.presensi.length > 0) {
-          el.innerHTML = data.presensi.map(p => {
-            const ok = String(p.status || '').toLowerCase() === 'hadir';
-            return `
-              <div class="mini-card">
-                <div class="mini-title">👤 ${escapeHtml(p.nama || p.username)} (${escapeHtml(p.username)})</div>
-                <div style="font-size:13px;color:#666;">⏰ ${escapeHtml(p.jam || '-')} • Jarak: <b>${escapeHtml(p.jarak || '-')} m</b></div>
-                <div class="badge ${ok ? 'badge-ok' : 'badge-bad'}">${escapeHtml(p.status || '-')}</div>
-
-                <div class="mini-sub">
-                  <b>GPS Presensi:</b> ${escapeHtml(p.lat || '-')} , ${escapeHtml(p.lng || '-')}
-                </div>
-                <div class="mini-sub">
-                  <b>GPS Magang:</b> ${escapeHtml(p.latMagang || '-')} , ${escapeHtml(p.lngMagang || '-')}
-                </div>
-
-                <div class="form-group" style="margin-top:10px;">
-                  <label style="margin-bottom:6px;">Edit Keterangan</label>
-                  <input type="text" id="ket_${escapeHtml(p.id)}" value="${escapeHtml(p.keterangan || '')}" placeholder="Keterangan...">
-                  <div style="display:flex; gap:8px; margin-top:8px;">
-                    <button class="btn-action btn-edit" onclick="adminUpdateKet('${escapeHtml(p.id)}')">💾 Simpan</button>
-                    <button class="btn-action btn-delete" onclick="adminDeletePresensi('${escapeHtml(p.id)}')">🗑️ Hapus</button>
-                  </div>
-                </div>
-              </div>
-            `;
-          }).join('');
-        } else {
-          el.innerHTML = '<div class="alert alert-info">Tidak ada presensi pada tanggal ini.</div>';
-        }
-      } catch (e) {
-        el.innerHTML = '<div class="alert alert-error">Gagal memuat presensi per tanggal.</div>';
-      }
-    }
-
-    async function adminDeletePresensi(id) {
-      if (!confirm('Yakin ingin menghapus presensi ini?')) return;
-      try {
-        showGlobalLoading(true, '🗑️ Menghapus presensi...');
-        const res = await fetch(`${SCRIPT_URL}?action=deletePresensi&id=${encodeURIComponent(id)}`);
-        const data = await res.json();
-
-        if (data.success) {
-          showAlert('adminAlert', '✅ Presensi berhasil dihapus', 'success');
-          await loadPresensiByDate();
-        } else {
-          showAlert('adminAlert', '❌ ' + (data.message || 'Gagal menghapus'), 'error');
-        }
-      } catch (e) {
-        showAlert('adminAlert', '❌ Error: ' + e.message, 'error');
-      } finally {
-        showGlobalLoading(false);
-      }
-    }
-
-    async function adminUpdateKet(id) {
-      try {
-        showGlobalLoading(true, '💾 Menyimpan keterangan...');
-        const input = document.getElementById('ket_' + id);
-        const ket = input ? input.value : '';
-
-        const payload = { action: 'updatePresensi', id, keterangan: ket };
-        const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-        const data = await res.json();
-
-        if (data.success) {
-          showAlert('adminAlert', '✅ Keterangan berhasil disimpan', 'success');
-          await loadPresensiByDate();
-        } else {
-          showAlert('adminAlert', '❌ ' + (data.message || 'Gagal update'), 'error');
-        }
-      } catch (e) {
-        showAlert('adminAlert', '❌ Error: ' + e.message, 'error');
-      } finally {
-        showGlobalLoading(false);
-      }
-    }
-
-    // =========================
-    // ADMIN (SISWA)
-    // =========================
     async function loadStudentsForAdmin() {
       const listDiv = document.getElementById('studentsList');
       listDiv.innerHTML = '<div class="loading">Memuat daftar siswa...</div>';
@@ -1575,6 +1412,7 @@
       document.getElementById('studentDetailPage').classList.add('hidden');
       document.getElementById('adminPage').classList.remove('hidden');
       selectedStudent = null;
+      showAdminTab('logbook');
     }
 
     async function showDetailTab(tab) {
@@ -1603,16 +1441,8 @@
 
         if (data.success && data.profile) {
           const p = data.profile;
-          const hasData = p.namaLengkap || p.tempatMagang || p.noAbsen;
-
-          if (!hasData) {
-            displayDiv.innerHTML = '<div class="alert alert-info">Siswa belum melengkapi profil.</div>';
-            return;
-          }
-
           const jamMulai = normalizeTime(p.jamKerjaMulai);
           const jamSelesai = normalizeTime(p.jamKerjaSelesai);
-          const jamKerjaText = (jamMulai || jamSelesai) ? `${escapeHtml(jamMulai || '-') } - ${escapeHtml(jamSelesai || '-')}` : '-';
 
           displayDiv.innerHTML = `
             <div class="profile-card">
@@ -1621,56 +1451,16 @@
             </div>
 
             <div class="info-grid">
-              <div class="info-item full-width">
-                <label>Email</label>
-                <span>${escapeHtml(p.email || '-')}</span>
-              </div>
-              <div class="info-item full-width">
-                <label>Telepon</label>
-                <span>${escapeHtml(p.telepon || '-')}</span>
-              </div>
-              <div class="info-item full-width">
-                <label>Tempat Magang</label>
-                <span>${escapeHtml(p.tempatMagang || '-')}</span>
-              </div>
-              <div class="info-item full-width">
-                <label>Alamat Tempat Magang</label>
-                <span>${escapeHtml(p.alamatMagang || '-')}</span>
-              </div>
-              <div class="info-item full-width">
-                <label>Lokasi Magang (GPS)</label>
-                <span>${escapeHtml(p.latMagang || '-')} , ${escapeHtml(p.lngMagang || '-')}</span>
-              </div>
-              <div class="info-item full-width">
-                <label>Posisi</label>
-                <span>${escapeHtml(p.posisi || '-')}</span>
-              </div>
-              <div class="info-item full-width">
-                <label>Pembimbing</label>
-                <span>${escapeHtml(p.pembimbing || '-')}</span>
-              </div>
-
-              <div class="info-item full-width">
-                <label>No HP Mentor</label>
-                <span>${escapeHtml(p.noHpMentor || '-')}</span>
-              </div>
-              <div class="info-item full-width">
-                <label>Hari Kerja</label>
-                <span>${escapeHtml(p.hariKerja || '-')}</span>
-              </div>
-              <div class="info-item full-width">
-                <label>Jam Kerja</label>
-                <span>${jamKerjaText}</span>
-              </div>
-
-              <div class="info-item">
-                <label>Tanggal Mulai</label>
-                <span>${escapeHtml(p.tanggalMulai || '-')}</span>
-              </div>
-              <div class="info-item">
-                <label>Tanggal Selesai</label>
-                <span>${escapeHtml(p.tanggalSelesai || '-')}</span>
-              </div>
+              <div class="info-item full-width"><label>Email</label><span>${escapeHtml(p.email || '-')}</span></div>
+              <div class="info-item full-width"><label>Telepon</label><span>${escapeHtml(p.telepon || '-')}</span></div>
+              <div class="info-item full-width"><label>Tempat Magang</label><span>${escapeHtml(p.tempatMagang || '-')}</span></div>
+              <div class="info-item full-width"><label>Alamat Tempat Magang</label><span>${escapeHtml(p.alamatMagang || '-')}</span></div>
+              <div class="info-item full-width"><label>Posisi</label><span>${escapeHtml(p.posisi || '-')}</span></div>
+              <div class="info-item full-width"><label>Pembimbing</label><span>${escapeHtml(p.pembimbing || '-')}</span></div>
+              <div class="info-item full-width"><label>No HP Mentor</label><span>${escapeHtml(p.noHpMentor || '-')}</span></div>
+              <div class="info-item full-width"><label>Hari Kerja</label><span>${escapeHtml(p.hariKerja || '-')}</span></div>
+              <div class="info-item full-width"><label>Jam Kerja</label><span>${escapeHtml((jamMulai||'-') + ' - ' + (jamSelesai||'-'))}</span></div>
+              <div class="info-item full-width"><label>GPS Magang</label><span>${escapeHtml(p.latMagang || '-')}, ${escapeHtml(p.lngMagang || '-')}</span></div>
             </div>
           `;
         } else {
@@ -1692,7 +1482,6 @@
         if (data.success && data.logbook && data.logbook.length > 0) {
           listDiv.innerHTML = data.logbook.map(log => {
             let imageHtml = '';
-
             if (log.fileId) {
               const thumbnailUrl = `https://drive.google.com/thumbnail?id=${log.fileId}&sz=w400`;
               imageHtml = `
@@ -1706,7 +1495,6 @@
             } else if (log.berkas && String(log.berkas).includes('drive.google.com')) {
               imageHtml = `<a href="${log.berkas}" target="_blank" class="file-link">📷 Lihat Foto</a>`;
             }
-
             return `
               <div class="logbook-item">
                 <h3>${escapeHtml(log.judul || '')}</h3>
@@ -1725,26 +1513,130 @@
     }
 
     // =========================
-    // HELPER UI
+    // ADMIN PRESENSI (PER TANGGAL)
+    // =========================
+    async function loadPresensiByDate() {
+      const t = document.getElementById('adminPresensiTanggal').value;
+      const list = document.getElementById('adminPresensiList');
+      list.innerHTML = '<div class="loading">Memuat presensi...</div>';
+
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getPresensiByDate&tanggal=${encodeURIComponent(t)}`);
+        const data = await res.json();
+
+        if (data.success && data.presensi && data.presensi.length) {
+          list.innerHTML = data.presensi.map(p => {
+            const thumb = p.selfieFileId ? `https://drive.google.com/thumbnail?id=${p.selfieFileId}&sz=w400` : '';
+            const img = p.selfieFileId ? `
+              <div class="logbook-image">
+                <img src="${thumb}" onclick="openImageModal('https://drive.google.com/uc?id=${p.selfieFileId}')"
+                  onerror="this.parentElement.innerHTML='<div class=image-placeholder>🤳 Selfie tidak dapat dimuat</div>'">
+              </div>` : '';
+            return `
+              <div class="logbook-item">
+                <div class="logbook-actions">
+                  <button class="btn-action btn-edit" onclick="adminEditPresensi('${escapeHtml(p.id)}')">✏️ Edit</button>
+                  <button class="btn-action btn-delete" onclick="adminDeletePresensi('${escapeHtml(p.id)}')">🗑️ Hapus</button>
+                </div>
+                <h3>👤 ${escapeHtml(p.nama)} (${escapeHtml(p.username)})</h3>
+                <p class="date">📅 ${escapeHtml(p.tanggalISO)} | ⏰ ${escapeHtml(p.jam || '-')} | ✅ ${escapeHtml(p.status || 'Hadir')}</p>
+                <p>📍 ${escapeHtml(p.lat || '-')}, ${escapeHtml(p.lng || '-')} | 🧭 ${escapeHtml(p.distanceM || '-')} m</p>
+                ${p.catatan ? `<p>📝 ${escapeHtml(p.catatan)}</p>` : ''}
+                ${img}
+              </div>
+            `;
+          }).join('');
+        } else {
+          list.innerHTML = '<div class="alert alert-info">Tidak ada presensi pada tanggal ini.</div>';
+        }
+      } catch (e) {
+        list.innerHTML = '<div class="alert alert-error">Gagal memuat presensi.</div>';
+      }
+    }
+
+    async function adminEditPresensi(id) {
+      const status = prompt('Masukkan Status (contoh: Hadir / Izin / Sakit / Ditolak):', 'Hadir');
+      if (status === null) return;
+
+      const catatan = prompt('Catatan (opsional):', '');
+      if (catatan === null) return;
+
+      const lat = prompt('Edit Latitude (opsional, kosongkan jika tidak):', '');
+      if (lat === null) return;
+
+      const lng = prompt('Edit Longitude (opsional, kosongkan jika tidak):', '');
+      if (lng === null) return;
+
+      try {
+        showGlobalLoading(true, '🔄 Update presensi...');
+        const payload = {
+          action: 'adminUpdatePresensi',
+          id,
+          status,
+          catatan,
+          lat: lat.trim(),
+          lng: lng.trim()
+        };
+        const res = await fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(payload) });
+        const data = await res.json();
+        if (data.success) {
+          showAlert('adminAlert', '✅ Presensi berhasil diupdate', 'success');
+          await loadPresensiByDate();
+        } else {
+          showAlert('adminAlert', '❌ ' + (data.message || 'Gagal update'), 'error');
+        }
+      } catch (e) {
+        showAlert('adminAlert', '❌ Error: ' + e.message, 'error');
+      } finally {
+        showGlobalLoading(false);
+      }
+    }
+
+    async function adminDeletePresensi(id) {
+      if (!confirm('Yakin ingin menghapus presensi ini?')) return;
+
+      try {
+        showGlobalLoading(true, '🔄 Menghapus presensi...');
+        const payload = { action:'adminDeletePresensi', id };
+        const res = await fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(payload) });
+        const data = await res.json();
+        if (data.success) {
+          showAlert('adminAlert', '✅ Presensi berhasil dihapus', 'success');
+          await loadPresensiByDate();
+        } else {
+          showAlert('adminAlert', '❌ ' + (data.message || 'Gagal hapus'), 'error');
+        }
+      } catch (e) {
+        showAlert('adminAlert', '❌ Error: ' + e.message, 'error');
+      } finally {
+        showGlobalLoading(false);
+      }
+    }
+
+    // =========================
+    // UI TAB SISWA
     // =========================
     function showStudentTab(tab) {
       document.querySelectorAll('#studentPage .tab').forEach(t => t.classList.remove('active'));
-
       const tabs = document.querySelectorAll('#studentPage .tab');
 
       document.getElementById('profilTab').classList.add('hidden');
+      document.getElementById('presensiTab').classList.add('hidden');
       document.getElementById('addTab').classList.add('hidden');
       document.getElementById('viewTab').classList.add('hidden');
-      document.getElementById('presensiTab').classList.add('hidden');
 
       if (tab === 'profil') {
         tabs[0].classList.add('active');
         document.getElementById('profilTab').classList.remove('hidden');
-      } else if (tab === 'add') {
+      } else if (tab === 'presensi') {
         tabs[1].classList.add('active');
-        document.getElementById('addTab').classList.remove('hidden');
-      } else if (tab === 'view') {
+        document.getElementById('presensiTab').classList.remove('hidden');
+        loadMyPresensi();
+      } else if (tab === 'add') {
         tabs[2].classList.add('active');
+        document.getElementById('addTab').classList.remove('hidden');
+      } else {
+        tabs[3].classList.add('active');
         document.getElementById('viewTab').classList.remove('hidden');
 
         editingLogbookNo = null;
@@ -1756,15 +1648,13 @@
         document.getElementById('logbookForm').reset();
         document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
         clearSelectedImage();
-
         loadMyLogbook();
-      } else {
-        tabs[3].classList.add('active');
-        document.getElementById('presensiTab').classList.remove('hidden');
-        loadMyPresensi();
       }
     }
 
+    // =========================
+    // HELPER UI
+    // =========================
     function showAlert(elementId, message, type) {
       const alertDiv = document.getElementById(elementId);
       if (!alertDiv) return;
@@ -1780,15 +1670,7 @@
     }
 
     function escapeHtml(text) {
-      const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;',
-        '\n': ' ',
-        '\r': ''
-      };
+      const map = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;', '\n':' ', '\r':'' };
       return String(text ?? '').replace(/[&<>"'\n\r]/g, m => map[m]);
     }
 
@@ -1810,6 +1692,7 @@
       document.getElementById('loginForm').reset();
       document.getElementById('rememberMe').checked = false;
       clearSelectedImage();
+      clearSelfie();
     }
 
     function openImageModal(imageUrl) {
@@ -1818,14 +1701,8 @@
       modal.style.display = 'block';
       modalImg.src = imageUrl;
     }
-
-    function closeImageModal() {
-      document.getElementById('imageModal').style.display = 'none';
-    }
-
-    document.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape') closeImageModal();
-    });
+    function closeImageModal() { document.getElementById('imageModal').style.display = 'none'; }
+    document.addEventListener('keydown', function(event) { if (event.key === 'Escape') closeImageModal(); });
 
     // =========================
     // AUTO KOMPRES FOTO MAX 2MB
@@ -1838,7 +1715,6 @@
         r.readAsDataURL(file);
       });
     }
-
     function loadImageFromDataURL(dataURL) {
       return new Promise((resolve, reject) => {
         const img = new Image();
@@ -1847,7 +1723,6 @@
         img.src = dataURL;
       });
     }
-
     async function compressImageToDataURL(file, maxBytes = 2 * 1024 * 1024) {
       const originalDataURL = await readFileAsDataURL(file);
       const img = await loadImageFromDataURL(originalDataURL);
@@ -1872,7 +1747,6 @@
         const dataUrl = encode();
         const base64 = (dataUrl.split(',')[1] || '');
         const approxBytes = Math.floor(base64.length * 0.75);
-
         if (approxBytes <= maxBytes) return dataUrl;
 
         if (quality > 0.55) quality -= 0.08;
@@ -1880,7 +1754,6 @@
 
         if (scale < 0.3) break;
       }
-
       throw new Error('Gambar terlalu besar walau sudah dikompres. Coba foto lain.');
     }
   </script>
