@@ -254,7 +254,13 @@ async function getFileContent(filename) {
 }
 
 async function pushFile(filename, content, message) {
-    const sha = originalSha[filename] || null;
+    let sha = null;
+    try {
+        const existing = await ghFetch(`/repos/${config.username}/${config.repo}/contents/dist/data/${filename}?ref=${config.branch}`);
+        sha = existing.sha;
+    } catch (e) {
+        if (!e.message.includes('Not Found')) throw e;
+    }
     const body = {
         message,
         content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))),
