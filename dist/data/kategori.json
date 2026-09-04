@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "nama": "Akademik",
+    "slug": "akademik"
+  },
+  {
+    "id": 2,
+    "nama": "Prestasi",
+    "slug": "prestasi"
+  },
+  {
+    "id": 3,
+    "nama": "Kegiatan",
+    "slug": "kegiatan"
+  },
+  {
+    "id": 4,
+    "nama": "Pengumuman Umum",
+    "slug": "pengumuman-umum"
+  }
+]

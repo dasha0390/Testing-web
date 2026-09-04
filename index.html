@@ -1,0 +1,1940 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ledger Nilai + Challenge (Role Based)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+    body { font-family:'Inter', sans-serif; background:#f3f4f6; }
+    .nilai-input{ width:52px; text-align:center; border:1px solid #d1d5db; border-radius:8px; padding:6px; font-size:.85rem; background:#fff; }
+    .nilai-input:focus{ outline:none; border-color:#3b82f6; box-shadow:0 0 0 2px rgba(59,130,246,.35); background:#fff; }
+    .nilai-low{ background:#fecaca !important; border-color:#ef4444 !important; }
+    .grade-table th,.grade-table td{ padding:6px 6px; font-size:.82rem; white-space:nowrap; vertical-align:middle; }
+
+    .cell-wrap{ display:flex; align-items:center; justify-content:center; gap:6px; }
+    .paste-btn{ width:28px; height:28px; border:1px solid #d1d5db; border-radius:8px; background:#fff; font-size:14px; cursor:pointer; line-height:1; }
+    .paste-btn:hover{ background:#f3f4f6; }
+
+    .sb-0{ background:#eff6ff; } .sb-1{ background:#ecfdf5; } .sb-2{ background:#fefce8; }
+    .sb-3{ background:#faf5ff; } .sb-4{ background:#fff1f2; } .sb-5{ background:#eef2ff; } .sb-6{ background:#f0fdfa; }
+
+    .challenge-table{ width:100%; border-collapse:collapse; font-size:12px; }
+    .challenge-table th, .challenge-table td{ border:1px solid #e5e7eb; padding:8px; text-align:center; vertical-align:middle; white-space:nowrap; }
+    .muted{ color:#6b7280; font-size:11px; }
+    .star{ font-size:12px; font-weight:800; color:#111827; }
+
+    .ekskul-input{ width:100%; border:1px solid #d1d5db; border-radius:8px; padding:7px 8px; font-size:12px; background:#fff; }
+    .ekskul-input:focus{ outline:none; border-color:#3b82f6; box-shadow:0 0 0 2px rgba(59,130,246,.25); }
+    .ekskul-select{ width:100%; border:1px solid #d1d5db; border-radius:8px; padding:7px 8px; font-size:12px; background:#fff; }
+
+    .chip{ display:inline-flex; align-items:center; gap:6px; border:1px solid #e5e7eb; border-radius:999px; padding:6px 10px; background:#fff; font-size:12px; margin:4px 6px 0 0; }
+
+    /* PDF styles placeholder */
+    .rapor-paper{ padding:18px;background:#fff;color:#000;max-width:800px;margin:0 auto;font-family:"Times New Roman",Times,serif; }
+    .rapor-title{ text-align:center;font-weight:bold;font-size:14px;line-height:1.2; }
+  </style>
+</head>
+
+<body class="p-4 md:p-8">
+  <!-- Loading -->
+  <div id="loading-overlay" class="fixed inset-0 bg-gray-900/70 hidden items-center justify-center z-50">
+    <div class="text-white flex flex-col items-center">
+      <svg class="animate-spin h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+      </svg>
+      <p class="mt-3 text-lg" id="loading-text">Memuat...</p>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="bg-white p-6 rounded-xl shadow-lg mb-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-extrabold text-gray-800">Ledger Nilai + Challenge</h1>
+        <p class="text-sm text-gray-500 mt-1">
+          ✅ Bulk paste (CTRL+V) | ✅ Nilai & Challenge | ✅ Role: Guru/Admin/Super Admin
+        </p>
+        <div class="mt-2 text-xs text-gray-500">
+          Status: <span id="save-status" class="font-semibold">-</span>
+        </div>
+      </div>
+
+      <div class="flex items-start md:items-center gap-3">
+        <div class="text-xs text-gray-600">
+          <div>User: <b id="me-name">-</b></div>
+          <div>Role: <b id="me-role">-</b></div>
+        </div>
+        <button id="btn-logout" class="bg-gray-900 hover:bg-black text-white font-semibold py-2 px-4 rounded-lg">
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Selector -->
+  <div class="bg-white p-6 rounded-xl shadow-lg mb-6 flex flex-wrap gap-4 items-center">
+    <div class="flex-shrink-0">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Kelas</label>
+      <select id="class-select" class="w-full md:w-48 p-2 border border-gray-300 rounded-lg shadow-sm">
+        <option value="Kelas 7">Kelas 7</option>
+        <option value="Kelas 8">Kelas 8</option>
+        <option value="Kelas 9">Kelas 9</option>
+        <option value="Kelas 10">Kelas 10</option>
+        <option value="Kelas 11">Kelas 11</option>
+        <option value="Kelas 12">Kelas 12</option>
+      </select>
+    </div>
+
+    <div class="flex-grow">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Siswa untuk Rapor</label>
+      <select id="student-select" class="w-full p-2 border border-gray-300 rounded-lg shadow-sm">
+        <option value="">-- Pilih Siswa --</option>
+      </select>
+      <p class="text-xs text-gray-500 mt-1">Tambah siswa bila kosong.</p>
+    </div>
+
+    <div class="flex-shrink-0">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Template PDF</label>
+      <select id="report-template" class="w-full md:w-56 p-2 border border-gray-300 rounded-lg shadow-sm">
+        <option value="ganjil">Raport Term Ganjil (Tengah Semester)</option>
+        <option value="genap">Raport Term Genap</option>
+      </select>
+    </div>
+
+    <div class="flex-shrink-0">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Semester</label>
+      <select id="semester-select" class="w-full md:w-44 p-2 border border-gray-300 rounded-lg shadow-sm">
+        <option value="1">Semester 1</option>
+        <option value="2">Semester 2</option>
+      </select>
+      <p class="text-xs text-gray-500 mt-1">Untuk data absensi/catatan & export.</p>
+    </div>
+
+
+    <div class="flex flex-col md:flex-row gap-2 mt-6 md:mt-0">
+      <button id="add-student-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md">
+        + Tambah Siswa
+      </button>
+      <button id="export-pdf-btn" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md disabled:opacity-50" disabled>
+        Ekspor PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- SUPER ADMIN PANEL -->
+  <div id="super-admin-panel" class="bg-white p-6 rounded-xl shadow-lg mb-6 hidden">
+    <div class="flex items-center justify-between gap-3">
+      <div>
+        <h2 class="text-lg font-extrabold text-gray-800">Panel Super Admin</h2>
+        <p class="text-xs text-gray-500">Atur akses Mapel & Challenge untuk tiap Guru.</p>
+      </div>
+      <button id="btn-refresh-teachers" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-3 rounded-lg">
+        Refresh
+      </button>
+    </div>
+
+    <div class="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Pilih Guru</label>
+        <select id="teacher-select" class="w-full p-2 border border-gray-300 rounded-lg shadow-sm">
+          <option value="">-- Pilih Guru --</option>
+        </select>
+
+        <div class="mt-3 flex gap-2">
+          <button id="btn-load-access" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-3 rounded-lg w-full">
+            Load Akses
+          </button>
+          <button id="btn-save-access" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3 rounded-lg w-full">
+            Simpan
+          </button>
+        </div>
+
+        
+        <div class="mt-4 p-3 bg-white border border-gray-200 rounded-xl">
+          <label class="flex items-center gap-2 text-sm font-semibold text-gray-800">
+            <input id="teacher-is-homeroom" type="checkbox" class="w-4 h-4">
+            Jadikan <span class="underline">Gembala Kelas / Wali Kelas</span>
+          </label>
+          <div class="text-xs text-gray-500 mt-1">
+            Jika dicentang, guru ini bisa mengisi catatan wali, absensi, organisasi, prestasi, dan capaian khusus genap.
+          </div>
+        </div>
+<div class="text-xs text-gray-500 mt-3">
+          Tips: untuk Guru, hanya data yang diizinkan akan muncul di tabel.
+        </div>
+      </div>
+
+      <div class="bg-white border border-gray-200 rounded-xl p-4 lg:col-span-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <div class="font-bold text-gray-800">Akses Mapel</div>
+            <div class="text-xs text-gray-500 mb-2">Centang mapel yang boleh diinput guru.</div>
+            <div id="access-subjects" class="flex flex-wrap"></div>
+          </div>
+
+          <div>
+            <div class="font-bold text-gray-800">Akses Challenge</div>
+            <div class="text-xs text-gray-500 mb-2">Centang challenge yang boleh diinput guru.</div>
+            <div id="access-challenges" class="flex flex-wrap"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal tambah siswa -->
+  <div id="add-student-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+    <div class="bg-white w-full max-w-md rounded-xl shadow-lg p-5">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-bold text-gray-800">Tambah Siswa</h3>
+        <button id="close-modal-btn" class="text-gray-500 hover:text-gray-700">✕</button>
+      </div>
+      <div class="mt-4 space-y-3">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">ID Siswa (unik)</label>
+          <input id="new-student-id" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="Contoh: S001 / NISN / dll">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Nama Siswa</label>
+          <input id="new-student-name" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="Contoh: Andi Wijaya">
+        </div>
+      </div>
+      <div class="mt-5 flex gap-2 justify-end">
+        <button id="cancel-add-btn" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg">Batal</button>
+        <button id="confirm-add-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Talent & Ekskul -->
+  <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-lg font-extrabold text-gray-800">Talent & Ekstrakurikuler</h2>
+        <p class="text-xs text-gray-500">Disimpan ke sheet “Kelas X - Activities”</p>
+      </div>
+      <button id="save-talent-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md disabled:opacity-50" disabled>
+        Simpan Talent
+      </button>
+    </div>
+
+    <div class="mt-4">
+      <h3 class="font-semibold text-gray-700 mb-2">Talent</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Talent</label>
+          <input id="talent-name" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="Contoh: Multimedia / Craft">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Predikat</label>
+          <select id="talent-predicate" class="w-full p-2 border border-gray-300 rounded-lg">
+            <option value="">-- Pilih --</option>
+            <option value="PB">PB</option>
+            <option value="BK">BK</option>
+            <option value="CK">CK</option>
+            <option value="MH">MH</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+          <input id="talent-desc" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="Deskripsi singkat...">
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <h3 class="font-semibold text-gray-700 mb-2">Ekstrakurikuler</h3>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Nama Ekskul</label>
+          <input id="ekskul-name" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="Contoh: Basket">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Predikat</label>
+          <select id="ekskul-predicate" class="w-full p-2 border border-gray-300 rounded-lg">
+            <option value="">-- Pilih --</option>
+            <option value="PB">PB</option>
+            <option value="BK">BK</option>
+            <option value="CK">CK</option>
+            <option value="MH">MH</option>
+          </select>
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+          <input id="ekskul-desc" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="Deskripsi singkat...">
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <button id="add-ekskul-btn" class="bg-gray-900 hover:bg-black text-white font-semibold py-2 px-4 rounded-lg">+ Tambah Ekskul</button>
+        <button id="save-ekskul-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg disabled:opacity-50" disabled>Simpan Ekskul</button>
+        <button id="clear-ekskul-btn" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg">Bersihkan</button>
+      </div>
+
+      <div class="mt-3 overflow-x-auto">
+        <table class="w-full border border-gray-200 text-sm">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="border px-2 py-2 w-[50px]">No</th>
+              <th class="border px-2 py-2">Ekstrakurikuler</th>
+              <th class="border px-2 py-2 w-[160px]">Predikat</th>
+              <th class="border px-2 py-2">Deskripsi</th>
+              <th class="border px-2 py-2 w-[90px]">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="ekskul-list-body">
+            <tr><td colspan="5" class="text-gray-500 text-center py-4">Belum ada data ekskul.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- PANEL RAPORT META (Absensi/Organisasi/Prestasi/Catatan Wali) -->
+  <div id="raport-meta-panel" class="bg-white p-6 rounded-xl shadow-lg mb-6 hidden">
+    <div class="flex items-center justify-between gap-3">
+      <div>
+        <h2 class="text-lg font-extrabold text-gray-800">Data Raport (Wali / Gembala Kelas)</h2>
+        <p class="text-xs text-gray-500">Isi data absensi, organisasi, prestasi, catatan wali, dan capaian khusus (genap).</p>
+      </div>
+      <button id="save-raportmeta-btn" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md disabled:opacity-50" disabled>
+        Simpan Data Raport
+      </button>
+    </div>
+
+    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">NISN (opsional)</label>
+        <input id="meta-nisn" class="ekskul-input" placeholder="Masukkan NISN siswa (jika ada)"/>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Sakit</label>
+          <input id="meta-sakit" type="number" min="0" class="ekskul-input" placeholder="0"/>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Izin</label>
+          <input id="meta-izin" type="number" min="0" class="ekskul-input" placeholder="0"/>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Alpha</label>
+          <input id="meta-alpha" type="number" min="0" class="ekskul-input" placeholder="0"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Kegiatan Organisasi</label>
+        <textarea id="meta-organisasi" class="ekskul-input" rows="4" placeholder="Contoh: OSIS / Pramuka / Rohis ..."></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Prestasi</label>
+        <textarea id="meta-prestasi" class="ekskul-input" rows="4" placeholder="Contoh: Juara 1 Lomba ..."></textarea>
+      </div>
+    </div>
+
+    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Catatan Gembala Kelas / Wali Kelas</label>
+        <textarea id="meta-catatan" class="ekskul-input" rows="4" placeholder="Catatan wali kelas..."></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Capaian Kompetensi (Khusus Raport Term Genap)</label>
+        <textarea id="meta-capaian-genap" class="ekskul-input" rows="4" placeholder="Ringkasan capaian kompetensi (genap)..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL KOMPETENSI PER MAPEL -->
+  <div id="kompetensi-panel" class="bg-white p-6 rounded-xl shadow-lg mb-6 hidden">
+    <div class="flex items-center justify-between gap-3">
+      <div>
+        <h2 class="text-lg font-extrabold text-gray-800">Capaian Kompetensi per Mata Pelajaran</h2>
+        <p class="text-xs text-gray-500">Diisi oleh guru mapel (sesuai akses) atau admin. Tersimpan di sheet Grades.</p>
+      </div>
+      <button id="save-kompetensi-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md disabled:opacity-50" disabled>
+        Simpan Kompetensi
+      </button>
+    </div>
+
+    <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Mata Pelajaran</label>
+        <select id="kompetensi-subject" class="w-full p-2 border border-gray-300 rounded-lg shadow-sm"></select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Term</label>
+        <select id="kompetensi-term" class="w-full p-2 border border-gray-300 rounded-lg shadow-sm">
+          <option value="ganjil">Term Ganjil</option>
+          <option value="genap">Term Genap</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Petunjuk</label>
+        <div class="text-xs text-gray-500 p-3 bg-gray-50 border border-gray-200 rounded-lg h-[42px] flex items-center">
+          Pilih siswa dulu, lalu isi kompetensi.
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Teks Capaian Kompetensi</label>
+      <textarea id="kompetensi-text" class="ekskul-input" rows="4" placeholder="Tuliskan capaian kompetensi siswa untuk mapel & term terpilih..."></textarea>
+    </div>
+  </div>
+
+<!-- TABEL INPUT NILAI -->
+  <div class="bg-white p-6 rounded-xl shadow-lg overflow-x-auto mb-6">
+    <table id="grades-table" class="grade-table min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50 sticky top-0 z-10">
+        <tr id="thead-row-1"></tr>
+        <tr id="thead-row-2"></tr>
+        <tr id="thead-row-3"></tr>
+      </thead>
+      <tbody id="grades-body" class="bg-white divide-y divide-gray-200">
+        <tr><td class="text-center py-8 text-gray-500">Memuat...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- CHALLENGE TABLE -->
+  <div class="bg-white p-6 rounded-xl shadow-lg overflow-x-auto mb-8">
+    <div class="text-lg font-extrabold text-gray-800 mb-3">Nilai Challenge</div>
+    <table class="challenge-table" id="challenge-table">
+      <thead id="challenge-head"></thead>
+      <tbody id="challenge-body">
+        <tr><td class="text-gray-500 py-6" colspan="999">Memuat...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PDF templates (placeholder) -->
+  <div id="pdf-ganjil" class="hidden rapor-paper"><div class="rapor-title">PDF GANJIL</div></div>
+  <div id="pdf-genap" class="hidden rapor-paper"><div class="rapor-title">PDF GENAP</div></div>
+
+  <!-- AREA CETAK PDF (hidden) -->
+  <div id="report-print-area" class="hidden"></div>
+
+
+<script>
+/** =========================
+ * ✅ CONFIG (SAMAKAN DENGAN login.html)
+ * ========================= */
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbydrQFi_FSK0KJKhzpfPwogqnyF1hHB-hXbBYGP8OxgRM4V4hOWvBbZSj6rrPk3dO1Uxw/exec"; 
+// contoh: https://script.google.com/macros/s/AKfycbxxxxxxx/exec
+
+/** Auth storage */
+function getToken(){ return localStorage.getItem("ledger_token") || ""; }
+function getUser(){ try { return JSON.parse(localStorage.getItem("ledger_user")||"{}"); } catch { return {}; } }
+function forceLogin(){ window.location.replace("./login.html"); }
+function logout(){
+  localStorage.removeItem("ledger_token");
+  localStorage.removeItem("ledger_user");
+  forceLogin();
+}
+
+/** =========================
+ *  SUBJECTS (Mapel)
+ * ========================= */
+const SUBJECTS_ALL = {
+  "Kelas 7": ["Bahasa Indonesia", "Matematika", "English", "Science", "Social Studies", "Olahraga"],
+  "Kelas 8": ["Bahasa Indonesia", "Matematika", "English", "Science", "Social Studies", "Olahraga"],
+  "Kelas 9": ["Bahasa Indonesia", "Matematika", "English", "Science", "Social Studies", "Olahraga"],
+  "Kelas 10": ["Bahasa Indonesia", "Matematika", "English", "Science", "Ekonomi", "Olahraga"],
+  "Kelas 11": ["Bahasa Indonesia", "Matematika", "English", "Science", "Ekonomi", "Olahraga"],
+  "Kelas 12": ["Bahasa Indonesia", "Matematika", "English", "Science", "Ekonomi", "Olahraga"],
+};
+const INPUTS_PER_SUBJECT = 8;
+
+/** =========================
+ *  CHALLENGES
+ * ========================= */
+const CHALLENGE_GROUPS = [
+  { key:"pemberdayaan", title:"PEMBERDAYAAN", desc:"Rata-rata semua nilai challenge pemberdayaan (NC & NCS).",
+    items:["timeline","leadership","menabung","manners and lifeskill","journal"], formula:"avg_all" },
+  { key:"project", title:"PROJECT", desc:"Nilai akhir per challenge = 50% NC + 50% NCS.",
+    items:["enterpreneur","communication skill","mathematics","IT"], formula:"50_50" },
+  { key:"mapel", title:"MATA PELAJARAN (Challenge)", desc:"Nilai akhir per challenge = 50% NC + 50% NCS.",
+    items:["agama","pkn","seni budaya","b. jawa"], formula:"50_50" }
+];
+const CHALLENGE_ALL = CHALLENGE_GROUPS.flatMap(g => g.items);
+
+/** =========================
+ *  STATE
+ * ========================= */
+let currentClass = "Kelas 7";
+let me = { role:"", email:"", name:"" };
+let permissions = { allowedSubjects:null, allowedChallenges:null, isHomeroom:false };
+
+let students = [];
+let grades = {};
+let activities = {};
+let challenge = {};   // frontend shape: challenge[sid][group][name] = {nc,nsc}
+let ekskulDraft = [];
+
+/** =========================
+ *  UI Helpers
+ * ========================= */
+function overlay(show, text="") {
+  const el = document.getElementById("loading-overlay");
+  const t = document.getElementById("loading-text");
+  if (text) t.textContent = text;
+  el.classList.toggle("hidden", !show);
+  if (show) el.classList.add("flex"); else el.classList.remove("flex");
+}
+function setSaveStatus(text, kind="idle") {
+  const el = document.getElementById("save-status");
+  el.textContent = text;
+  el.classList.remove("text-gray-600","text-green-700","text-red-700","text-blue-700");
+  if (kind==="ok") el.classList.add("text-green-700");
+  else if (kind==="err") el.classList.add("text-red-700");
+  else if (kind==="saving") el.classList.add("text-blue-700");
+  else el.classList.add("text-gray-600");
+}
+
+/** =========================
+ *  API
+ * ========================= */
+async function apiLoadClass(className) {
+  const url = `${APPS_SCRIPT_URL}?action=load&className=${encodeURIComponent(className)}&token=${encodeURIComponent(getToken())}&_ts=${Date.now()}`;
+  const res = await fetch(url, { method:"GET" });
+  const json = await res.json();
+  if (!json.ok) throw new Error(json.message || "Load failed");
+  return json;
+}
+
+/**
+ * ✅ FIX FAILED TO FETCH (CORS/Preflight)
+ * - Jangan kirim headers application/json
+ * - POST body plain string (JSON.stringify)
+ */
+async function apiPost(payload) {
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify(payload) // tanpa headers => biasanya tidak preflight
+  });
+
+  // Apps Script kadang balas text/plain, jadi parse manual:
+  const text = await res.text();
+  let json;
+  try { json = JSON.parse(text); } catch { json = { ok:false, message:text }; }
+
+  if (!json.ok) throw new Error(json.message || "POST failed");
+  return json;
+}
+
+/** =========================
+ *  CALC FUNCTIONS
+ * ========================= */
+function round05(x) { return Math.round(Number(x) || 0); }
+function calculateNR(obj) {
+  const keys = ["N1","N2","N3","N4"].filter(k => k in obj);
+  const vals = keys.map(k => Number(obj[k])||0).filter(v=>v>0);
+  if (!vals.length) return 0;
+  return round05(vals.reduce((a,b)=>a+b,0) / vals.length);
+}
+function calculateFinalScore(subjectData) {
+  const F_NR = calculateNR(subjectData.formatif);
+  const P_NR = calculateNR(subjectData.project);
+  const S = Number(subjectData.sikap) || 0;
+  const A = Number(subjectData.asesmen) || 0;
+  return round05((0.40 * F_NR) + (0.30 * P_NR) + (0.25 * S) + (0.05 * A));
+}
+function getPredicateSikap(score) {
+  const s = Math.max(0, Math.min(100, Number(score)||0));
+  if (s >= 86) return "A";
+  if (s >= 71) return "B";
+  if (s >= 56) return "C";
+  return "D";
+}
+function getPredicate(score) {
+  const s = Math.max(0, Math.min(100, Number(score)||0));
+  if (s >= 86) return "A";
+  if (s >= 71) return "B";
+  return "C";
+}
+function challengeStars(value){
+  const v = Number(value)||0;
+  if (v < 70) return 1;
+  if (v <= 79) return 2;
+  if (v <= 85) return 3;
+  if (v <= 89) return 4;
+  return 5;
+}
+function starsText(n){
+  return "★".repeat(n) + "☆".repeat(5-n);
+}
+function calcChallengeFinal(nc, nsc){ return round05((Number(nc)||0)*0.5 + (Number(nsc)||0)*0.5); }
+
+/** =========================
+ *  DATA SHAPE
+ * ========================= */
+function emptyGradeObj() {
+  return {
+    formatif:{N1:0,N2:0,N3:0,N4:0,NR:0},
+    project:{N1:0,N2:0,NR:0},
+    asesmen:0,
+    sikap:0,
+    final:0,
+    pred:"D",
+    predSikap:"D"
+  };
+}
+function ensureGrade(sid, subject) {
+  if (!grades[sid]) grades[sid] = {};
+  if (!grades[sid][subject]) grades[sid][subject] = emptyGradeObj();
+  return grades[sid][subject];
+}
+function ensureChallenge(sid, group, cname){
+  if(!challenge[sid]) challenge[sid] = {};
+  if(!challenge[sid][group]) challenge[sid][group] = {};
+  if(!challenge[sid][group][cname]) challenge[sid][group][cname] = { nc:0, nsc:0 };
+  return challenge[sid][group][cname];
+}
+
+/** =========================
+ *  PERMISSION FILTER
+ * ========================= */
+function getSubjectsForCurrentClass(){
+  const all = SUBJECTS_ALL[currentClass] || [];
+  if(String(me.role||"").toLowerCase()==="guru" && Array.isArray(permissions.allowedSubjects)){
+    return all.filter(x => permissions.allowedSubjects.includes(x));
+  }
+  return all;
+}
+function getChallengeListFiltered(){
+  if(String(me.role||"").toLowerCase()==="guru" && Array.isArray(permissions.allowedChallenges)){
+    return CHALLENGE_GROUPS.map(g => ({
+      ...g,
+      items: g.items.filter(x => permissions.allowedChallenges.includes(x))
+    })).filter(g => g.items.length > 0);
+  }
+  return CHALLENGE_GROUPS;
+}
+
+/** =========================
+ *  TABLE HEADERS (MAPEL)
+ * ========================= */
+function subjectColorClass(idx){ return `sb-${idx % 7}`; }
+
+function renderHeaders() {
+  const subjects = getSubjectsForCurrentClass();
+  const row1 = document.getElementById("thead-row-1");
+  const row2 = document.getElementById("thead-row-2");
+  const row3 = document.getElementById("thead-row-3");
+
+  row1.innerHTML = `
+    <th rowspan="3" class="border-r border-gray-300 bg-gray-50">No</th>
+    <th rowspan="3" class="border-r border-gray-300 bg-gray-50 text-left">Nama Siswa</th>
+    <th colspan="4" class="border-r border-gray-300 text-center bg-gray-50">Rata-rata</th>
+    ${subjects.map((s, i)=>`
+      <th colspan="12" class="border-r border-gray-300 text-center ${subjectColorClass(i)} font-extrabold">${s}</th>
+    `).join("")}
+  `;
+
+  row2.innerHTML = `
+    <th rowspan="2" class="border-r border-gray-300 text-center bg-gray-50">Nilai</th>
+    <th rowspan="2" colspan="3" class="border-r border-gray-300 text-center bg-gray-50">Pred</th>
+    ${subjects.map((_,i)=>`
+      <th colspan="12" class="border-r border-gray-300 text-center ${subjectColorClass(i)}">Komponen</th>
+    `).join("")}
+  `;
+
+  const comp = (subjIndex)=>`
+    <th colspan="4" class="text-center border-r border-gray-300 ${subjectColorClass(subjIndex)}">Formatif</th>
+    <th class="text-center border-r border-gray-300 ${subjectColorClass(subjIndex)}">NR-F</th>
+    <th colspan="2" class="text-center border-r border-gray-300 ${subjectColorClass(subjIndex)}">Project</th>
+    <th class="text-center border-r border-gray-300 ${subjectColorClass(subjIndex)}">NR-P</th>
+    <th class="text-center border-r border-gray-300 ${subjectColorClass(subjIndex)}">Asesmen</th>
+    <th class="text-center border-r border-gray-300 ${subjectColorClass(subjIndex)}">Sikap</th>
+    <th class="text-center border-r border-gray-300 ${subjectColorClass(subjIndex)} font-extrabold">NA</th>
+    <th class="text-center border-r border-gray-300 ${subjectColorClass(subjIndex)} font-extrabold">Pred</th>
+  `;
+  row3.innerHTML = subjects.map((_,i)=>comp(i)).join("");
+}
+
+function computeOverall(sid) {
+  const subs = grades[sid] || {};
+  const finals = Object.values(subs).map(s => Number(s.final)||0).filter(v=>v>0);
+  if (!finals.length) return { avg:0, pred:"C" };
+  const avgInt = round05(finals.reduce((a,b)=>a+b,0) / finals.length);
+  return { avg: avgInt, pred: getPredicate(avgInt) };
+}
+
+function markLowInput(inputEl){
+  const v = Number(inputEl.value)||0;
+  if(v > 0 && v < 75) inputEl.classList.add("nilai-low");
+  else inputEl.classList.remove("nilai-low");
+}
+
+function updateGradeLocalAndUI({sid, subj, part, key, val}) {
+  const g = ensureGrade(sid, subj);
+  const n = Number(val) || 0;
+
+  if (part === "formatif" || part === "project") {
+    g[part][key] = n;
+    g[part].NR = calculateNR(g[part]);
+
+    const nrCell = document.querySelector(`.${part==="formatif"?"nr-f":"nr-p"}[data-sid="${sid}"][data-subj="${subj}"]`);
+    if (nrCell) nrCell.textContent = g[part].NR || 0;
+  } else if (part === "asesmen") {
+    g.asesmen = n;
+  } else if (part === "sikap") {
+    g.sikap = n;
+  }
+
+  g.final = calculateFinalScore(g);
+  g.predSikap = getPredicateSikap(g.sikap);
+
+  const naCell = document.querySelector(`.na[data-sid="${sid}"][data-subj="${subj}"]`);
+  const predCell = document.querySelector(`.pred[data-sid="${sid}"][data-subj="${subj}"]`);
+  if (naCell) naCell.textContent = g.final;
+  if (predCell) predCell.textContent = g.predSikap;
+
+  const ov = computeOverall(sid);
+  const row = document.querySelector(`tr[data-sid="${sid}"]`);
+  if (row) {
+    row.querySelector(".ov-avg").textContent = ov.avg;
+    row.querySelector(".ov-pred").textContent = ov.pred;
+  }
+}
+
+function renderTable() {
+  const tbody = document.getElementById("grades-body");
+  const subjects = getSubjectsForCurrentClass();
+  tbody.innerHTML = "";
+
+  if (!students.length) {
+    tbody.innerHTML = `<tr><td colspan="999" class="text-center py-10 text-gray-500">Belum ada siswa. Klik <b>+ Tambah Siswa</b>.</td></tr>`;
+    return;
+  }
+
+  students.forEach((st, idx) => {
+    subjects.forEach(subj => {
+      const g = ensureGrade(st.id, subj);
+      g.formatif.NR = calculateNR(g.formatif);
+      g.project.NR = calculateNR(g.project);
+      g.final = calculateFinalScore(g);
+      g.predSikap = getPredicateSikap(g.sikap);
+    });
+
+    const overall = computeOverall(st.id);
+    const tr = document.createElement("tr");
+    tr.setAttribute("data-sid", st.id);
+
+    let html = `
+      <td class="border-r border-gray-200 text-center font-semibold">${idx+1}</td>
+      <td class="border-r border-gray-200 font-semibold text-left">${st.name}</td>
+      <td class="border-r border-gray-300 text-center font-extrabold text-blue-600 ov-avg">${overall.avg}</td>
+      <td colspan="3" class="border-r border-gray-300 text-center font-extrabold ov-pred">${overall.pred}</td>
+    `;
+
+    subjects.forEach((subj, subjIndex) => {
+      const g = ensureGrade(st.id, subj);
+      const mkInput = (value, part, key, compIndex, extraClass="") => {
+        const r = idx;
+        const c = (subjIndex * INPUTS_PER_SUBJECT) + compIndex;
+        const v = value ? value : "";
+        return `
+          <div class="cell-wrap">
+            <input class="nilai-input ${extraClass}" type="number" min="0" max="100"
+              value="${v}"
+              data-sid="${st.id}" data-subj="${subj}" data-part="${part}" data-key="${key}"
+              data-r="${r}" data-c="${c}"
+              oninput="handleInputTyping(this)"
+              onchange="handleGradeChange(this)"
+            >
+            <button class="paste-btn" title="Paste" onclick="pasteButtonClick(event,this)"
+              data-r="${r}" data-c="${c}">📋</button>
+          </div>
+        `;
+      };
+
+      const sb = subjectColorClass(subjIndex);
+
+      html += `
+        <td class="text-center ${sb}">${mkInput(g.formatif.N1, "formatif", "N1", 0)}</td>
+        <td class="text-center ${sb}">${mkInput(g.formatif.N2, "formatif", "N2", 1)}</td>
+        <td class="text-center ${sb}">${mkInput(g.formatif.N3, "formatif", "N3", 2)}</td>
+        <td class="text-center border-r border-gray-300 ${sb}">${mkInput(g.formatif.N4, "formatif", "N4", 3)}</td>
+        <td class="text-center font-extrabold border-r border-gray-300 ${sb} nr-f" data-sid="${st.id}" data-subj="${subj}">${g.formatif.NR||0}</td>
+        <td class="text-center ${sb}">${mkInput(g.project.N1, "project", "N1", 4)}</td>
+        <td class="text-center border-r border-gray-300 ${sb}">${mkInput(g.project.N2, "project", "N2", 5)}</td>
+        <td class="text-center font-extrabold border-r border-gray-300 ${sb} nr-p" data-sid="${st.id}" data-subj="${subj}">${g.project.NR||0}</td>
+        <td class="text-center border-r border-gray-300 ${sb}">${mkInput(g.asesmen, "asesmen", "asesmen", 6)}</td>
+        <td class="text-center border-r border-gray-300 ${sb}">${mkInput(g.sikap, "sikap", "sikap", 7)}</td>
+        <td class="text-center font-extrabold border-r border-gray-300 ${sb} na" data-sid="${st.id}" data-subj="${subj}">${g.final||0}</td>
+        <td class="text-center font-extrabold border-r border-gray-300 ${sb} pred" data-sid="${st.id}" data-subj="${subj}">${g.predSikap||"D"}</td>
+      `;
+    });
+
+    tr.innerHTML = html;
+    tbody.appendChild(tr);
+  });
+
+  document.querySelectorAll("#grades-body input.nilai-input").forEach(inp => markLowInput(inp));
+  installBulkPasteListeners();
+}
+
+window.handleInputTyping = function(inputEl){
+  if (inputEl.value === "") return;
+  let n = Number(inputEl.value);
+  if (Number.isNaN(n)) n = 0;
+  if (n < 0) n = 0;
+  if (n > 100) n = 100;
+  inputEl.value = n;
+  markLowInput(inputEl);
+};
+
+window.handleGradeChange = async function(inputEl) {
+  const sid = inputEl.dataset.sid;
+  const subj = inputEl.dataset.subj;
+  const part = inputEl.dataset.part;
+  const key = inputEl.dataset.key;
+  const val = Number(inputEl.value) || 0;
+
+  updateGradeLocalAndUI({sid, subj, part, key, val});
+  markLowInput(inputEl);
+
+  try {
+    setSaveStatus("Menyimpan nilai…", "saving");
+    const g = ensureGrade(sid, subj);
+
+    await apiPost({
+      action:"saveGradesBatch",
+      token:getToken(),
+      className: currentClass,
+      items: [{
+        studentId: sid,
+        subject: subj,
+        formatif: g.formatif,
+        project: g.project,
+        asesmen: g.asesmen,
+        sikap: g.sikap,
+        final: g.final,
+        pred: g.predSikap
+      }]
+    });
+
+    setSaveStatus("Tersimpan ✅", "ok");
+  } catch (e) {
+    console.error(e);
+    setSaveStatus("Gagal simpan ❌", "err");
+    alert("Gagal menyimpan nilai.\n\nCek:\n1) APPS_SCRIPT_URL /exec\n2) Deploy Web App = Anyone\n3) Tidak restricted/harus login Google");
+  }
+};
+
+/** BULK PASTE MAPEL */
+function parseClipboardGrid(text) {
+  return text.replace(/\r/g, "").split("\n").filter(r => r.length > 0).map(r => r.split("\t"));
+}
+function findInputByRC(r, c) { return document.querySelector(`input[data-r="${r}"][data-c="${c}"]`); }
+function installBulkPasteListeners() {
+  const allInputs = document.querySelectorAll("#grades-body input.nilai-input");
+  allInputs.forEach(inp => {
+    inp.addEventListener("paste", async (e) => {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData)?.getData("text") || "";
+      if (!text) return;
+      await applyBulkPasteFromText(inp, text);
+    });
+  });
+}
+async function applyBulkPasteFromText(startInput, text) {
+  const grid = parseClipboardGrid(text);
+  if (!grid.length) return;
+
+  const startR = Number(startInput.dataset.r);
+  const startC = Number(startInput.dataset.c);
+  const changedMap = new Map(); // sid|subj
+
+  for (let dr = 0; dr < grid.length; dr++) {
+    for (let dc = 0; dc < grid[dr].length; dc++) {
+      const target = findInputByRC(startR + dr, startC + dc);
+      if (!target) continue;
+
+      const raw = grid[dr][dc];
+      if (raw === "" || raw == null) continue;
+
+      const n = Number(String(raw).replace(",", "."));
+      if (Number.isNaN(n)) continue;
+
+      target.value = Math.max(0, Math.min(100, n));
+      markLowInput(target);
+
+      const sid = target.dataset.sid;
+      const subj = target.dataset.subj;
+      const part = target.dataset.part;
+      const key = target.dataset.key;
+
+      updateGradeLocalAndUI({sid, subj, part, key, val: target.value});
+      changedMap.set(`${sid}|${subj}`, {sid, subj});
+    }
+  }
+
+  if (changedMap.size === 0) return;
+
+  try {
+    setSaveStatus("Menyimpan hasil paste…", "saving");
+
+    const items = Array.from(changedMap.values()).map(({sid, subj}) => {
+      const g = ensureGrade(sid, subj);
+      return {
+        studentId: sid,
+        subject: subj,
+        formatif: g.formatif,
+        project: g.project,
+        asesmen: g.asesmen,
+        sikap: g.sikap,
+        final: g.final,
+        pred: g.predSikap
+      };
+    });
+
+    await apiPost({ action:"saveGradesBatch", token:getToken(), className: currentClass, items });
+    setSaveStatus("Paste tersimpan ✅", "ok");
+  } catch (e) {
+    console.error(e);
+    setSaveStatus("Gagal simpan paste ❌", "err");
+    alert("Gagal simpan paste.\n\nPastikan Web App deploy Anyone & URL benar.");
+  }
+}
+window.pasteButtonClick = async function(event, btn) {
+  event.preventDefault();
+  event.stopPropagation();
+  try {
+    const text = await navigator.clipboard.readText();
+    if (!text) return alert("Clipboard kosong. Copy nilai dari Excel dulu.");
+    const target = findInputByRC(Number(btn.dataset.r), Number(btn.dataset.c));
+    if (!target) return;
+    await applyBulkPasteFromText(target, text);
+    target.focus();
+  } catch (e) {
+    console.error(e);
+    alert("Gagal baca clipboard.\n\nPastikan website HTTPS atau pakai Live Server VSCode.");
+  }
+};
+
+/** STUDENT SELECT */
+function renderStudentSelector() {
+  const sel = document.getElementById("student-select");
+  const selected = sel.value;
+  sel.innerHTML = `<option value="">-- Pilih Siswa --</option>`;
+  students.forEach(s => {
+    const opt = document.createElement("option");
+    opt.value = s.id;
+    opt.textContent = s.name;
+    sel.appendChild(opt);
+  });
+  sel.value = selected;
+  const sid = sel.value;
+  document.getElementById("export-pdf-btn").disabled = !sid;
+  document.getElementById("save-talent-btn").disabled = !sid;
+  document.getElementById("save-ekskul-btn").disabled = !sid;
+}
+function onStudentSelected(){
+  const sid=document.getElementById("student-select").value;
+  document.getElementById("export-pdf-btn").disabled=!sid;
+  document.getElementById("save-talent-btn").disabled=!sid;
+  document.getElementById("save-ekskul-btn").disabled=!sid;
+
+  if(!sid){ clearTalentEkskulUI(); updatePanelsOnStudentChange_(); return; }
+
+  const a=activities[sid]||{talent:{name:"",predicate:"",description:""},ekskul:[]};
+  document.getElementById("talent-name").value=a.talent?.name||"";
+  document.getElementById("talent-predicate").value=a.talent?.predicate||"";
+  document.getElementById("talent-desc").value=a.talent?.description||"";
+
+  ekskulDraft=(a.ekskul||[]).map(x=>({...x}));
+  renderEkskulList(ekskulDraft);
+  updatePanelsOnStudentChange_();
+}
+
+/** MODAL */
+function openModal(){
+  const m=document.getElementById("add-student-modal");
+  m.classList.remove("hidden"); m.classList.add("flex");
+  document.getElementById("new-student-id").value="";
+  document.getElementById("new-student-name").value="";
+  document.getElementById("new-student-id").focus();
+}
+function closeModal(){
+  const m=document.getElementById("add-student-modal");
+  m.classList.add("hidden"); m.classList.remove("flex");
+}
+function emptyGradePayload() {
+  return { formatif:{N1:0,N2:0,N3:0,N4:0,NR:0}, project:{N1:0,N2:0,NR:0}, asesmen:0,sikap:0,final:0,pred:"D" };
+}
+async function confirmAddStudent() {
+  const id = document.getElementById("new-student-id").value.trim();
+  const name = document.getElementById("new-student-name").value.trim();
+  if (!id || !name) return alert("ID dan Nama wajib diisi.");
+  if (students.some(s => String(s.id) === String(id))) return alert("ID sudah ada di kelas ini.");
+
+  overlay(true, "Menyimpan siswa...");
+  setSaveStatus("Menyimpan…", "saving");
+
+  try {
+    await apiPost({ action:"saveStudent", token:getToken(), className: currentClass, studentId:id, studentName:name });
+
+    const subjects = SUBJECTS_ALL[currentClass] || [];
+    const items = subjects.map(subj => ({ studentId:id, subject:subj, ...emptyGradePayload() }));
+    await apiPost({ action:"saveGradesBatch", token:getToken(), className: currentClass, items });
+
+    closeModal();
+    await loadClassData();
+    setSaveStatus("Tersimpan ✅", "ok");
+  } catch (e) {
+    console.error(e);
+    setSaveStatus("Gagal simpan ❌", "err");
+    alert("Gagal menambah siswa. Pastikan kamu admin/super admin.");
+  } finally {
+    overlay(false);
+  }
+}
+
+/** TALENT & EKSKUL */
+function clearTalentEkskulUI(){
+  document.getElementById("talent-name").value="";
+  document.getElementById("talent-predicate").value="";
+  document.getElementById("talent-desc").value="";
+  document.getElementById("ekskul-name").value="";
+  document.getElementById("ekskul-predicate").value="";
+  document.getElementById("ekskul-desc").value="";
+  ekskulDraft=[];
+  renderEkskulList([]);
+}
+function renderEkskulList(list){
+  const tbody=document.getElementById("ekskul-list-body");
+  tbody.innerHTML="";
+  if(!list||list.length===0){
+    tbody.innerHTML=`<tr><td colspan="5" class="text-gray-500 text-center py-4">Belum ada data ekskul.</td></tr>`;
+    return;
+  }
+  list.forEach((x,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td class="border px-2 py-2">${i+1}</td>
+      <td class="border px-2 py-2">
+        <input class="ekskul-input" value="${(x.name||"").replace(/"/g,'&quot;')}"
+          oninput="updateEkskulField(${i}, 'name', this.value)" placeholder="Nama ekskul..." />
+      </td>
+      <td class="border px-2 py-2">
+        <select class="ekskul-select" onchange="updateEkskulField(${i}, 'predicate', this.value)">
+          <option value="" ${!x.predicate ? "selected" : ""}>-- Pilih --</option>
+          <option value="PB" ${x.predicate==="PB"?"selected":""}>PB</option>
+          <option value="BK" ${x.predicate==="BK"?"selected":""}>BK</option>
+          <option value="CK" ${x.predicate==="CK"?"selected":""}>CK</option>
+          <option value="MH" ${x.predicate==="MH"?"selected":""}>MH</option>
+        </select>
+      </td>
+      <td class="border px-2 py-2">
+        <input class="ekskul-input" value="${(x.description||"").replace(/"/g,'&quot;')}"
+          oninput="updateEkskulField(${i}, 'description', this.value)" placeholder="Deskripsi..." />
+      </td>
+      <td class="border px-2 py-2">
+        <button class="text-red-600 hover:underline" onclick="removeEkskulItem(${i})">Hapus</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+window.updateEkskulField = function(index, field, value){
+  if (!ekskulDraft[index]) return;
+  ekskulDraft[index][field] = value;
+};
+window.removeEkskulItem=function(i){
+  ekskulDraft=ekskulDraft.filter((_,idx)=>idx!==i);
+  renderEkskulList(ekskulDraft);
+};
+async function saveTalent(){
+  const sid=document.getElementById("student-select").value;
+  if(!sid) return alert("Pilih siswa dulu.");
+
+  const talent={
+    name:document.getElementById("talent-name").value.trim(),
+    predicate:document.getElementById("talent-predicate").value,
+    description:document.getElementById("talent-desc").value.trim()
+  };
+
+  try{
+    setSaveStatus("Menyimpan talent…","saving");
+    await apiPost({action:"saveTalent",token:getToken(),className:currentClass,studentId:sid,talent});
+    if(!activities[sid]) activities[sid]={talent:{},ekskul:[]};
+    activities[sid].talent=talent;
+    setSaveStatus("Tersimpan ✅","ok");
+  }catch(e){
+    console.error(e);
+    setSaveStatus("Gagal simpan ❌","err");
+    alert("Gagal menyimpan talent.");
+  }
+}
+function addEkskulDraft(){
+  const sid=document.getElementById("student-select").value;
+  if(!sid) return alert("Pilih siswa dulu.");
+
+  const name=document.getElementById("ekskul-name").value.trim();
+  const predicate=document.getElementById("ekskul-predicate").value;
+  const description=document.getElementById("ekskul-desc").value.trim();
+
+  if(!name) return alert("Nama ekskul wajib.");
+  if(!predicate) return alert("Predikat ekskul wajib.");
+
+  ekskulDraft.push({name,predicate,description});
+  renderEkskulList(ekskulDraft);
+
+  document.getElementById("ekskul-name").value="";
+  document.getElementById("ekskul-predicate").value="";
+  document.getElementById("ekskul-desc").value="";
+}
+function clearEkskulDraft(){ ekskulDraft=[]; renderEkskulList([]); }
+async function saveEkskulList(){
+  const sid=document.getElementById("student-select").value;
+  if(!sid) return alert("Pilih siswa dulu.");
+
+  try{
+    setSaveStatus("Menyimpan ekskul…","saving");
+    await apiPost({action:"saveEkskulList",token:getToken(),className:currentClass,studentId:sid,ekskul:ekskulDraft});
+    if(!activities[sid]) activities[sid]={talent:{},ekskul:[]};
+    activities[sid].ekskul=ekskulDraft.map(x=>({...x}));
+    setSaveStatus("Tersimpan ✅","ok");
+  }catch(e){
+    console.error(e);
+    setSaveStatus("Gagal simpan ❌","err");
+    alert("Gagal menyimpan ekskul.");
+  }
+}
+
+/** =========================
+ * ✅ CHALLENGE RENDER + SAVE
+ * ========================= */
+function renderChallengeTable(){
+  const head = document.getElementById("challenge-head");
+  const body = document.getElementById("challenge-body");
+  head.innerHTML = "";
+  body.innerHTML = "";
+
+  const groups = getChallengeListFiltered();
+  if(!students.length){
+    body.innerHTML = `<tr><td class="text-gray-500 py-6" colspan="999">Belum ada siswa.</td></tr>`;
+    return;
+  }
+
+  const tr1 = document.createElement("tr");
+  tr1.innerHTML = `
+    <th rowspan="2" class="bg-gray-50">No</th>
+    <th rowspan="2" class="bg-gray-50 text-left">Nama Siswa</th>
+    ${groups.map(g=>`<th colspan="${g.items.length*3 + 3}" class="bg-gray-50 font-extrabold">${g.title}</th>`).join("")}
+  `;
+  head.appendChild(tr1);
+
+  const tr2 = document.createElement("tr");
+  tr2.innerHTML = `
+    ${groups.map((g,gi)=>{
+      const color = gi===0 ? "bg-blue-50" : gi===1 ? "bg-emerald-50" : "bg-yellow-50";
+      return `
+        ${g.items.map(cname=>`
+          <th class="${color}">${cname}<div class="muted">NC</div></th>
+          <th class="${color}">${cname}<div class="muted">NCS</div></th>
+          <th class="${color}">⭐</th>
+        `).join("")}
+        <th class="${color} font-extrabold">AVG NC</th>
+        <th class="${color} font-extrabold">AVG NCS</th>
+        <th class="${color} font-extrabold">AVG ⭐</th>
+      `;
+    }).join("")}
+  `;
+  head.appendChild(tr2);
+
+  students.forEach((st, rIdx)=>{
+    const tr = document.createElement("tr");
+    tr.setAttribute("data-cr", rIdx);
+
+    let html = `
+      <td class="font-semibold">${rIdx+1}</td>
+      <td class="text-left font-semibold">${st.name}</td>
+    `;
+
+    let baseC = 0;
+
+    groups.forEach((g, gi)=>{
+      const color = gi===0 ? "bg-blue-50" : gi===1 ? "bg-emerald-50" : "bg-yellow-50";
+      let sumNC = 0, sumNCS = 0, cnt = 0;
+      let sumStars = 0;
+
+      g.items.forEach((cname)=>{
+        const obj = ensureChallenge(st.id, g.key, cname);
+        const nc = Number(obj.nc)||0;
+        const nsc = Number(obj.nsc)||0;
+
+        const finalVal = calcChallengeFinal(nc, nsc);
+        const stars = challengeStars(finalVal);
+
+        if(nc>0){ sumNC += nc; }
+        if(nsc>0){ sumNCS += nsc; }
+        if(nc>0 || nsc>0) { cnt++; sumStars += stars; }
+
+        const ncClass = (nc>0 && nc<75) ? "nilai-low" : "";
+        const nscClass = (nsc>0 && nsc<75) ? "nilai-low" : "";
+
+        const cNC = baseC;
+        const cNCS = baseC + 1;
+
+        html += `
+          <td class="${color}">
+            <div class="cell-wrap">
+              <input class="nilai-input ${ncClass}" type="number" min="0" max="100"
+                value="${nc ? nc : ""}"
+                data-cr="${rIdx}" data-cc="${cNC}"
+                data-sid="${st.id}"
+                data-group="${g.key}"
+                data-cname="${cname}"
+                data-part="nc"
+                oninput="handleChallengeTyping(this)"
+                onchange="handleChallengeChange(this)"
+              />
+              <button class="paste-btn" onclick="pasteChallengeButton(event,this)" data-cr="${rIdx}" data-cc="${cNC}">📋</button>
+            </div>
+          </td>
+
+          <td class="${color}">
+            <div class="cell-wrap">
+              <input class="nilai-input ${nscClass}" type="number" min="0" max="100"
+                value="${nsc ? nsc : ""}"
+                data-cr="${rIdx}" data-cc="${cNCS}"
+                data-sid="${st.id}"
+                data-group="${g.key}"
+                data-cname="${cname}"
+                data-part="nsc"
+                oninput="handleChallengeTyping(this)"
+                onchange="handleChallengeChange(this)"
+              />
+              <button class="paste-btn" onclick="pasteChallengeButton(event,this)" data-cr="${rIdx}" data-cc="${cNCS}">📋</button>
+            </div>
+          </td>
+
+          <td class="${color}">
+            <div class="star">${starsText(stars)}</div>
+            <div class="muted">${finalVal}</div>
+          </td>
+        `;
+
+        baseC += 2;
+      });
+
+      const avgNC = cnt ? round05(sumNC / cnt) : 0;
+      const avgNCS = cnt ? round05(sumNCS / cnt) : 0;
+      const avgStars = cnt ? round05(sumStars / cnt) : 0;
+
+      html += `
+        <td class="${color} font-extrabold">${avgNC}</td>
+        <td class="${color} font-extrabold">${avgNCS}</td>
+        <td class="${color} font-extrabold">
+          <div class="star">${starsText(Math.max(1, Math.min(5, avgStars||1)))}</div>
+          <div class="muted">${avgStars||0}</div>
+        </td>
+      `;
+    });
+
+    tr.innerHTML = html;
+    body.appendChild(tr);
+  });
+
+  installChallengeBulkPaste();
+}
+
+function findChallengeInputByRC(r,c){ return document.querySelector(`input[data-cr="${r}"][data-cc="${c}"]`); }
+
+function installChallengeBulkPaste(){
+  const all = document.querySelectorAll("#challenge-body input.nilai-input");
+  all.forEach(inp=>{
+    inp.addEventListener("paste", async(e)=>{
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData)?.getData("text") || "";
+      if(!text) return;
+      await applyChallengeBulkPaste(inp, text);
+    });
+  });
+}
+
+window.handleChallengeTyping = function(inputEl){
+  if (inputEl.value === "") return;
+  let n = Number(inputEl.value);
+  if (Number.isNaN(n)) n = 0;
+  if (n < 0) n = 0;
+  if (n > 100) n = 100;
+  inputEl.value = n;
+  markLowInput(inputEl);
+};
+
+window.handleChallengeChange = async function(inputEl){
+  const sid = inputEl.dataset.sid;
+  const group = inputEl.dataset.group;
+  const cname = inputEl.dataset.cname;
+  const part = inputEl.dataset.part;
+  const val = Number(inputEl.value)||0;
+
+  const obj = ensureChallenge(sid, group, cname);
+  if(part==="nc") obj.nc = val;
+  if(part==="nsc") obj.nsc = val;
+
+  markLowInput(inputEl);
+
+  try{
+    setSaveStatus("Menyimpan challenge…","saving");
+
+    await apiPost({
+      action:"saveChallengesBatch",
+      token:getToken(),
+      className: currentClass,
+      items:[{
+        studentId: sid,
+        group: group,
+        challengeName: cname,
+        NC: obj.nc,
+        NCS: obj.nsc
+      }]
+    });
+
+    setSaveStatus("Tersimpan ✅","ok");
+    renderChallengeTable(); // refresh stars
+  }catch(e){
+    console.error(e);
+    setSaveStatus("Gagal simpan ❌","err");
+    alert(
+      "Gagal menyimpan challenge.\n\nPenyebab paling sering:\n" +
+      "1) Web App belum 'Anyone'\n" +
+      "2) APPS_SCRIPT_URL salah (harus /exec)\n" +
+      "3) Preflight/CORS (sudah kita hindari dengan POST tanpa headers)\n\n" +
+      "Detail: " + (e.message||e)
+    );
+  }
+};
+
+async function applyChallengeBulkPaste(startInput, text){
+  const grid = parseClipboardGrid(text);
+  if(!grid.length) return;
+
+  const startR = Number(startInput.dataset.cr);
+  const startC = Number(startInput.dataset.cc);
+
+  const changed = new Map(); // key: sid|group|cname
+
+  for(let dr=0; dr<grid.length; dr++){
+    for(let dc=0; dc<grid[dr].length; dc++){
+      const target = findChallengeInputByRC(startR+dr, startC+dc);
+      if(!target) continue;
+
+      const raw = grid[dr][dc];
+      if(raw==="" || raw==null) continue;
+
+      const n = Number(String(raw).replace(",", "."));
+      if(Number.isNaN(n)) continue;
+
+      target.value = Math.max(0, Math.min(100, n));
+      markLowInput(target);
+
+      const sid = target.dataset.sid;
+      const group = target.dataset.group;
+      const cname = target.dataset.cname;
+      const part = target.dataset.part;
+
+      const obj = ensureChallenge(sid, group, cname);
+      if(part==="nc") obj.nc = Number(target.value)||0;
+      if(part==="nsc") obj.nsc = Number(target.value)||0;
+
+      changed.set(`${sid}|${group}|${cname}`, { sid, group, cname });
+    }
+  }
+
+  if(changed.size===0) return;
+
+  try{
+    setSaveStatus("Menyimpan paste challenge…","saving");
+
+    const items = Array.from(changed.values()).map(x=>{
+      const obj = ensureChallenge(x.sid, x.group, x.cname);
+      return {
+        studentId: x.sid,
+        group: x.group,
+        challengeName: x.cname,
+        NC: obj.nc,
+        NCS: obj.nsc
+      };
+    });
+
+    await apiPost({
+      action:"saveChallengesBatch",
+      token:getToken(),
+      className: currentClass,
+      items
+    });
+
+    setSaveStatus("Paste challenge tersimpan ✅","ok");
+    renderChallengeTable();
+  }catch(e){
+    console.error(e);
+    setSaveStatus("Gagal paste ❌","err");
+    alert("Gagal simpan paste challenge.\nDetail: " + (e.message||e));
+  }
+}
+
+window.pasteChallengeButton = async function(event, btn){
+  event.preventDefault();
+  event.stopPropagation();
+  try{
+    const text = await navigator.clipboard.readText();
+    if(!text) return alert("Clipboard kosong.");
+    const target = findChallengeInputByRC(Number(btn.dataset.cr), Number(btn.dataset.cc));
+    if(!target) return;
+    await applyChallengeBulkPaste(target, text);
+    target.focus();
+  }catch(e){
+    console.error(e);
+    alert("Gagal baca clipboard (butuh HTTPS/LiveServer).");
+  }
+};
+
+/** =========================
+ *  SUPER ADMIN ACCESS
+ * ========================= */
+function renderAccessCheckboxes(){
+  const wrapSub = document.getElementById("access-subjects");
+  const wrapCh = document.getElementById("access-challenges");
+  wrapSub.innerHTML = "";
+  wrapCh.innerHTML = "";
+
+  const subjectsAll = Array.from(new Set(Object.values(SUBJECTS_ALL).flat()));
+  subjectsAll.forEach(s=>{
+    const chip = document.createElement("label");
+    chip.className = "chip";
+    chip.innerHTML = `<input type="checkbox" class="acc-sub" value="${s}"> <span>${s}</span>`;
+    wrapSub.appendChild(chip);
+  });
+
+  CHALLENGE_ALL.forEach(c=>{
+    const chip = document.createElement("label");
+    chip.className = "chip";
+    chip.innerHTML = `<input type="checkbox" class="acc-ch" value="${c}"> <span>${c}</span>`;
+    wrapCh.appendChild(chip);
+  });
+}
+async function loadTeacherList(){
+  const res = await apiPost({ action:"getTeachers", token:getToken() });
+  const sel = document.getElementById("teacher-select");
+  sel.innerHTML = `<option value="">-- Pilih Guru --</option>`;
+  (res.teachers||[]).forEach(t=>{
+    const opt = document.createElement("option");
+    opt.value = t.email;
+    opt.textContent = t.name ? `${t.name} (${t.email})` : t.email;
+    sel.appendChild(opt);
+  });
+}
+function clearAccessChecks(){
+  document.querySelectorAll(".acc-sub").forEach(x=>x.checked=false);
+  document.querySelectorAll(".acc-ch").forEach(x=>x.checked=false);
+}
+async function loadAccessForSelectedTeacher(){
+  const teacherEmail = document.getElementById("teacher-select").value;
+  if(!teacherEmail) return alert("Pilih guru dulu.");
+  clearAccessChecks();
+  const res = await apiPost({ action:"getTeacherAccess", token:getToken(), teacherEmail });
+  const allowedSubjects = res.allowedSubjects || [];
+  const allowedChallenges = res.allowedChallenges || [];
+  const isHomeroom = !!res.isHomeroom;
+  const cbH = document.getElementById("teacher-is-homeroom");
+  if(cbH) cbH.checked = isHomeroom;
+  document.querySelectorAll(".acc-sub").forEach(cb=>{ if(allowedSubjects.includes(cb.value)) cb.checked = true; });
+  document.querySelectorAll(".acc-ch").forEach(cb=>{ if(allowedChallenges.includes(cb.value)) cb.checked = true; });
+  alert("Akses guru berhasil dimuat ✅");
+}
+async function saveAccessForSelectedTeacher(){
+  const teacherEmail = document.getElementById("teacher-select").value;
+  if(!teacherEmail) return alert("Pilih guru dulu.");
+  const allowedSubjects = Array.from(document.querySelectorAll(".acc-sub:checked")).map(x=>x.value);
+  const allowedChallenges = Array.from(document.querySelectorAll(".acc-ch:checked")).map(x=>x.value);
+  const isHomeroom = !!document.getElementById("teacher-is-homeroom")?.checked;
+  await apiPost({ action:"saveTeacherAccess", token:getToken(), teacherEmail, allowedSubjects, allowedChallenges, isHomeroom });
+  alert("Akses guru tersimpan ✅");
+}
+
+/** =========================
+ * ✅ LOAD CLASS DATA (FIX challenges key)
+ * ========================= */
+async function loadClassData() {
+  currentClass = document.getElementById("class-select").value;
+  overlay(true, `Memuat ${currentClass}...`);
+  setSaveStatus("Memuat…", "saving");
+
+  try {
+    const data = await apiLoadClass(currentClass);
+
+    me = data.me || me;
+    permissions = data.permissions || permissions;
+
+    students = data.students || [];
+    grades = data.grades || {};
+    activities = data.activities || {};
+    raportMeta = data.raportMeta || {};
+
+    // backend returns: challenges[sid][group][name]={NC,NCS}
+    const rawCh = data.challenges || {};
+    challenge = {};
+    for(const sid of Object.keys(rawCh)){
+      for(const group of Object.keys(rawCh[sid]||{})){
+        for(const name of Object.keys(rawCh[sid][group]||{})){
+          const v = rawCh[sid][group][name] || {};
+          const obj = ensureChallenge(sid, group, name);
+          obj.nc = Number(v.NC||0);
+          obj.nsc = Number(v.NCS||0);
+        }
+      }
+    }
+
+    students.forEach(s => {
+      if (!activities[s.id]) activities[s.id] = { talent:{name:"",predicate:"",description:""}, ekskul:[] };
+    });
+
+    document.getElementById("me-name").textContent = me.name || me.email || "-";
+    document.getElementById("me-role").textContent = me.role || "-";
+
+    if(String(me.role||"").toLowerCase() === "super_admin"){
+      document.getElementById("super-admin-panel").classList.remove("hidden");
+      await loadTeacherList();
+      renderAccessCheckboxes();
+    }else{
+      document.getElementById("super-admin-panel").classList.add("hidden");
+    }
+
+    // show/hide rapor meta + kompetensi panels
+    updatePanelsVisibility_();
+
+    renderHeaders();
+    renderTable();
+    renderChallengeTable();
+    renderStudentSelector();
+    clearTalentEkskulUI();
+
+    setSaveStatus("Data termuat ✅", "ok");
+  } catch (e) {
+    console.error(e);
+    setSaveStatus("Gagal memuat ❌", "err");
+    alert("Gagal memuat.\nKemungkinan token expired / URL salah.\n\nDetail: " + (e.message||e));
+    logout();
+  } finally {
+    overlay(false);
+  }
+}
+
+
+/* =========================
+ * ✅ RAPORT META + KOMPETENSI + EXPORT (ADD-ON)
+ * ========================= */
+function getSelectedSemester_(){
+  const el = document.getElementById("semester-select");
+  return el ? String(el.value||"1") : "1";
+}
+function getSelectedTemplate_(){
+  const el = document.getElementById("report-template");
+  return el ? String(el.value||"ganjil") : "ganjil";
+}
+function getStudentById_(sid){
+  sid = String(sid||"").trim();
+  return (students||[]).find(s=>String(s.id)===sid) || { id:sid, name:"" };
+}
+function faseInfoForClass_(className){
+  const n = String(className||"").match(/(\d+)/);
+  const kelasNum = n ? Number(n[1]) : null;
+  if (kelasNum === 10) return { fase:"Fase E", tingkatan:"Tingkatan 5" };
+  if (kelasNum === 11 || kelasNum === 12) return { fase:"Fase F", tingkatan:"Tingkatan 6" };
+  if (kelasNum === 7 || kelasNum === 8 || kelasNum === 9) return { fase:"Fase D", tingkatan:"Tingkatan 3" };
+  return { fase:"", tingkatan:"" };
+}
+function canEditRaportMeta_(){
+  const role = String(me.role||"").toLowerCase();
+  return role === "admin" || role === "super_admin" || !!(permissions && permissions.isHomeroom);
+}
+function canEditKompetensi_(){
+  const role = String(me.role||"").toLowerCase();
+  return role === "admin" || role === "super_admin" || role === "guru";
+}
+
+function updatePanelsVisibility_(){
+  const sid = document.getElementById("student-select")?.value || "";
+  const raporPanel = document.getElementById("raport-meta-panel");
+  const kompPanel  = document.getElementById("kompetensi-panel");
+  if (raporPanel){
+    if (canEditRaportMeta_()) raporPanel.classList.remove("hidden");
+    else raporPanel.classList.add("hidden");
+  }
+  if (kompPanel){
+    if (canEditKompetensi_()) kompPanel.classList.remove("hidden");
+    else kompPanel.classList.add("hidden");
+  }
+
+  const b1 = document.getElementById("save-raportmeta-btn");
+  if(b1) b1.disabled = !sid || !canEditRaportMeta_();
+  const b2 = document.getElementById("save-kompetensi-btn");
+  if(b2) b2.disabled = !sid || !canEditKompetensi_();
+}
+
+function updatePanelsOnStudentChange_(){
+  updatePanelsVisibility_();
+  fillRaportMetaInputs_();
+  populateKompetensiSubjects_();
+  loadKompetensiFromState_();
+}
+
+function fillRaportMetaInputs_(){
+  const sid = document.getElementById("student-select")?.value || "";
+  const sem = getSelectedSemester_();
+  const meta = (raportMeta && raportMeta[sid] && raportMeta[sid][sem]) ? raportMeta[sid][sem] : null;
+
+  const nisnEl = document.getElementById("meta-nisn");
+  const sakitEl = document.getElementById("meta-sakit");
+  const izinEl  = document.getElementById("meta-izin");
+  const alphaEl = document.getElementById("meta-alpha");
+  const orgEl   = document.getElementById("meta-organisasi");
+  const presEl  = document.getElementById("meta-prestasi");
+  const catEl   = document.getElementById("meta-catatan");
+  const capEl   = document.getElementById("meta-capaian-genap");
+
+  if(!sid || !meta){
+    if(nisnEl) nisnEl.value = "";
+    if(sakitEl) sakitEl.value = 0;
+    if(izinEl) izinEl.value = 0;
+    if(alphaEl) alphaEl.value = 0;
+    if(orgEl) orgEl.value = "";
+    if(presEl) presEl.value = "";
+    if(catEl) catEl.value = "";
+    if(capEl) capEl.value = "";
+    return;
+  }
+
+  if(nisnEl) nisnEl.value = meta.nisn || "";
+  if(sakitEl) sakitEl.value = meta.sakit ?? 0;
+  if(izinEl)  izinEl.value  = meta.izin ?? 0;
+  if(alphaEl) alphaEl.value = meta.alpha ?? 0;
+  if(orgEl)   orgEl.value   = meta.organisasi || "";
+  if(presEl)  presEl.value  = meta.prestasi || "";
+  if(catEl)   catEl.value   = meta.catatanWali || "";
+  if(capEl)   capEl.value   = meta.capaianKompetensiGenap || "";
+}
+
+function populateKompetensiSubjects_(){
+  const sel = document.getElementById("kompetensi-subject");
+  if(!sel) return;
+  const role = String(me.role||"").toLowerCase();
+  const all = getSubjectsForCurrentClass();
+  let allowed = all;
+  if(role === "guru" && permissions && Array.isArray(permissions.allowedSubjects)){
+    allowed = all.filter(s => permissions.allowedSubjects.includes(s));
+  }
+  const cur = sel.value;
+  sel.innerHTML = "";
+  allowed.forEach(s=>{
+    const opt=document.createElement("option");
+    opt.value=s; opt.textContent=s;
+    sel.appendChild(opt);
+  });
+  if(cur && allowed.includes(cur)) sel.value = cur;
+}
+
+function loadKompetensiFromState_(){
+  const sid = document.getElementById("student-select")?.value || "";
+  const subject = document.getElementById("kompetensi-subject")?.value || "";
+  const term = document.getElementById("kompetensi-term")?.value || "ganjil";
+  const ta = document.getElementById("kompetensi-text");
+  if(!ta){ return; }
+
+  if(!sid || !subject){
+    ta.value = "";
+    return;
+  }
+
+  const g = (grades && grades[sid] && grades[sid][subject]) ? grades[sid][subject] : null;
+  if(!g){
+    ta.value = "";
+    return;
+  }
+  ta.value = term === "genap" ? (g.kompetensiGenap || "") : (g.kompetensiGanjil || "");
+}
+
+async function saveRaportMeta_(){
+  const sid = document.getElementById("student-select")?.value || "";
+  if(!sid) return alert("Pilih siswa dulu.");
+  const sem = getSelectedSemester_();
+
+  const item = {
+    studentId: sid,
+    semester: sem,
+    nisn: String(document.getElementById("meta-nisn")?.value || "").trim(),
+    sakit: Number(document.getElementById("meta-sakit")?.value || 0),
+    izin:  Number(document.getElementById("meta-izin")?.value || 0),
+    alpha: Number(document.getElementById("meta-alpha")?.value || 0),
+    organisasi: String(document.getElementById("meta-organisasi")?.value || ""),
+    prestasi: String(document.getElementById("meta-prestasi")?.value || ""),
+    catatanWali: String(document.getElementById("meta-catatan")?.value || ""),
+    capaianKompetensiGenap: String(document.getElementById("meta-capaian-genap")?.value || "")
+  };
+
+  overlay(true, "Menyimpan data raport…");
+  try{
+    await apiPost({ action:"saveRaportMetaBatch", token:getToken(), className: currentClass, items:[item] });
+    if(!raportMeta[sid]) raportMeta[sid] = {};
+    raportMeta[sid][sem] = {
+      nisn: item.nisn,
+      sakit: item.sakit,
+      izin: item.izin,
+      alpha: item.alpha,
+      organisasi: item.organisasi,
+      prestasi: item.prestasi,
+      catatanWali: item.catatanWali,
+      capaianKompetensiGenap: item.capaianKompetensiGenap
+    };
+    setSaveStatus("Data raport tersimpan ✅", "ok");
+  }catch(e){
+    console.error(e);
+    setSaveStatus("Gagal simpan raport meta ❌", "err");
+    alert("Gagal simpan data raport: " + (e.message||e));
+  }finally{
+    overlay(false);
+  }
+}
+
+async function saveKompetensi_(){
+  const sid = document.getElementById("student-select")?.value || "";
+  const subject = document.getElementById("kompetensi-subject")?.value || "";
+  const term = document.getElementById("kompetensi-term")?.value || "ganjil";
+  const text = String(document.getElementById("kompetensi-text")?.value || "");
+  if(!sid || !subject) return alert("Pilih siswa dan mata pelajaran dulu.");
+
+  const g = (grades[sid] && grades[sid][subject]) ? grades[sid][subject] : {
+    formatif:{N1:0,N2:0,N3:0,N4:0,NR:0},
+    project:{N1:0,N2:0,NR:0},
+    asesmen:0, sikap:0, final:0, pred:"C",
+    kompetensiGanjil:"", kompetensiGenap:""
+  };
+
+  const item = {
+    studentId: sid,
+    subject,
+    formatif: g.formatif || {},
+    project: g.project || {},
+    asesmen: g.asesmen || 0,
+    sikap: g.sikap || 0,
+    final: g.final || 0,
+    pred: g.pred || "C",
+    kompetensiGanjil: term === "ganjil" ? text : (g.kompetensiGanjil || ""),
+    kompetensiGenap:  term === "genap"  ? text : (g.kompetensiGenap  || "")
+  };
+
+  overlay(true, "Menyimpan kompetensi…");
+  try{
+    await apiPost({ action:"saveGradesBatch", token:getToken(), className: currentClass, items:[item] });
+    if(!grades[sid]) grades[sid] = {};
+    grades[sid][subject] = { ...g, ...item };
+    setSaveStatus("Kompetensi tersimpan ✅", "ok");
+  }catch(e){
+    console.error(e);
+    setSaveStatus("Gagal simpan kompetensi ❌", "err");
+    alert("Gagal simpan kompetensi: " + (e.message||e));
+  }finally{
+    overlay(false);
+  }
+}
+
+function buildRaportHtml_(mode){
+  const sid = document.getElementById("student-select")?.value || "";
+  const st = getStudentById_(sid);
+  const sem = getSelectedSemester_();
+  const meta = (raportMeta && raportMeta[sid] && raportMeta[sid][sem]) ? raportMeta[sid][sem] : {};
+  const fase = faseInfoForClass_(currentClass);
+
+  const subjects = getSubjectsForCurrentClass();
+  const rows = subjects.map(sub=>{
+    const g = (grades[sid] && grades[sid][sub]) ? grades[sid][sub] : null;
+    const nilaiAkhir = g ? (g.final ?? 0) : 0;
+    const pred = g ? (g.pred || "C") : "C";
+    const komp = mode==="genap" ? (g?.kompetensiGenap||"") : (g?.kompetensiGanjil||"");
+    return `
+      <tr>
+        <td style="border:1px solid #000; padding:6px; font-size:12px;">${sub}</td>
+        <td style="border:1px solid #000; padding:6px; font-size:12px; text-align:center;">${nilaiAkhir}</td>
+        <td style="border:1px solid #000; padding:6px; font-size:12px; text-align:center;">${pred}</td>
+        <td style="border:1px solid #000; padding:6px; font-size:12px;">${(mode==="genap") ? komp : ""}</td>
+      </tr>
+    `;
+  }).join("");
+
+  return `
+  <div style="font-family: Arial, sans-serif; color:#000;">
+    <div style="text-align:center; font-weight:700; font-size:14px; margin-bottom:8px;">
+      LAPORAN HASIL BELAJAR (RAPOR) - TERM ${mode.toUpperCase()}
+    </div>
+
+    <table style="width:100%; border-collapse:collapse; margin-bottom:8px;">
+      <tr>
+        <td style="width:50%; font-size:12px;">
+          <div><b>Nama Siswa</b>: ${st.name || ""}</div>
+          <div><b>NIS</b>: ${st.id || ""}</div>
+          <div><b>NISN</b>: ${meta.nisn || ""}</div>
+        </td>
+        <td style="width:50%; font-size:12px;">
+          <div><b>Kelas</b>: ${currentClass}</div>
+          <div><b>Semester</b>: ${sem}</div>
+          <div><b>${fase.fase}</b> - ${fase.tingkatan}</div>
+        </td>
+      </tr>
+    </table>
+
+    <table style="width:100%; border-collapse:collapse; margin-bottom:10px;">
+      <thead>
+        <tr>
+          <th style="border:1px solid #000; padding:6px; font-size:12px; text-align:left;">Mata Pelajaran</th>
+          <th style="border:1px solid #000; padding:6px; font-size:12px;">Nilai Akhir</th>
+          <th style="border:1px solid #000; padding:6px; font-size:12px;">Pred</th>
+          <th style="border:1px solid #000; padding:6px; font-size:12px; text-align:left;">${mode==="genap" ? "Capaian Kompetensi" : ""}</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows}
+      </tbody>
+    </table>
+
+    <table style="width:100%; border-collapse:collapse; margin-bottom:10px;">
+      <tr>
+        <td style="border:1px solid #000; padding:6px; font-size:12px; width:33%;">
+          <b>Ketidakhadiran</b><br/>
+          Sakit: ${meta.sakit||0} <br/>
+          Izin: ${meta.izin||0} <br/>
+          Alpha: ${meta.alpha||0}
+        </td>
+        <td style="border:1px solid #000; padding:6px; font-size:12px; width:33%;">
+          <b>Kegiatan Organisasi</b><br/>
+          ${meta.organisasi || ""}
+        </td>
+        <td style="border:1px solid #000; padding:6px; font-size:12px; width:33%;">
+          <b>Prestasi</b><br/>
+          ${meta.prestasi || ""}
+        </td>
+      </tr>
+    </table>
+
+    <div style="border:1px solid #000; padding:6px; font-size:12px; margin-bottom:10px;">
+      <b>Catatan Gembala/Wali Kelas</b><br/>
+      ${meta.catatanWali || ""}
+    </div>
+
+    ${mode==="genap" ? `
+      <div style="border:1px solid #000; padding:6px; font-size:12px; margin-bottom:10px;">
+        <b>Capaian Kompetensi Khusus (Term Genap)</b><br/>
+        ${meta.capaianKompetensiGenap || ""}
+      </div>
+    ` : ""}
+
+    <div style="display:flex; justify-content:space-between; margin-top:18px; font-size:12px;">
+      <div style="text-align:center; width:45%;">
+        Mengetahui,<br/>Orang Tua/Wali<br/><br/><br/>
+        (____________________)
+      </div>
+      <div style="text-align:center; width:45%;">
+        Wali Kelas<br/><br/><br/><br/>
+        (____________________)
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+async function exportPdf_(){
+  const sid = document.getElementById("student-select")?.value || "";
+  if(!sid) return alert("Pilih siswa dulu.");
+  const mode = getSelectedTemplate_(); // ganjil / genap
+  const html = buildRaportHtml_(mode);
+  const container = document.getElementById("report-print-area");
+  container.innerHTML = html;
+  container.classList.remove("hidden");
+
+  const st = getStudentById_(sid);
+  const sem = getSelectedSemester_();
+  const opt = {
+    margin: 8,
+    filename: `Raport_${mode}_${currentClass}_${(st.name||st.id||"siswa")}_Sem${sem}.pdf`,
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+  };
+
+  overlay(true, "Membuat PDF…");
+  try{
+    await html2pdf().set(opt).from(container).save();
+    setSaveStatus("PDF tersimpan ✅", "ok");
+  }catch(e){
+    console.error(e);
+    setSaveStatus("Gagal export PDF ❌", "err");
+    alert("Gagal export PDF: " + (e.message||e));
+  }finally{
+    container.innerHTML = "";
+    container.classList.add("hidden");
+    overlay(false);
+  }
+}
+
+
+/** INIT */
+document.addEventListener("DOMContentLoaded", async () => {
+  const u = getUser();
+  if(!getToken() || !u.email) return forceLogin();
+
+  document.getElementById("me-name").textContent = u.name || u.email || "-";
+  document.getElementById("me-role").textContent = u.role || "-";
+
+  document.getElementById("btn-logout").addEventListener("click", logout);
+
+  document.getElementById("class-select").addEventListener("change", loadClassData);
+  document.getElementById("student-select").addEventListener("change", onStudentSelected);
+
+  document.getElementById("add-student-btn").addEventListener("click", openModal);
+  document.getElementById("close-modal-btn").addEventListener("click", closeModal);
+  document.getElementById("cancel-add-btn").addEventListener("click", closeModal);
+  document.getElementById("confirm-add-btn").addEventListener("click", confirmAddStudent);
+  document.getElementById("add-student-modal").addEventListener("click", (e)=>{ if (e.target.id==="add-student-modal") closeModal(); });
+
+  document.getElementById("save-talent-btn").addEventListener("click", saveTalent);
+  document.getElementById("add-ekskul-btn").addEventListener("click", addEkskulDraft);
+  document.getElementById("clear-ekskul-btn").addEventListener("click", clearEkskulDraft);
+  document.getElementById("save-ekskul-btn").addEventListener("click", saveEkskulList);
+
+  // raport meta + kompetensi + export (add-on)
+  const semSel = document.getElementById("semester-select");
+  if(semSel) semSel.addEventListener("change", ()=>{ updatePanelsOnStudentChange_(); });
+  document.getElementById("save-raportmeta-btn")?.addEventListener("click", saveRaportMeta_);
+  document.getElementById("kompetensi-subject")?.addEventListener("change", loadKompetensiFromState_);
+  document.getElementById("kompetensi-term")?.addEventListener("change", loadKompetensiFromState_);
+  document.getElementById("save-kompetensi-btn")?.addEventListener("click", saveKompetensi_);
+  document.getElementById("export-pdf-btn")?.addEventListener("click", exportPdf_);
+
+  // super admin buttons
+  document.getElementById("btn-refresh-teachers").addEventListener("click", loadTeacherList);
+  document.getElementById("teacher-select")?.addEventListener("change", ()=>{ const cb=document.getElementById("teacher-is-homeroom"); if(cb) cb.checked=false; });
+  document.getElementById("btn-load-access").addEventListener("click", loadAccessForSelectedTeacher);
+  document.getElementById("btn-save-access").addEventListener("click", saveAccessForSelectedTeacher);
+
+  currentClass = document.getElementById("class-select").value;
+  await loadClassData();
+  updatePanelsOnStudentChange_();
+});
+</script>
+
+</body>
+</html>

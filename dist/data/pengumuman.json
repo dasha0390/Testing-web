@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "judul": "Jadwal Ujian Akhir Semester Ganjil 2026",
+    "slug": "jadwal-ujian-akhir-semester-ganjil-2026",
+    "konten": "Diberitahukan kepada seluruh siswa, orang tua, dan wali murid mengenai jadwal ujian akhir semester ganjil tahun 2026. Ujian akan dilaksanakan mulai tanggal 15 Desember hingga 22 Desember 2026.\n\nMohon untuk memperhatikan jadwal dan ketentuan yang berlaku. Informasi lebih lanjut dapat menghubungi pihak sekolah.",
+    "file": "",
+    "tanggal": "2026-12-01",
+    "status": "published"
+  },
+  {
+    "id": 2,
+    "judul": "Libur Sekolah dalam Rangka Hari Raya",
+    "slug": "libur-sekolah-dalam-rangka-hari-raya",
+    "konten": "Diberitahukan kepada seluruh siswa, orang tua, dan wali murid mengenai libur sekolah dalam rangka hari raya. Libur akan dimulai dari tanggal 25 Desember 2026 hingga 2 Januari 2027.\n\nKegiatan belajar mengajar akan kembali normal pada tanggal 3 Januari 2027.",
+    "file": "",
+    "tanggal": "2026-12-20",
+    "status": "published"
+  },
+  {
+    "id": 3,
+    "judul": "Pengumuman Kelulusan Kelas XII",
+    "slug": "pengumuman-kelulusan-kelas-xii",
+    "konten": "Diberitahukan kepada seluruh siswa, orang tua, dan wali murid mengenai pengumuman kelulusan kelas XII. Pengumuman akan dilaksanakan pada tanggal 23 Desember 2026.\n\nSeluruh siswa kelas XII diharapkan hadir di sekolah pukul 08.00 WIB.",
+    "file": "",
+    "tanggal": "2026-12-18",
+    "status": "published"
+  }
+]

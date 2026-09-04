@@ -1,0 +1,8 @@
+{
+  "name": "sekolah-cms",
+  "version": "1.0.0",
+  "description": "Static school website with CMS editor",
+  "scripts": {
+    "build": "node build.js"
+  }
+}

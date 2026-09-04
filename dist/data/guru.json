@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "nama": "Drs. Ahmad Sutrisno, M.Pd",
+    "nip": "",
+    "jabatan": "Kepala Sekolah",
+    "mapel": "-",
+    "foto": "",
+    "deskripsi": "Berdedikasi dalam mendidik dan membimbing siswa untuk mencapai prestasi terbaik.",
+    "urutan": 0
+  },
+  {
+    "id": 2,
+    "nama": "Siti Nurhaliza, S.Pd",
+    "nip": "",
+    "jabatan": "Wakil Kepala Sekolah",
+    "mapel": "Matematika",
+    "foto": "",
+    "deskripsi": "Berdedikasi dalam mendidik dan membimbing siswa untuk mencapai prestasi terbaik.",
+    "urutan": 1
+  },
+  {
+    "id": 3,
+    "nama": "Budi Hartono, S.Pd",
+    "nip": "",
+    "jabatan": "Guru",
+    "mapel": "Bahasa Indonesia",
+    "foto": "",
+    "deskripsi": "Berdedikasi dalam mendidik dan membimbing siswa untuk mencapai prestasi terbaik.",
+    "urutan": 2
+  },
+  {
+    "id": 4,
+    "nama": "Rina Wijaya, S.Pd",
+    "nip": "",
+    "jabatan": "Guru",
+    "mapel": "Bahasa Inggris",
+    "foto": "",
+    "deskripsi": "Berdedikasi dalam mendidik dan membimbing siswa untuk mencapai prestasi terbaik.",
+    "urutan": 3
+  },
+  {
+    "id": 5,
+    "nama": "Andi Saputra, S.Kom",
+    "nip": "",
+    "jabatan": "Guru",
+    "mapel": "Informatika",
+    "foto": "",
+    "deskripsi": "Berdedikasi dalam mendidik dan membimbing siswa untuk mencapai prestasi terbaik.",
+    "urutan": 4
+  },
+  {
+    "id": 6,
+    "nama": "Dewi Lestari, S.Pd",
+    "nip": "",
+    "jabatan": "Guru",
+    "mapel": "Biologi",
+    "foto": "",
+    "deskripsi": "Berdedikasi dalam mendidik dan membimbing siswa untuk mencapai prestasi terbaik.",
+    "urutan": 5
+  }
+]

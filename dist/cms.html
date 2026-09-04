@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMS Editor — Sekolah</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-active { border-bottom: 2px solid #C79A3E; color: #0F2A3D; font-weight: 600; }
+        .toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 24px; border-radius: 12px; color: white; font-weight: 500; z-index: 9999; transform: translateY(100px); opacity: 0; transition: all 0.3s ease; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { background: #059669; }
+        .toast.error { background: #DC2626; }
+        .toast.info { background: #2563EB; }
+        textarea { resize: vertical; min-height: 100px; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<!-- Header -->
+<header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div>
+            <h1 class="text-xl font-bold text-gray-900">CMS Editor</h1>
+            <p class="text-sm text-gray-500">Edit konten website sekolah</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <span id="statusBadge" class="text-xs px-3 py-1 rounded-full bg-gray-100 text-gray-500">Belum terhubung</span>
+            <button onclick="showSettings()" class="text-sm px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition">Pengaturan</button>
+            <button onclick="saveAll()" class="text-sm px-4 py-2 rounded-lg bg-amber-500 text-white font-semibold hover:bg-amber-600 transition">Simpan & Push</button>
+        </div>
+    </div>
+</header>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center">
+    <div class="bg-white rounded-2xl p-8 w-full max-w-lg mx-4 shadow-2xl">
+        <h2 class="text-lg font-bold mb-4">Pengaturan GitHub</h2>
+        <p class="text-sm text-gray-500 mb-4">Masukkan data untuk menghubungkan ke repository GitHub Anda.</p>
+        <div class="space-y-4">
+            <div>
+                <label class="text-sm font-medium text-gray-700">GitHub Username</label>
+                <input id="cfgUsername" type="text" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5 focus:border-amber-500 focus:ring-amber-500" placeholder="username">
+            </div>
+            <div>
+                <label class="text-sm font-medium text-gray-700">Repository Name</label>
+                <input id="cfgRepo" type="text" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5 focus:border-amber-500 focus:ring-amber-500" placeholder="nama-repo">
+            </div>
+            <div>
+                <label class="text-sm font-medium text-gray-700">Branch</label>
+                <input id="cfgBranch" type="text" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5 focus:border-amber-500 focus:ring-amber-500" placeholder="main" value="main">
+            </div>
+            <div>
+                <label class="text-sm font-medium text-gray-700">GitHub Personal Access Token</label>
+                <input id="cfgToken" type="password" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5 focus:border-amber-500 focus:ring-amber-500" placeholder="ghp_xxxxxxxxxxxx">
+                <p class="text-xs text-gray-400 mt-1">Buat di GitHub &rarr; Settings &rarr; Developer settings &rarr; Personal access tokens &rarr; Fine-grained tokens. Berikan permission: Contents (Read and write).</p>
+            </div>
+        </div>
+        <div class="flex justify-end gap-3 mt-6">
+            <button onclick="hideSettings()" class="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50">Batal</button>
+            <button onclick="saveSettings()" class="px-4 py-2 rounded-lg bg-amber-500 text-white font-semibold hover:bg-amber-600">Simpan & Hubungkan</button>
+        </div>
+    </div>
+</div>
+
+<!-- Tabs -->
+<div class="bg-white border-b border-gray-200">
+    <div class="max-w-6xl mx-auto px-6">
+        <nav class="flex gap-6 text-sm" id="tabs">
+            <button onclick="switchTab('pengaturan')" class="py-3 px-1 tab-active" data-tab="pengaturan">Pengaturan</button>
+            <button onclick="switchTab('berita')" class="py-3 px-1 text-gray-500 hover:text-gray-800" data-tab="berita">Berita</button>
+            <button onclick="switchTab('pengumuman')" class="py-3 px-1 text-gray-500 hover:text-gray-800" data-tab="pengumuman">Pengumuman</button>
+            <button onclick="switchTab('guru')" class="py-3 px-1 text-gray-500 hover:text-gray-800" data-tab="guru">Guru & Staff</button>
+            <button onclick="switchTab('galeri')" class="py-3 px-1 text-gray-500 hover:text-gray-800" data-tab="galeri">Galeri</button>
+            <button onclick="switchTab('kategori')" class="py-3 px-1 text-gray-500 hover:text-gray-800" data-tab="kategori">Kategori</button>
+        </nav>
+    </div>
+</div>
+
+<!-- Content -->
+<main class="max-w-6xl mx-auto px-6 py-8">
+
+    <!-- PENGATURAN -->
+    <div id="panel-pengaturan" class="tab-panel">
+        <h2 class="text-lg font-bold mb-6">Pengaturan Sekolah</h2>
+        <div class="bg-white rounded-2xl border border-gray-200 p-8 space-y-5">
+            <div class="grid md:grid-cols-2 gap-5">
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Nama Sekolah</label>
+                    <input id="p_nama_sekolah" type="text" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Singkatan</label>
+                    <input id="p_singkatan" type="text" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                </div>
+            </div>
+            <div>
+                <label class="text-sm font-medium text-gray-700">Alamat</label>
+                <input id="p_alamat" type="text" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+            </div>
+            <div class="grid md:grid-cols-2 gap-5">
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Telepon</label>
+                    <input id="p_telepon" type="text" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Email</label>
+                    <input id="p_email" type="email" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                </div>
+            </div>
+            <div>
+                <label class="text-sm font-medium text-gray-700">Deskripsi Singkat</label>
+                <textarea id="p_deskripsi_singkat" rows="3" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5"></textarea>
+            </div>
+            <div>
+                <label class="text-sm font-medium text-gray-700">Visi</label>
+                <textarea id="p_visi" rows="3" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5"></textarea>
+            </div>
+            <div>
+                <label class="text-sm font-medium text-gray-700">Misi (satu per baris)</label>
+                <textarea id="p_misi" rows="4" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5"></textarea>
+            </div>
+            <div>
+                <label class="text-sm font-medium text-gray-700">Sejarah</label>
+                <textarea id="p_sejarah" rows="5" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5"></textarea>
+            </div>
+            <div class="grid md:grid-cols-4 gap-5">
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Jumlah Siswa</label>
+                    <input id="p_jumlah_siswa" type="number" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Jumlah Guru</label>
+                    <input id="p_jumlah_guru" type="number" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Jumlah Prestasi</label>
+                    <input id="p_jumlah_prestasi" type="number" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Tahun Berdiri</label>
+                    <input id="p_tahun_berdiri" type="number" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                </div>
+            </div>
+            <div class="grid md:grid-cols-3 gap-5">
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Facebook URL</label>
+                    <input id="p_facebook" type="url" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Instagram URL</label>
+                    <input id="p_instagram" type="url" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">YouTube URL</label>
+                    <input id="p_youtube" type="url" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                </div>
+            </div>
+            <div>
+                <label class="text-sm font-medium text-gray-700">Google Maps Embed HTML</label>
+                <textarea id="p_maps_embed" rows="3" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5 font-mono text-xs"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- BERITA -->
+    <div id="panel-berita" class="tab-panel hidden">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-bold">Berita</h2>
+            <button onclick="addBerita()" class="text-sm px-4 py-2 rounded-lg bg-amber-500 text-white font-semibold hover:bg-amber-600 transition">+ Tambah Berita</button>
+        </div>
+        <div id="beritaList" class="space-y-4"></div>
+    </div>
+
+    <!-- PENGUMUMAN -->
+    <div id="panel-pengumuman" class="tab-panel hidden">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-bold">Pengumuman</h2>
+            <button onclick="addPengumuman()" class="text-sm px-4 py-2 rounded-lg bg-amber-500 text-white font-semibold hover:bg-amber-600 transition">+ Tambah Pengumuman</button>
+        </div>
+        <div id="pengumumanList" class="space-y-4"></div>
+    </div>
+
+    <!-- GURU -->
+    <div id="panel-guru" class="tab-panel hidden">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-bold">Guru & Staff</h2>
+            <button onclick="addGuru()" class="text-sm px-4 py-2 rounded-lg bg-amber-500 text-white font-semibold hover:bg-amber-600 transition">+ Tambah Guru</button>
+        </div>
+        <div id="guruList" class="space-y-4"></div>
+    </div>
+
+    <!-- GALERI -->
+    <div id="panel-galeri" class="tab-panel hidden">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-bold">Galeri</h2>
+            <button onclick="addGaleri()" class="text-sm px-4 py-2 rounded-lg bg-amber-500 text-white font-semibold hover:bg-amber-600 transition">+ Tambah Foto</button>
+        </div>
+        <div id="galeriList" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+    </div>
+
+    <!-- KATEGORI -->
+    <div id="panel-kategori" class="tab-panel hidden">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-bold">Kategori Berita</h2>
+            <button onclick="addKategori()" class="text-sm px-4 py-2 rounded-lg bg-amber-500 text-white font-semibold hover:bg-amber-600 transition">+ Tambah Kategori</button>
+        </div>
+        <div id="kategoriList" class="space-y-3"></div>
+    </div>
+
+</main>
+
+<script>
+// ===== STATE =====
+let config = { username: '', repo: '', branch: 'main', token: '' };
+let data = { pengaturan: {}, berita: [], pengumuman: [], guru: [], galeri: [], kategori: [] };
+let originalSha = {};
+
+// ===== GITHUB API =====
+const API = 'https://api.github.com';
+
+async function ghFetch(path, method = 'GET', body = null) {
+    const res = await fetch(`${API}${path}`, {
+        method,
+        headers: {
+            'Authorization': `Bearer ${config.token}`,
+            'Accept': 'application/vnd.github+json',
+            'Content-Type': 'application/json',
+            'X-GitHub-Api-Version': '2022-11-28'
+        },
+        body: body ? JSON.stringify(body) : null
+    });
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `GitHub API error: ${res.status}`);
+    }
+    return res.json();
+}
+
+async function getFileContent(filename) {
+    try {
+        const result = await ghFetch(`/repos/${config.username}/${config.repo}/contents/dist/data/${filename}?ref=${config.branch}`);
+        originalSha[filename] = result.sha;
+        return JSON.parse(atob(result.content));
+    } catch (e) {
+        if (e.message.includes('Not Found')) return null;
+        throw e;
+    }
+}
+
+async function pushFile(filename, content, message) {
+    const sha = originalSha[filename] || null;
+    const body = {
+        message,
+        content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))),
+        branch: config.branch
+    };
+    if (sha) body.sha = sha;
+    const result = await ghFetch(`/repos/${config.username}/${config.repo}/contents/dist/data/${filename}`, 'PUT', body);
+    originalSha[filename] = result.commit.sha;
+    return result;
+}
+
+// ===== TOAST =====
+function toast(msg, type = 'info') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = `toast ${type} show`;
+    setTimeout(() => el.className = 'toast', 3000);
+}
+
+// ===== SETTINGS =====
+function showSettings() {
+    document.getElementById('settingsModal').classList.remove('hidden');
+    document.getElementById('cfgUsername').value = config.username;
+    document.getElementById('cfgRepo').value = config.repo;
+    document.getElementById('cfgBranch').value = config.branch;
+    document.getElementById('cfgToken').value = config.token;
+}
+
+function hideSettings() {
+    document.getElementById('settingsModal').classList.add('hidden');
+}
+
+function saveSettings() {
+    config.username = document.getElementById('cfgUsername').value.trim();
+    config.repo = document.getElementById('cfgRepo').value.trim();
+    config.branch = document.getElementById('cfgBranch').value.trim() || 'main';
+    config.token = document.getElementById('cfgToken').value.trim();
+    localStorage.setItem('cms_config', JSON.stringify(config));
+    hideSettings();
+    toast('Menghubungkan ke GitHub...', 'info');
+    loadData();
+}
+
+// ===== LOAD DATA =====
+async function loadData() {
+    if (!config.token || !config.username || !config.repo) {
+        toast('Harap isi pengaturan GitHub terlebih dahulu', 'error');
+        showSettings();
+        return;
+    }
+    try {
+        document.getElementById('statusBadge').textContent = 'Loading...';
+        document.getElementById('statusBadge').className = 'text-xs px-3 py-1 rounded-full bg-blue-100 text-blue-600';
+
+        data.pengaturan = (await getFileContent('pengaturan.json')) || getDefaultPengaturan();
+        data.kategori = (await getFileContent('kategori.json')) || [];
+        data.berita = (await getFileContent('berita.json')) || [];
+        data.pengumuman = (await getFileContent('pengumuman.json')) || [];
+        data.guru = (await getFileContent('guru.json')) || [];
+        data.galeri = (await getFileContent('galeri.json')) || [];
+
+        renderAll();
+        document.getElementById('statusBadge').textContent = 'Terhubung';
+        document.getElementById('statusBadge').className = 'text-xs px-3 py-1 rounded-full bg-green-100 text-green-600';
+        toast('Data berhasil dimuat!', 'success');
+    } catch (e) {
+        document.getElementById('statusBadge').textContent = 'Error';
+        document.getElementById('statusBadge').className = 'text-xs px-3 py-1 rounded-full bg-red-100 text-red-600';
+        toast('Gagal memuat data: ' + e.message, 'error');
+    }
+}
+
+function getDefaultPengaturan() {
+    return {
+        nama_sekolah: '', singkatan: '', alamat: '', telepon: '', email: '',
+        deskripsi_singkat: '', visi: '', misi: '', sejarah: '',
+        logo: '', hero_image: '', facebook: '', instagram: '', youtube: '',
+        maps_embed: '', jumlah_siswa: 0, jumlah_guru: 0, jumlah_prestasi: 0, tahun_berdiri: 2000
+    };
+}
+
+// ===== RENDER =====
+function renderAll() {
+    renderPengaturan();
+    renderBerita();
+    renderPengumuman();
+    renderGuru();
+    renderGaleri();
+    renderKategori();
+}
+
+function renderPengaturan() {
+    const p = data.pengaturan;
+    const fields = ['nama_sekolah','singkatan','alamat','telepon','email','deskripsi_singkat','visi','misi','sejarah','jumlah_siswa','jumlah_guru','jumlah_prestasi','tahun_berdiri','facebook','instagram','youtube','maps_embed'];
+    fields.forEach(f => {
+        const el = document.getElementById('p_' + f);
+        if (el) el.value = p[f] || '';
+    });
+}
+
+function savePengaturan() {
+    const fields = ['nama_sekolah','singkatan','alamat','telepon','email','deskripsi_singkat','visi','misi','sejarah','jumlah_siswa','jumlah_guru','jumlah_prestasi','tahun_berdiri','facebook','instagram','youtube','maps_embed'];
+    fields.forEach(f => {
+        const el = document.getElementById('p_' + f);
+        if (el) {
+            const val = el.value;
+            data.pengaturan[f] = ['jumlah_siswa','jumlah_guru','jumlah_prestasi','tahun_berdiri'].includes(f) ? parseInt(val) || 0 : val;
+        }
+    });
+}
+
+// ===== BERITA =====
+function renderBerita() {
+    const container = document.getElementById('beritaList');
+    if (!data.berita.length) {
+        container.innerHTML = '<p class="text-gray-500 text-center py-10">Belum ada berita</p>';
+        return;
+    }
+    container.innerHTML = data.berita.map((b, i) => `
+        <div class="bg-white rounded-2xl border border-gray-200 p-6">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <span class="text-xs px-2 py-1 rounded-full ${b.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">${b.status}</span>
+                    <h3 class="font-semibold text-gray-900 mt-1">${b.judul}</h3>
+                    <p class="text-sm text-gray-500">${b.tanggal_publish} &middot; ${b.views} dilihat</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="toggleBerita(${i})" class="text-sm px-3 py-1 rounded-lg border border-gray-300 hover:bg-gray-50">Edit</button>
+                    <button onclick="deleteBerita(${i})" class="text-sm px-3 py-1 rounded-lg border border-red-300 text-red-600 hover:bg-red-50">Hapus</button>
+                </div>
+            </div>
+            <div id="beritaForm${i}" class="hidden space-y-4 mt-4 pt-4 border-t border-gray-100">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Judul</label>
+                        <input id="b_judul${i}" type="text" value="${escHtml(b.judul)}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Kategori</label>
+                        <select id="b_kategori${i}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                            <option value="">— Pilih —</option>
+                            ${data.kategori.map(k => `<option value="${k.id}" ${b.kategori_id == k.id ? 'selected' : ''}>${k.nama}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Penulis</label>
+                        <input id="b_penulis${i}" type="text" value="${escHtml(b.penulis)}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Tanggal Publish</label>
+                        <input id="b_tanggal${i}" type="date" value="${b.tanggal_publish}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Status</label>
+                        <select id="b_status${i}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                            <option value="draft" ${b.status==='draft'?'selected':''}>Draft</option>
+                            <option value="published" ${b.status==='published'?'selected':''}>Published</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Thumbnail URL (opsional)</label>
+                    <input id="b_thumbnail${i}" type="text" value="${escHtml(b.thumbnail || '')}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5" placeholder="https://...">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Konten</label>
+                    <textarea id="b_konten${i}" rows="8" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">${escHtml(b.konten)}</textarea>
+                </div>
+                <button onclick="saveBerita(${i})" class="text-sm px-4 py-2 rounded-lg bg-green-500 text-white font-semibold hover:bg-green-600">Simpan Berita</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function toggleBerita(i) {
+    const form = document.getElementById('beritaForm' + i);
+    form.classList.toggle('hidden');
+}
+
+function addBerita() {
+    data.berita.push({
+        id: Date.now(),
+        judul: 'Berita Baru',
+        slug: 'berita-baru',
+        kategori_id: null,
+        thumbnail: '',
+        konten: 'Tulis konten berita di sini...',
+        penulis: 'Admin Sekolah',
+        tanggal_publish: new Date().toISOString().split('T')[0],
+        status: 'draft',
+        views: 0
+    });
+    renderBerita();
+    toast('Berita baru ditambahkan', 'info');
+}
+
+function saveBerita(i) {
+    const b = data.berita[i];
+    b.judul = document.getElementById('b_judul' + i).value;
+    b.slug = b.judul.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    b.kategori_id = parseInt(document.getElementById('b_kategori' + i).value) || null;
+    b.penulis = document.getElementById('b_penulis' + i).value;
+    b.tanggal_publish = document.getElementById('b_tanggal' + i).value;
+    b.status = document.getElementById('b_status' + i).value;
+    b.thumbnail = document.getElementById('b_thumbnail' + i).value;
+    b.konten = document.getElementById('b_konten' + i).value;
+    renderBerita();
+    toast('Berita tersimpan', 'success');
+}
+
+function deleteBerita(i) {
+    if (!confirm('Hapus berita ini?')) return;
+    data.berita.splice(i, 1);
+    renderBerita();
+    toast('Berita dihapus', 'info');
+}
+
+// ===== PENGUMUMAN =====
+function renderPengumuman() {
+    const container = document.getElementById('pengumumanList');
+    if (!data.pengumuman.length) {
+        container.innerHTML = '<p class="text-gray-500 text-center py-10">Belum ada pengumuman</p>';
+        return;
+    }
+    container.innerHTML = data.pengumuman.map((p, i) => `
+        <div class="bg-white rounded-2xl border border-gray-200 p-6">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <span class="text-xs px-2 py-1 rounded-full ${p.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">${p.status}</span>
+                    <h3 class="font-semibold text-gray-900 mt-1">${p.judul}</h3>
+                    <p class="text-sm text-gray-500">${p.tanggal}</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="togglePengumuman(${i})" class="text-sm px-3 py-1 rounded-lg border border-gray-300 hover:bg-gray-50">Edit</button>
+                    <button onclick="deletePengumuman(${i})" class="text-sm px-3 py-1 rounded-lg border border-red-300 text-red-600 hover:bg-red-50">Hapus</button>
+                </div>
+            </div>
+            <div id="pengumumanForm${i}" class="hidden space-y-4 mt-4 pt-4 border-t border-gray-100">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Judul</label>
+                        <input id="pg_judul${i}" type="text" value="${escHtml(p.judul)}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Tanggal</label>
+                        <input id="pg_tanggal${i}" type="date" value="${p.tanggal}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Status</label>
+                    <select id="pg_status${i}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                        <option value="draft" ${p.status==='draft'?'selected':''}>Draft</option>
+                        <option value="published" ${p.status==='published'?'selected':''}>Published</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">File Lampiran URL (opsional)</label>
+                    <input id="pg_file${i}" type="text" value="${escHtml(p.file || '')}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5" placeholder="https://...">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Konten</label>
+                    <textarea id="pg_konten${i}" rows="6" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">${escHtml(p.konten)}</textarea>
+                </div>
+                <button onclick="savePengumuman(${i})" class="text-sm px-4 py-2 rounded-lg bg-green-500 text-white font-semibold hover:bg-green-600">Simpan Pengumuman</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function togglePengumuman(i) {
+    document.getElementById('pengumumanForm' + i).classList.toggle('hidden');
+}
+
+function addPengumuman() {
+    data.pengumuman.push({
+        id: Date.now(),
+        judul: 'Pengumuman Baru',
+        slug: 'pengumuman-baru',
+        konten: 'Tulis konten pengumuman di sini...',
+        file: '',
+        tanggal: new Date().toISOString().split('T')[0],
+        status: 'draft'
+    });
+    renderPengumuman();
+    toast('Pengumuman baru ditambahkan', 'info');
+}
+
+function savePengumuman(i) {
+    const p = data.pengumuman[i];
+    p.judul = document.getElementById('pg_judul' + i).value;
+    p.slug = p.judul.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    p.tanggal = document.getElementById('pg_tanggal' + i).value;
+    p.status = document.getElementById('pg_status' + i).value;
+    p.file = document.getElementById('pg_file' + i).value;
+    p.konten = document.getElementById('pg_konten' + i).value;
+    renderPengumuman();
+    toast('Pengumuman tersimpan', 'success');
+}
+
+function deletePengumuman(i) {
+    if (!confirm('Hapus pengumuman ini?')) return;
+    data.pengumuman.splice(i, 1);
+    renderPengumuman();
+    toast('Pengumuman dihapus', 'info');
+}
+
+// ===== GURU =====
+function renderGuru() {
+    const container = document.getElementById('guruList');
+    if (!data.guru.length) {
+        container.innerHTML = '<p class="text-gray-500 text-center py-10">Belum ada guru</p>';
+        return;
+    }
+    container.innerHTML = data.guru.map((g, i) => `
+        <div class="bg-white rounded-2xl border border-gray-200 p-6">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <h3 class="font-semibold text-gray-900">${g.nama}</h3>
+                    <p class="text-sm text-gray-500">${g.jabatan} &middot; ${g.mapel || '-'}</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="toggleGuru(${i})" class="text-sm px-3 py-1 rounded-lg border border-gray-300 hover:bg-gray-50">Edit</button>
+                    <button onclick="deleteGuru(${i})" class="text-sm px-3 py-1 rounded-lg border border-red-300 text-red-600 hover:bg-red-50">Hapus</button>
+                </div>
+            </div>
+            <div id="guruForm${i}" class="hidden space-y-4 mt-4 pt-4 border-t border-gray-100">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Nama</label>
+                        <input id="g_nama${i}" type="text" value="${escHtml(g.nama)}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">NIP</label>
+                        <input id="g_nip${i}" type="text" value="${escHtml(g.nip || '')}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Jabatan</label>
+                        <input id="g_jabatan${i}" type="text" value="${escHtml(g.jabatan)}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Mata Pelajaran</label>
+                        <input id="g_mapel${i}" type="text" value="${escHtml(g.mapel || '')}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Urutan</label>
+                        <input id="g_urutan${i}" type="number" value="${g.urutan}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Foto URL (opsional)</label>
+                    <input id="g_foto${i}" type="text" value="${escHtml(g.foto || '')}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5" placeholder="https://...">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Deskripsi</label>
+                    <textarea id="g_deskripsi${i}" rows="3" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5">${escHtml(g.deskripsi || '')}</textarea>
+                </div>
+                <button onclick="saveGuru(${i})" class="text-sm px-4 py-2 rounded-lg bg-green-500 text-white font-semibold hover:bg-green-600">Simpan Guru</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function toggleGuru(i) {
+    document.getElementById('guruForm' + i).classList.toggle('hidden');
+}
+
+function addGuru() {
+    data.guru.push({
+        id: Date.now(), nama: 'Guru Baru', nip: '', jabatan: 'Guru',
+        mapel: '', foto: '', deskripsi: '', urutan: data.guru.length
+    });
+    renderGuru();
+    toast('Guru baru ditambahkan', 'info');
+}
+
+function saveGuru(i) {
+    const g = data.guru[i];
+    g.nama = document.getElementById('g_nama' + i).value;
+    g.nip = document.getElementById('g_nip' + i).value;
+    g.jabatan = document.getElementById('g_jabatan' + i).value;
+    g.mapel = document.getElementById('g_mapel' + i).value;
+    g.urutan = parseInt(document.getElementById('g_urutan' + i).value) || 0;
+    g.foto = document.getElementById('g_foto' + i).value;
+    g.deskripsi = document.getElementById('g_deskripsi' + i).value;
+    renderGuru();
+    toast('Guru tersimpan', 'success');
+}
+
+function deleteGuru(i) {
+    if (!confirm('Hapus guru ini?')) return;
+    data.guru.splice(i, 1);
+    renderGuru();
+    toast('Guru dihapus', 'info');
+}
+
+// ===== GALERI =====
+function renderGaleri() {
+    const container = document.getElementById('galeriList');
+    if (!data.galeri.length) {
+        container.innerHTML = '<p class="text-gray-500 text-center py-10 col-span-4">Belum ada foto</p>';
+        return;
+    }
+    container.innerHTML = data.galeri.map((g, i) => `
+        <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+            <div class="aspect-square bg-gray-100">
+                ${g.gambar ? `<img src="${g.gambar}" class="w-full h-full object-cover" alt="${escHtml(g.judul)}">` : `<div class="w-full h-full flex items-center justify-center text-gray-400">No Image</div>`}
+            </div>
+            <div class="p-4">
+                <p class="font-medium text-sm text-gray-900">${escHtml(g.judul)}</p>
+                <p class="text-xs text-gray-500 uppercase">${g.kategori}</p>
+                <div class="mt-3 space-y-2">
+                    <input id="gl_judul${i}" type="text" value="${escHtml(g.judul)}" class="w-full text-sm rounded-lg border-gray-300 border px-3 py-2" placeholder="Judul">
+                    <input id="gl_kategori${i}" type="text" value="${escHtml(g.kategori)}" class="w-full text-sm rounded-lg border-gray-300 border px-3 py-2" placeholder="Kategori">
+                    <input id="gl_gambar${i}" type="text" value="${escHtml(g.gambar || '')}" class="w-full text-sm rounded-lg border-gray-300 border px-3 py-2" placeholder="URL gambar">
+                    <div class="flex gap-2">
+                        <button onclick="saveGaleri(${i})" class="flex-1 text-xs px-3 py-2 rounded-lg bg-green-500 text-white font-semibold hover:bg-green-600">Simpan</button>
+                        <button onclick="deleteGaleri(${i})" class="text-xs px-3 py-2 rounded-lg border border-red-300 text-red-600 hover:bg-red-50">Hapus</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function addGaleri() {
+    data.galeri.push({
+        id: Date.now(), judul: 'Foto Baru', gambar: '', kategori: 'kegiatan'
+    });
+    renderGaleri();
+    toast('Foto baru ditambahkan', 'info');
+}
+
+function saveGaleri(i) {
+    const g = data.galeri[i];
+    g.judul = document.getElementById('gl_judul' + i).value;
+    g.kategori = document.getElementById('gl_kategori' + i).value;
+    g.gambar = document.getElementById('gl_gambar' + i).value;
+    renderGaleri();
+    toast('Foto tersimpan', 'success');
+}
+
+function deleteGaleri(i) {
+    if (!confirm('Hapus foto ini?')) return;
+    data.galeri.splice(i, 1);
+    renderGaleri();
+    toast('Foto dihapus', 'info');
+}
+
+// ===== KATEGORI =====
+function renderKategori() {
+    const container = document.getElementById('kategoriList');
+    if (!data.kategori.length) {
+        container.innerHTML = '<p class="text-gray-500 text-center py-10">Belum ada kategori</p>';
+        return;
+    }
+    container.innerHTML = data.kategori.map((k, i) => `
+        <div class="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4">
+            <input id="k_nama${i}" type="text" value="${escHtml(k.nama)}" class="flex-1 rounded-lg border-gray-300 border px-4 py-2.5">
+            <button onclick="saveKategori(${i})" class="text-sm px-4 py-2 rounded-lg bg-green-500 text-white font-semibold hover:bg-green-600">Simpan</button>
+            <button onclick="deleteKategori(${i})" class="text-sm px-4 py-2 rounded-lg border border-red-300 text-red-600 hover:bg-red-50">Hapus</button>
+        </div>
+    `).join('');
+}
+
+function addKategori() {
+    data.kategori.push({ id: Date.now(), nama: 'Kategori Baru', slug: 'kategori-baru' });
+    renderKategori();
+}
+
+function saveKategori(i) {
+    data.kategori[i].nama = document.getElementById('k_nama' + i).value;
+    data.kategori[i].slug = data.kategori[i].nama.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    renderKategori();
+    toast('Kategori tersimpan', 'success');
+}
+
+function deleteKategori(i) {
+    if (!confirm('Hapus kategori ini?')) return;
+    data.kategori.splice(i, 1);
+    renderKategori();
+    toast('Kategori dihapus', 'info');
+}
+
+// ===== TABS =====
+function switchTab(tab) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+    document.getElementById('panel-' + tab).classList.remove('hidden');
+    document.querySelectorAll('#tabs button').forEach(b => {
+        b.classList.remove('tab-active');
+        b.classList.add('text-gray-500');
+    });
+    document.querySelector(`[data-tab="${tab}"]`).classList.add('tab-active');
+    document.querySelector(`[data-tab="${tab}"]`).classList.remove('text-gray-500');
+}
+
+// ===== SAVE ALL =====
+async function saveAll() {
+    if (!config.token) {
+        toast('Harap hubungkan ke GitHub terlebih dahulu', 'error');
+        showSettings();
+        return;
+    }
+    savePengaturan();
+    try {
+        toast('Menyimpan ke GitHub...', 'info');
+        await pushFile('pengaturan.json', data.pengaturan, 'CMS: update pengaturan');
+        await pushFile('kategori.json', data.kategori, 'CMS: update kategori');
+        await pushFile('berita.json', data.berita, 'CMS: update berita');
+        await pushFile('pengumuman.json', data.pengumuman, 'CMS: update pengumuman');
+        await pushFile('guru.json', data.guru, 'CMS: update guru');
+        await pushFile('galeri.json', data.galeri, 'CMS: update galeri');
+        toast('Semua data berhasil di-push ke GitHub! Netlify akan auto-deploy.', 'success');
+    } catch (e) {
+        toast('Gagal push: ' + e.message, 'error');
+    }
+}
+
+// ===== UTILS =====
+function escHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ===== INIT =====
+const saved = localStorage.getItem('cms_config');
+if (saved) {
+    config = JSON.parse(saved);
+    loadData();
+} else {
+    showSettings();
+}
+</script>
+</body>
+</html>

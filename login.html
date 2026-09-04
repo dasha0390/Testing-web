@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Ledger Nilai</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+    body{ font-family:Inter, sans-serif; }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+  <div class="bg-white w-full max-w-md rounded-2xl shadow-lg p-6">
+    <h1 class="text-2xl font-bold text-gray-800">Login</h1>
+    <p class="text-sm text-gray-500 mt-1">Masuk untuk mengakses Ledger Nilai</p>
+
+    <div class="mt-5 space-y-3">
+      <div>
+        <label class="text-sm font-medium text-gray-700">Email</label>
+        <input id="email" type="email" class="mt-1 w-full p-2 border rounded-lg" placeholder="contoh@gmail.com" autocomplete="username">
+      </div>
+      <div>
+        <label class="text-sm font-medium text-gray-700">Password</label>
+        <input id="password" type="password" class="mt-1 w-full p-2 border rounded-lg" placeholder="••••••••" autocomplete="current-password">
+      </div>
+    </div>
+
+    <button id="loginBtn"
+      class="w-full mt-5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg">
+      Masuk
+    </button>
+
+    <div class="mt-3 text-sm text-gray-500">
+      Status: <span id="status" class="font-semibold">-</span>
+    </div>
+
+    <div class="mt-4 text-xs text-gray-400">
+      Pastikan URL Apps Script benar (Web App /exec) & sama dengan index.html
+    </div>
+  </div>
+
+<script>
+/** ✅ SAMAKAN dengan index.html */
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbydrQFi_FSK0KJKhzpfPwogqnyF1hHB-hXbBYGP8OxgRM4V4hOWvBbZSj6rrPk3dO1Uxw/exec";
+
+function setStatus(msg, type="idle"){
+  const el = document.getElementById("status");
+  el.textContent = msg;
+  el.className = "font-semibold";
+  el.classList.remove("text-green-700","text-red-700","text-blue-700","text-gray-700");
+  if(type==="ok") el.classList.add("text-green-700");
+  if(type==="err") el.classList.add("text-red-700");
+  if(type==="loading") el.classList.add("text-blue-700");
+  if(type==="idle") el.classList.add("text-gray-700");
+}
+
+function getToken(){ return localStorage.getItem("ledger_token") || ""; }
+function getUser(){ try { return JSON.parse(localStorage.getItem("ledger_user")||"{}"); } catch { return {}; } }
+
+async function doLogin(){
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  if(!email || !password){
+    alert("Email dan password wajib diisi!");
+    return;
+  }
+
+  try{
+    setStatus("Memproses login...", "loading");
+
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type":"text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "login", email, password })
+    });
+
+    const json = await res.json();
+
+    if(!json.ok){
+      setStatus(json.message || "Login gagal", "err");
+      alert(json.message || "Login gagal");
+      return;
+    }
+
+    // ✅ simpan token & user (ANTI GLITCH)
+    localStorage.setItem("ledger_token", json.token || "");
+    localStorage.setItem("ledger_user", JSON.stringify(json.user || {}));
+
+    setStatus("Login berhasil ✅", "ok");
+    window.location.replace("index.html");
+
+  }catch(err){
+    console.error(err);
+    setStatus("Gagal koneksi", "err");
+    alert("Gagal login. Cek URL Web App / internet.");
+  }
+}
+
+document.getElementById("loginBtn").addEventListener("click", doLogin);
+document.getElementById("password").addEventListener("keydown", (e)=>{
+  if(e.key==="Enter") doLogin();
+});
+
+// ✅ auto redirect hanya jika token+user valid
+(function autoRedirect(){
+  const u = getUser();
+  const t = getToken();
+  if (u && u.email && t) window.location.replace("index.html");
+})();
+</script>
+</body>
+</html>
