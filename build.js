@@ -85,7 +85,7 @@ function navbar(pengaturan) {
     <div class="max-w-7xl mx-auto px-5 sm:px-8">
         <div class="flex items-center justify-between h-20">
             <a href="index.html" class="flex items-center gap-3">
-                ${pengaturan.logo ? `<img src="${pengaturan.logo}" alt="Logo" class="h-11 w-11 rounded-full object-cover">` : `<span class="h-11 w-11 rounded-full bg-ink-700 text-gold-100 flex items-center justify-center font-display text-lg">${(pengaturan.singkatan || 'S')[0]}</span>`}
+                ${pengaturan.logo ? `<img src="${pengaturan.logo}" alt="Logo" class="h-11 w-11 rounded-full object-cover">` : `<img src="eagle.jpg" alt="Logo" class="h-11 w-11 rounded-full object-cover">`}
                 <div class="leading-tight">
                     <p class="font-display text-lg text-ink-800">${pengaturan.singkatan || 'Sekolah Kita'}</p>
                     <p class="text-[11px] tracking-widest uppercase text-ink-600/70">Berprestasi &amp; Berkarakter</p>
