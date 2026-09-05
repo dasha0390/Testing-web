@@ -1,8 +1,39 @@
 {
   "name": "sekolah-cms",
   "version": "1.0.0",
-  "description": "Static school website with CMS editor",
+  "description": "Aplikasi Desktop Sekolah Kita",
+  "main": "main.js",
   "scripts": {
-    "build": "node build.js"
+    "build": "node build.js",
+    "electron:start": "electron .",
+    "electron:build": "electron-builder --win"
+  },
+  "build": {
+    "appId": "com.sekolah-kita.app",
+    "productName": "Sekolah Kita",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.js",
+      "dist/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "eagle.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "eagle.ico",
+      "uninstallerIcon": "eagle.ico"
+    }
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.0.0",
+    "jimp": "^1.6.1",
+    "png-to-ico": "^3.0.2",
+    "sharp": "^0.35.4"
   }
 }

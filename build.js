@@ -166,6 +166,7 @@ function generateIndex(pengaturan, berita, pengumuman, galeri, guru) {
 
   // Hero
   html += `<section class="relative overflow-hidden bg-ink-800">
+    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('realgedung.jpeg'); opacity: 0.25;"></div>
     <div class="absolute inset-0 opacity-[0.07]" style="background-image: radial-gradient(circle at 20% 20%, white 1px, transparent 1px); background-size: 22px 22px;"></div>
     <div class="max-w-7xl mx-auto px-5 sm:px-8 py-20 lg:py-28 grid lg:grid-cols-5 gap-12 items-center relative">
         <div class="lg:col-span-3 fade-up">
