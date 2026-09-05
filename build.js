@@ -182,15 +182,7 @@ function generateIndex(pengaturan, berita, pengumuman, galeri, guru) {
             </div>
         </div>
         <div class="lg:col-span-2 fade-up" style="animation-delay:.15s">
-            <div class="bg-paper rounded-2xl shadow-2xl p-7 rotate-1 hover:rotate-0 transition-transform duration-300">
-                <p class="text-xs uppercase tracking-widest text-ink-600/60 mb-4">Ikhtisar Sekolah</p>
-                <dl class="divide-y divide-ink-100">
-                    <div class="flex items-center justify-between py-3"><dt class="text-ink-700">Siswa Aktif</dt><dd class="font-display text-2xl text-ink-800">${(pengaturan.jumlah_siswa || 0).toLocaleString('id-ID')}+</dd></div>
-                    <div class="flex items-center justify-between py-3"><dt class="text-ink-700">Tenaga Pendidik</dt><dd class="font-display text-2xl text-ink-800">${(pengaturan.jumlah_guru || 0).toLocaleString('id-ID')}+</dd></div>
-                    <div class="flex items-center justify-between py-3"><dt class="text-ink-700">Prestasi Diraih</dt><dd class="font-display text-2xl text-ink-800">${(pengaturan.jumlah_prestasi || 0).toLocaleString('id-ID')}+</dd></div>
-                    <div class="flex items-center justify-between py-3"><dt class="text-ink-700">Tahun Pengalaman</dt><dd class="font-display text-2xl text-ink-800">${years}</dd></div>
-                </dl>
-            </div>
+            <img src="gedung.png" alt="Gedung Sekolah" class="rounded-2xl shadow-2xl w-full object-cover rotate-1 hover:rotate-0 transition-transform duration-300">
         </div>
     </div>
 </section>`;
