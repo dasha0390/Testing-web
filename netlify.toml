@@ -13,3 +13,8 @@
   for = "/data/*"
   [headers.values]
     Cache-Control = "no-cache"
+
+[[redirects]]
+  from = "/cms"
+  to = "/cms.html"
+  status = 200
