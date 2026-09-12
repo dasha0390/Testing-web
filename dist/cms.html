@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CMS Editor — Sekolah</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>CMS Editor — Sekolah (v3)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -31,7 +34,7 @@
 <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
         <div>
-            <h1 class="text-xl font-bold text-gray-900">CMS Editor</h1>
+            <h1 class="text-xl font-bold text-gray-900">CMS Editor <span class="text-xs font-normal text-gray-400">v3.1</span></h1>
             <p class="text-sm text-gray-500">Edit konten website sekolah</p>
         </div>
         <div class="flex items-center gap-3">
@@ -282,26 +285,29 @@ async function getFileContent(filename) {
 
 async function pushFile(filename, content, message) {
     const url = `/repos/${config.username}/${config.repo}/contents/dist/data/${filename}`;
-    let sha = null;
-    try {
-        const existing = await ghFetch(`${url}?ref=${config.branch}`);
-        sha = existing.sha;
-    } catch (e) {
-        if (!e.message.includes('Not Found')) throw e;
-    }
     const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2))));
+    async function getSha() {
+        try {
+            const r = await ghFetch(`${url}?ref=${config.branch}`);
+            return r.sha;
+        } catch (e) {
+            if (e.message.includes('Not Found')) return null;
+            throw e;
+        }
+    }
+    let sha = await getSha();
     const body = { message, content: encoded, branch: config.branch };
     if (sha) body.sha = sha;
     try {
         const result = await ghFetch(url, 'PUT', body);
-        originalSha[filename] = result.commit.sha;
+        originalSha[filename] = result.content ? result.content.sha : sha;
         return result;
     } catch (e) {
-        const fresh = await ghFetch(`${url}?ref=${config.branch}`);
-        body.sha = fresh.sha;
-        const retry = await ghFetch(url, 'PUT', body);
-        originalSha[filename] = retry.commit.sha;
-        return retry;
+        const freshSha = await getSha();
+        body.sha = freshSha;
+        const result = await ghFetch(url, 'PUT', body);
+        originalSha[filename] = result.content ? result.content.sha : freshSha;
+        return result;
     }
 }
 
