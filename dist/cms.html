@@ -15,6 +15,11 @@
         .toast.error { background: #DC2626; }
         .toast.info { background: #2563EB; }
         textarea { resize: vertical; min-height: 100px; }
+        .img-preview { max-height: 120px; border-radius: 8px; object-fit: cover; border: 2px solid #e5e7eb; }
+        .img-preview-sm { max-height: 80px; border-radius: 8px; object-fit: cover; border: 2px solid #e5e7eb; }
+        .upload-zone { border: 2px dashed #d1d5db; border-radius: 12px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .upload-zone:hover { border-color: #f59e0b; background: #fffbeb; }
+        .upload-zone input[type="file"] { display: none; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -116,6 +121,28 @@
             <div>
                 <label class="text-sm font-medium text-gray-700">Deskripsi Singkat</label>
                 <textarea id="p_deskripsi_singkat" rows="3" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5"></textarea>
+            </div>
+            <div class="grid md:grid-cols-2 gap-5">
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Logo Sekolah</label>
+                    <div id="p_logo_preview" class="mt-2 mb-2"></div>
+                    <div class="upload-zone" onclick="document.getElementById('p_logo_file').click()">
+                        <input type="file" id="p_logo_file" accept="image/png,image/jpeg,image/jpg" onchange="handleUpload(this, 'p_logo')">
+                        <p class="text-sm text-gray-500">Klik untuk upload PNG/JPG</p>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1">atau masukkan URL:</p>
+                    <input id="p_logo" type="text" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5" placeholder="https://..." oninput="showPreviewFromUrl(this, 'p_logo')">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Hero Image</label>
+                    <div id="p_hero_image_preview" class="mt-2 mb-2"></div>
+                    <div class="upload-zone" onclick="document.getElementById('p_hero_image_file').click()">
+                        <input type="file" id="p_hero_image_file" accept="image/png,image/jpeg,image/jpg" onchange="handleUpload(this, 'p_hero_image')">
+                        <p class="text-sm text-gray-500">Klik untuk upload PNG/JPG</p>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1">atau masukkan URL:</p>
+                    <input id="p_hero_image" type="text" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5" placeholder="https://..." oninput="showPreviewFromUrl(this, 'p_hero_image')">
+                </div>
             </div>
             <div>
                 <label class="text-sm font-medium text-gray-700">Visi</label>
@@ -254,12 +281,14 @@ async function getFileContent(filename) {
 }
 
 async function pushFile(filename, content, message) {
-    let sha = null;
-    try {
-        const existing = await ghFetch(`/repos/${config.username}/${config.repo}/contents/dist/data/${filename}?ref=${config.branch}`);
-        sha = existing.sha;
-    } catch (e) {
-        if (!e.message.includes('Not Found')) throw e;
+    let sha = originalSha[filename] || null;
+    if (!sha) {
+        try {
+            const existing = await ghFetch(`/repos/${config.username}/${config.repo}/contents/dist/data/${filename}?ref=${config.branch}`);
+            sha = existing.sha;
+        } catch (e) {
+            if (!e.message.includes('Not Found')) throw e;
+        }
     }
     const body = {
         message,
@@ -359,6 +388,13 @@ function renderPengaturan() {
         const el = document.getElementById('p_' + f);
         if (el) el.value = p[f] || '';
     });
+    ['p_logo', 'p_hero_image'].forEach(fieldId => {
+        const val = p[fieldId.replace('p_', '')] || '';
+        const input = document.getElementById(fieldId);
+        const preview = document.getElementById(fieldId + '_preview');
+        if (input) input.value = val;
+        if (preview) preview.innerHTML = renderImgPreview(val, 'img-preview');
+    });
 }
 
 function savePengaturan() {
@@ -369,6 +405,10 @@ function savePengaturan() {
             const val = el.value;
             data.pengaturan[f] = ['jumlah_siswa','jumlah_guru','jumlah_prestasi','tahun_berdiri'].includes(f) ? parseInt(val) || 0 : val;
         }
+    });
+    ['logo', 'hero_image'].forEach(f => {
+        const el = document.getElementById('p_' + f);
+        if (el) data.pengaturan[f] = el.value;
     });
 }
 
@@ -424,8 +464,14 @@ function renderBerita() {
                     </div>
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Thumbnail URL (opsional)</label>
-                    <input id="b_thumbnail${i}" type="text" value="${escHtml(b.thumbnail || '')}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5" placeholder="https://...">
+                    <label class="text-sm font-medium text-gray-700">Thumbnail</label>
+                    <div id="b_thumb_preview${i}" class="mt-2 mb-2">${renderImgPreview(b.thumbnail || '', 'img-preview-sm')}</div>
+                    <div class="upload-zone" onclick="document.getElementById('b_thumb_file${i}').click()">
+                        <input type="file" id="b_thumb_file${i}" accept="image/png,image/jpeg,image/jpg" onchange="handleBeritaUpload(this, ${i})">
+                        <p class="text-xs text-gray-500">Upload PNG/JPG</p>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1">atau URL:</p>
+                    <input id="b_thumbnail${i}" type="text" value="${escHtml(b.thumbnail || '')}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5" placeholder="https://..." oninput="showBeritaPreview(this, ${i})">
                 </div>
                 <div>
                     <label class="text-sm font-medium text-gray-700">Konten</label>
@@ -614,8 +660,14 @@ function renderGuru() {
                     </div>
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Foto URL (opsional)</label>
-                    <input id="g_foto${i}" type="text" value="${escHtml(g.foto || '')}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5" placeholder="https://...">
+                    <label class="text-sm font-medium text-gray-700">Foto</label>
+                    <div id="g_foto_preview${i}" class="mt-2 mb-2">${renderImgPreview(g.foto || '', 'img-preview-sm')}</div>
+                    <div class="upload-zone" onclick="document.getElementById('g_foto_file${i}').click()">
+                        <input type="file" id="g_foto_file${i}" accept="image/png,image/jpeg,image/jpg" onchange="handleGuruUpload(this, ${i})">
+                        <p class="text-xs text-gray-500">Upload PNG/JPG</p>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1">atau URL:</p>
+                    <input id="g_foto${i}" type="text" value="${escHtml(g.foto || '')}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5" placeholder="https://..." oninput="showGuruPreview(this, ${i})">
                 </div>
                 <div>
                     <label class="text-sm font-medium text-gray-700">Deskripsi</label>
@@ -678,7 +730,12 @@ function renderGaleri() {
                 <div class="mt-3 space-y-2">
                     <input id="gl_judul${i}" type="text" value="${escHtml(g.judul)}" class="w-full text-sm rounded-lg border-gray-300 border px-3 py-2" placeholder="Judul">
                     <input id="gl_kategori${i}" type="text" value="${escHtml(g.kategori)}" class="w-full text-sm rounded-lg border-gray-300 border px-3 py-2" placeholder="Kategori">
-                    <input id="gl_gambar${i}" type="text" value="${escHtml(g.gambar || '')}" class="w-full text-sm rounded-lg border-gray-300 border px-3 py-2" placeholder="URL gambar">
+                    <div class="upload-zone" onclick="document.getElementById('gl_gambar_file${i}').click()">
+                        <input type="file" id="gl_gambar_file${i}" accept="image/png,image/jpeg,image/jpg" onchange="handleGaleriUpload(this, ${i})">
+                        <p class="text-xs text-gray-500">Upload PNG/JPG</p>
+                    </div>
+                    <p class="text-xs text-gray-400">atau URL:</p>
+                    <input id="gl_gambar${i}" type="text" value="${escHtml(g.gambar || '')}" class="w-full text-sm rounded-lg border-gray-300 border px-3 py-2" placeholder="https://...">
                     <div class="flex gap-2">
                         <button onclick="saveGaleri(${i})" class="flex-1 text-xs px-3 py-2 rounded-lg bg-green-500 text-white font-semibold hover:bg-green-600">Simpan</button>
                         <button onclick="deleteGaleri(${i})" class="text-xs px-3 py-2 rounded-lg border border-red-300 text-red-600 hover:bg-red-50">Hapus</button>
@@ -786,6 +843,130 @@ async function saveAll() {
 function escHtml(str) {
     if (!str) return '';
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+function renderImgPreview(src, cssClass) {
+    if (!src) return '';
+    return `<img src="${escHtml(src)}" class="${cssClass}" onerror="this.style.display='none'">`;
+}
+
+async function handleUpload(input, fieldId) {
+    const file = input.files[0];
+    if (!file) return;
+    if (!file.type.match(/^image\/(png|jpeg|jpg)$/)) {
+        toast('Hanya file PNG dan JPG yang diizinkan', 'error');
+        input.value = '';
+        return;
+    }
+    if (file.size > 3 * 1024 * 1024) {
+        toast('Ukuran file maksimal 3MB', 'error');
+        input.value = '';
+        return;
+    }
+    try {
+        const base64 = await fileToBase64(file);
+        document.getElementById(fieldId).value = base64;
+        const previewEl = document.getElementById(fieldId + '_preview');
+        if (previewEl) previewEl.innerHTML = renderImgPreview(base64, 'img-preview');
+        toast('Gambar berhasil diupload', 'success');
+    } catch (e) {
+        toast('Gagal membaca file', 'error');
+    }
+}
+
+function showPreviewFromUrl(input, fieldId) {
+    const url = input.value;
+    const previewEl = document.getElementById(fieldId + '_preview');
+    if (previewEl) previewEl.innerHTML = renderImgPreview(url, 'img-preview');
+}
+
+async function handleGuruUpload(input, index) {
+    const file = input.files[0];
+    if (!file) return;
+    if (!file.type.match(/^image\/(png|jpeg|jpg)$/)) {
+        toast('Hanya file PNG dan JPG yang diizinkan', 'error');
+        input.value = '';
+        return;
+    }
+    if (file.size > 3 * 1024 * 1024) {
+        toast('Ukuran file maksimal 3MB', 'error');
+        input.value = '';
+        return;
+    }
+    try {
+        const base64 = await fileToBase64(file);
+        document.getElementById('g_foto' + index).value = base64;
+        const preview = document.getElementById('g_foto_preview' + index);
+        if (preview) preview.innerHTML = renderImgPreview(base64, 'img-preview-sm');
+        toast('Foto berhasil diupload', 'success');
+    } catch (e) {
+        toast('Gagal membaca file', 'error');
+    }
+}
+
+function showGuruPreview(input, index) {
+    const preview = document.getElementById('g_foto_preview' + index);
+    if (preview) preview.innerHTML = renderImgPreview(input.value, 'img-preview-sm');
+}
+
+async function handleGaleriUpload(input, index) {
+    const file = input.files[0];
+    if (!file) return;
+    if (!file.type.match(/^image\/(png|jpeg|jpg)$/)) {
+        toast('Hanya file PNG dan JPG yang diizinkan', 'error');
+        input.value = '';
+        return;
+    }
+    if (file.size > 3 * 1024 * 1024) {
+        toast('Ukuran file maksimal 3MB', 'error');
+        input.value = '';
+        return;
+    }
+    try {
+        const base64 = await fileToBase64(file);
+        document.getElementById('gl_gambar' + index).value = base64;
+        toast('Gambar berhasil diupload', 'success');
+    } catch (e) {
+        toast('Gagal membaca file', 'error');
+    }
+}
+
+async function handleBeritaUpload(input, index) {
+    const file = input.files[0];
+    if (!file) return;
+    if (!file.type.match(/^image\/(png|jpeg|jpg)$/)) {
+        toast('Hanya file PNG dan JPG yang diizinkan', 'error');
+        input.value = '';
+        return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+        toast('Ukuran file maksimal 2MB', 'error');
+        input.value = '';
+        return;
+    }
+    try {
+        const base64 = await fileToBase64(file);
+        document.getElementById('b_thumbnail' + index).value = base64;
+        const preview = document.getElementById('b_thumb_preview' + index);
+        if (preview) preview.innerHTML = renderImgPreview(base64, 'img-preview-sm');
+        toast('Thumbnail berhasil diupload', 'success');
+    } catch (e) {
+        toast('Gagal membaca file', 'error');
+    }
+}
+
+function showBeritaPreview(input, index) {
+    const preview = document.getElementById('b_thumb_preview' + index);
+    if (preview) preview.innerHTML = renderImgPreview(input.value, 'img-preview-sm');
 }
 
 // ===== INIT =====
