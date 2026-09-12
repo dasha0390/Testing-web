@@ -281,24 +281,28 @@ async function getFileContent(filename) {
 }
 
 async function pushFile(filename, content, message) {
-    let sha = originalSha[filename] || null;
-    if (!sha) {
-        try {
-            const existing = await ghFetch(`/repos/${config.username}/${config.repo}/contents/dist/data/${filename}?ref=${config.branch}`);
-            sha = existing.sha;
-        } catch (e) {
-            if (!e.message.includes('Not Found')) throw e;
-        }
+    let sha = null;
+    try {
+        const existing = await ghFetch(`/repos/${config.username}/${config.repo}/contents/dist/data/${filename}?ref=${config.branch}`);
+        sha = existing.sha;
+    } catch (e) {
+        if (!e.message.includes('Not Found')) throw e;
     }
-    const body = {
-        message,
-        content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))),
-        branch: config.branch
-    };
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2))));
+    const body = { message, content: encoded, branch: config.branch };
     if (sha) body.sha = sha;
-    const result = await ghFetch(`/repos/${config.username}/${config.repo}/contents/dist/data/${filename}`, 'PUT', body);
-    originalSha[filename] = result.commit.sha;
-    return result;
+    try {
+        const result = await ghFetch(`/repos/${config.username}/${config.repo}/contents/dist/data/${filename}`, 'PUT', body);
+        originalSha[filename] = result.commit.sha;
+        return result;
+    } catch (e) {
+        if (!e.message.includes('does not match')) throw e;
+        const fresh = await ghFetch(`/repos/${config.username}/${config.repo}/contents/dist/data/${filename}?ref=${config.branch}`);
+        body.sha = fresh.sha;
+        const retry = await ghFetch(`/repos/${config.username}/${config.repo}/contents/dist/data/${filename}`, 'PUT', body);
+        originalSha[filename] = retry.commit.sha;
+        return retry;
+    }
 }
 
 // ===== TOAST =====
