@@ -986,12 +986,21 @@ function showBeritaPreview(input, index) {
 }
 
 // ===== INIT =====
-const saved = localStorage.getItem('cms_config');
-if (saved) {
-    config = JSON.parse(saved);
-    loadData();
+const CMS_VERSION = '3.2';
+const savedVersion = localStorage.getItem('cms_version');
+if (savedVersion && savedVersion !== CMS_VERSION) {
+    localStorage.removeItem('cms_version');
+    localStorage.removeItem('cms_config');
+    location.reload(true);
 } else {
-    showSettings();
+    localStorage.setItem('cms_version', CMS_VERSION);
+    const saved = localStorage.getItem('cms_config');
+    if (saved) {
+        config = JSON.parse(saved);
+        loadData();
+    } else {
+        showSettings();
+    }
 }
 </script>
 </body>

@@ -14,6 +14,13 @@
   [headers.values]
     Cache-Control = "no-cache"
 
+[[headers]]
+  for = "/cms.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
+
 [[redirects]]
   from = "/cms"
   to = "/cms.html"
