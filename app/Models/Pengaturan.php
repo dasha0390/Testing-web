@@ -10,7 +10,7 @@ class Pengaturan extends Model
 
     protected $fillable = [
         'nama_sekolah', 'singkatan', 'alamat', 'telepon', 'email',
-        'deskripsi_singkat', 'visi', 'misi', 'sejarah', 'logo', 'hero_image',
+        'deskripsi_singkat', 'visi', 'misi', 'sejarah', 'logo', 'hero_image', 'hero_bg_video',
         'facebook', 'instagram', 'youtube', 'maps_embed',
         'jumlah_siswa', 'jumlah_guru', 'jumlah_prestasi', 'tahun_berdiri',
     ];

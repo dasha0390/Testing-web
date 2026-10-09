@@ -36,16 +36,36 @@
                 <input type="email" name="email" value="{{ old('email', $pengaturan->email) }}" class="mt-1.5 w-full rounded-xl border-ink-200 focus:border-gold-500 focus:ring-gold-500">
             </div>
         </div>
+        <div>
+            <label class="text-sm font-medium text-ink-700">Logo Sekolah</label>
+            <input type="file" name="logo" accept="image/*" class="mt-1.5 w-full text-sm">
+            @if($pengaturan->logo)<img src="{{ asset('storage/'.$pengaturan->logo) }}" class="mt-2 h-16 w-16 rounded-full object-cover">@endif
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-ink-100 p-8 space-y-5">
+        <h3 class="font-display text-lg text-ink-800">Background Hero</h3>
+        <p class="text-sm text-ink-500">Jika video diunggah, video akan diprioritaskan sebagai background hero. Kosongkan untuk memakai foto, atau hapus keduanya untuk memakai background default.</p>
         <div class="grid sm:grid-cols-2 gap-5">
             <div>
-                <label class="text-sm font-medium text-ink-700">Logo Sekolah</label>
-                <input type="file" name="logo" accept="image/*" class="mt-1.5 w-full text-sm">
-                @if($pengaturan->logo)<img src="{{ asset('storage/'.$pengaturan->logo) }}" class="mt-2 h-16 w-16 rounded-full object-cover">@endif
+                <label class="text-sm font-medium text-ink-700">Foto Background Hero</label>
+                <input type="file" name="hero_image" accept="image/*" class="mt-1.5 w-full text-sm">
+                @if($pengaturan->hero_image)
+                    <img src="{{ asset('storage/'.$pengaturan->hero_image) }}" class="mt-2 h-24 rounded-lg object-cover">
+                    <label class="mt-1 flex items-center gap-1.5 text-xs text-ink-500">
+                        <input type="checkbox" name="remove_hero_image" value="1"> Hapus foto background
+                    </label>
+                @endif
             </div>
             <div>
-                <label class="text-sm font-medium text-ink-700">Foto Hero Beranda</label>
-                <input type="file" name="hero_image" accept="image/*" class="mt-1.5 w-full text-sm">
-                @if($pengaturan->hero_image)<img src="{{ asset('storage/'.$pengaturan->hero_image) }}" class="mt-2 h-16 rounded-lg object-cover">@endif
+                <label class="text-sm font-medium text-ink-700">Video Background Hero (MP4/WebM, maks 50MB)</label>
+                <input type="file" name="hero_bg_video" accept="video/mp4,video/webm,video/ogg" class="mt-1.5 w-full text-sm">
+                @if($pengaturan->hero_bg_video)
+                    <video src="{{ asset('storage/'.$pengaturan->hero_bg_video) }}" class="mt-2 h-24 rounded-lg object-cover" controls muted></video>
+                    <label class="mt-1 flex items-center gap-1.5 text-xs text-ink-500">
+                        <input type="checkbox" name="remove_hero_bg_video" value="1"> Hapus video background
+                    </label>
+                @endif
             </div>
         </div>
     </div>

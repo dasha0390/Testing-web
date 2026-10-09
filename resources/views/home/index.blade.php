@@ -7,7 +7,17 @@
 
 {{-- HERO --}}
 <section class="relative overflow-hidden bg-ink-800">
-    <div class="absolute inset-0 opacity-[0.07]" style="background-image: radial-gradient(circle at 20% 20%, white 1px, transparent 1px); background-size: 22px 22px;"></div>
+    @if($pengaturan->hero_bg_video)
+        <video class="absolute inset-0 w-full h-full object-cover" autoplay muted loop playsinline>
+            <source src="{{ asset('storage/'.$pengaturan->hero_bg_video) }}" type="video/mp4">
+        </video>
+        <div class="absolute inset-0 bg-ink-800/70"></div>
+    @elseif($pengaturan->hero_image)
+        <img src="{{ asset('storage/'.$pengaturan->hero_image) }}" alt="" class="absolute inset-0 w-full h-full object-cover">
+        <div class="absolute inset-0 bg-ink-800/70"></div>
+    @else
+        <div class="absolute inset-0 opacity-[0.07]" style="background-image: radial-gradient(circle at 20% 20%, white 1px, transparent 1px); background-size: 22px 22px;"></div>
+    @endif
     <div class="max-w-7xl mx-auto px-5 sm:px-8 py-20 lg:py-28 grid lg:grid-cols-5 gap-12 items-center relative">
         <div class="lg:col-span-3 fade-up">
             <span class="inline-flex items-center gap-2 text-gold-400 text-xs tracking-[0.2em] uppercase font-semibold">

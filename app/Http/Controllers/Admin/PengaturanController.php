@@ -39,8 +39,25 @@ class PengaturanController extends Controller
             'jumlah_prestasi' => ['nullable', 'integer'],
             'tahun_berdiri' => ['nullable', 'integer'],
             'logo' => ['nullable', 'image', 'max:1024'],
-            'hero_image' => ['nullable', 'image', 'max:3072'],
+            'hero_image' => ['nullable', 'image', 'max:5120'],
+            'hero_bg_video' => ['nullable', 'file', 'mimetypes:video/mp4,video/webm,video/ogg', 'max:51200'],
+            'remove_hero_image' => ['nullable', 'boolean'],
+            'remove_hero_bg_video' => ['nullable', 'boolean'],
         ]);
+
+        if ($request->boolean('remove_hero_image') && !$request->hasFile('hero_image')) {
+            if ($pengaturan->hero_image) {
+                Storage::disk('public')->delete($pengaturan->hero_image);
+            }
+            $data['hero_image'] = null;
+        }
+
+        if ($request->boolean('remove_hero_bg_video') && !$request->hasFile('hero_bg_video')) {
+            if ($pengaturan->hero_bg_video) {
+                Storage::disk('public')->delete($pengaturan->hero_bg_video);
+            }
+            $data['hero_bg_video'] = null;
+        }
 
         if ($request->hasFile('logo')) {
             if ($pengaturan->logo) {
@@ -55,6 +72,15 @@ class PengaturanController extends Controller
             }
             $data['hero_image'] = $request->file('hero_image')->store('pengaturan', 'public');
         }
+
+        if ($request->hasFile('hero_bg_video')) {
+            if ($pengaturan->hero_bg_video) {
+                Storage::disk('public')->delete($pengaturan->hero_bg_video);
+            }
+            $data['hero_bg_video'] = $request->file('hero_bg_video')->store('pengaturan', 'public');
+        }
+
+        unset($data['remove_hero_image'], $data['remove_hero_bg_video']);
 
         $pengaturan->update($data);
 
