@@ -14,7 +14,7 @@
                 <span class="h-px w-8 bg-gold-400"></span> Sejak {{ $pengaturan->tahun_berdiri ?? '—' }}
             </span>
             <h1 class="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.08]">
-                Membangun Generasi Pemimpin,<br class="hidden sm:block"> <span class="signature-underline text-gold-400">Berwawasan Global, Terampil</span> & Berjiwa Pengusaha.
+                Membangun Generasi Pemimpin,<br class="hidden sm:block"> <span class="signature-underline text-gold-400">Berkarakter Kristus</span> Berwawasan Global & Terampil.
             </h1>
             <p class="mt-6 text-ink-100/90 text-lg max-w-xl leading-relaxed">
                 {{ $pengaturan->deskripsi_singkat }}
