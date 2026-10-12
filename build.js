@@ -311,8 +311,9 @@ function generateIndex(pengaturan, berita, pengumuman, galeri, guru, igPosts) {
   html += `</div></section>`;
 
   // Instagram terbaru
+  const igWidget = String(pengaturan.ig_widget || '').trim();
   const igLatest = (igPosts || []).filter((p) => p && (p.media_url || p.thumbnail_url)).slice(0, 3);
-  if (igLatest.length) {
+  if (igWidget || igLatest.length) {
     html += `<section class="max-w-7xl mx-auto px-5 sm:px-8 pb-20">
     <div class="flex items-end justify-between mb-10">
         <div>
@@ -320,11 +321,14 @@ function generateIndex(pengaturan, berita, pengumuman, galeri, guru, igPosts) {
             <h2 class="font-display text-3xl sm:text-4xl text-ink-800 mt-2">Terbaru di Instagram</h2>
         </div>
         <a href="${IG_ACCOUNT_URL}" target="_blank" rel="noopener" class="hidden sm:inline-flex text-sm font-semibold text-ink-700 hover:text-gold-600">@eagleschool_ &rarr;</a>
-    </div>
-    <div class="grid md:grid-cols-3 gap-8">`;
-    for (const p of igLatest) {
-      const caption = escapeHtml(String(p.caption || '').replace(/\n{2,}/g, '\n'));
-      html += `<a href="${escapeHtml(p.permalink || IG_ACCOUNT_URL)}" target="_blank" rel="noopener" class="group block bg-white rounded-2xl overflow-hidden border border-ink-100 hover:shadow-xl transition">
+    </div>`;
+    if (igWidget) {
+      html += `<div id="instagram-feed">${igWidget}</div>`;
+    } else {
+      html += `<div class="grid md:grid-cols-3 gap-8">`;
+      for (const p of igLatest) {
+        const caption = escapeHtml(String(p.caption || '').replace(/\n{2,}/g, '\n'));
+        html += `<a href="${escapeHtml(p.permalink || IG_ACCOUNT_URL)}" target="_blank" rel="noopener" class="group block bg-white rounded-2xl overflow-hidden border border-ink-100 hover:shadow-xl transition">
         <div class="aspect-[4/3] bg-ink-100 overflow-hidden">
             <img src="${escapeHtml(p.thumbnail_url || p.media_url)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Postingan Instagram" loading="lazy">
         </div>
@@ -334,8 +338,10 @@ function generateIndex(pengaturan, berita, pengumuman, galeri, guru, igPosts) {
             ${p.timestamp ? `<p class="mt-4 text-xs text-ink-400">${formatDate(p.timestamp)}</p>` : ''}
         </div>
     </a>`;
+      }
+      html += `</div>`;
     }
-    html += `</div>
+    html += `
     <p class="mt-8 sm:hidden"><a href="${IG_ACCOUNT_URL}" target="_blank" rel="noopener" class="text-sm font-semibold text-ink-700 hover:text-gold-600">@eagleschool_ &rarr;</a></p>
 </section>`;
   }

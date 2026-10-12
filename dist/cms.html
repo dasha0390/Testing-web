@@ -196,6 +196,11 @@
                 <label class="text-sm font-medium text-gray-700">Google Maps Embed HTML</label>
                 <textarea id="p_maps_embed" rows="3" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5 font-mono text-xs"></textarea>
             </div>
+            <div>
+                <label class="text-sm font-medium text-gray-700">Kode Embed Instagram (opsional)</label>
+                <p class="text-xs text-gray-400 mb-1">Tempel kode embed dari penyedia widget (mis. SnapWidget / Elfsight) untuk menampilkan feed Instagram di beranda. Biarkan kosong jika tidak dipakai.</p>
+                <textarea id="p_ig_widget" rows="5" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5 font-mono text-xs" placeholder="&lt;script src=&quot;https://...&quot;&gt;&lt;/script&gt;"></textarea>
+            </div>
         </div>
     </div>
 
@@ -416,7 +421,7 @@ function renderAll() {
 
 function renderPengaturan() {
     const p = data.pengaturan;
-    const fields = ['nama_sekolah','singkatan','alamat','telepon','email','deskripsi_singkat','visi','misi','sejarah','jumlah_siswa','jumlah_guru','jumlah_prestasi','tahun_berdiri','facebook','instagram','youtube','maps_embed'];
+    const fields = ['nama_sekolah','singkatan','alamat','telepon','email','deskripsi_singkat','visi','misi','sejarah','jumlah_siswa','jumlah_guru','jumlah_prestasi','tahun_berdiri','facebook','instagram','youtube','maps_embed','ig_widget'];
     fields.forEach(f => {
         const el = document.getElementById('p_' + f);
         if (el) el.value = p[f] || '';
@@ -436,7 +441,7 @@ function renderPengaturan() {
 }
 
 function savePengaturan() {
-    const fields = ['nama_sekolah','singkatan','alamat','telepon','email','deskripsi_singkat','visi','misi','sejarah','jumlah_siswa','jumlah_guru','jumlah_prestasi','tahun_berdiri','facebook','instagram','youtube','maps_embed'];
+    const fields = ['nama_sekolah','singkatan','alamat','telepon','email','deskripsi_singkat','visi','misi','sejarah','jumlah_siswa','jumlah_guru','jumlah_prestasi','tahun_berdiri','facebook','instagram','youtube','maps_embed','ig_widget'];
     fields.forEach(f => {
         const el = document.getElementById('p_' + f);
         if (el) {
