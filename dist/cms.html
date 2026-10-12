@@ -137,14 +137,15 @@
                     <input id="p_logo" type="text" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5" placeholder="https://..." oninput="showPreviewFromUrl(this, 'p_logo')">
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Hero Image</label>
+                    <label class="text-sm font-medium text-gray-700">Hero (background beranda)</label>
+                    <p class="text-xs text-gray-400 mb-1">Isi dengan URL gambar <b>atau</b> link video YouTube. Kosongkan untuk memakai foto gedung bawaan.</p>
                     <div id="p_hero_image_preview" class="mt-2 mb-2"></div>
                     <div class="upload-zone" onclick="document.getElementById('p_hero_image_file').click()">
-                        <input type="file" id="p_hero_image_file" accept="image/png,image/jpeg,image/jpg" onchange="handleUpload(this, 'p_hero_image')">
+                        <input type="file" id="p_hero_image_file" accept="image/png,image/jpeg,image/jpg" onchange="handleHeroUpload(this)">
                         <p class="text-sm text-gray-500">Klik untuk upload PNG/JPG</p>
                     </div>
-                    <p class="text-xs text-gray-400 mt-1">atau masukkan URL:</p>
-                    <input id="p_hero_image" type="text" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5" placeholder="https://..." oninput="showPreviewFromUrl(this, 'p_hero_image')">
+                    <p class="text-xs text-gray-400 mt-1">atau masukkan URL gambar / link YouTube:</p>
+                    <input id="p_hero_image" type="text" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5" placeholder="https://youtu.be/..." oninput="showHeroPreview(this)">
                 </div>
             </div>
             <div>
@@ -311,6 +312,28 @@ async function pushFile(filename, content, message) {
     }
 }
 
+async function pushBinary(repoPath, base64Data, message) {
+    const url = `/repos/${config.username}/${config.repo}/contents/${repoPath}`;
+    async function getSha() {
+        try {
+            const r = await ghFetch(`${url}?ref=${config.branch}`);
+            return r.sha;
+        } catch (e) {
+            if (e.message.includes('Not Found')) return null;
+            throw e;
+        }
+    }
+    const body = { message, content: base64Data, branch: config.branch };
+    const sha = await getSha();
+    if (sha) body.sha = sha;
+    try {
+        return await ghFetch(url, 'PUT', body);
+    } catch (e) {
+        body.sha = await getSha();
+        return await ghFetch(url, 'PUT', body);
+    }
+}
+
 // ===== TOAST =====
 function toast(msg, type = 'info') {
     const el = document.getElementById('toast');
@@ -398,13 +421,18 @@ function renderPengaturan() {
         const el = document.getElementById('p_' + f);
         if (el) el.value = p[f] || '';
     });
-    ['p_logo', 'p_hero_image'].forEach(fieldId => {
+    ['p_logo'].forEach(fieldId => {
         const val = p[fieldId.replace('p_', '')] || '';
         const input = document.getElementById(fieldId);
         const preview = document.getElementById(fieldId + '_preview');
         if (input) input.value = val;
         if (preview) preview.innerHTML = renderImgPreview(val, 'img-preview');
     });
+    const heroInput = document.getElementById('p_hero_image');
+    if (heroInput) {
+        heroInput.value = p.hero_image || '';
+        showHeroPreview(heroInput);
+    }
 }
 
 function savePengaturan() {
@@ -864,7 +892,7 @@ function fileToBase64(file) {
     });
 }
 
-function compressImage(file, maxPx) {
+function compressImage(file, maxPx, quality = 0.8) {
     return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -915,6 +943,44 @@ function showPreviewFromUrl(input, fieldId) {
     const url = input.value;
     const previewEl = document.getElementById(fieldId + '_preview');
     if (previewEl) previewEl.innerHTML = renderImgPreview(url, 'img-preview');
+}
+
+function isYoutubeUrl(url) {
+    return /(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:[^&]*&)*v=|embed\/|shorts\/|live\/))[A-Za-z0-9_-]{11}/.test(String(url || ''));
+}
+
+function showHeroPreview(input) {
+    const val = input.value.trim();
+    const preview = document.getElementById('p_hero_image_preview');
+    if (!preview) return;
+    if (isYoutubeUrl(val)) {
+        preview.innerHTML = '<p class="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2">Video YouTube akan tampil sebagai background hero (diam &amp; otomatis putar).</p>';
+        return;
+    }
+    preview.innerHTML = renderImgPreview(val, 'img-preview');
+}
+
+async function handleHeroUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (!file.type.match(/^image\/(png|jpeg|jpg)$/)) {
+        toast('Hanya file PNG dan JPG yang diizinkan', 'error');
+        input.value = '';
+        return;
+    }
+    try {
+        toast('Mengkompres gambar...', 'info');
+        const dataUrl = await compressImage(file, 1600, 0.82);
+        toast('Mengunggah hero.jpg ke repository...', 'info');
+        await pushBinary('dist/uploads/hero.jpg', dataUrl.split(',')[1], 'CMS: update hero');
+        document.getElementById('p_hero_image').value = 'uploads/hero.jpg';
+        document.getElementById('p_hero_image_preview').innerHTML = renderImgPreview(dataUrl, 'img-preview');
+        toast('Hero image tersimpan', 'success');
+    } catch (e) {
+        toast('Gagal upload hero: ' + e.message, 'error');
+    } finally {
+        input.value = '';
+    }
 }
 
 async function handleGuruUpload(input, index) {

@@ -35,6 +35,89 @@ function linkify(text) {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(urlRegex, '<a href="$1" target="_blank" class="text-gold-600 underline">$1</a>').replace(/\n/g, '<br>');
 }
 
+function readJSONSafe(file, fallback) {
+  try {
+    const p = path.join(DATA_DIR, file);
+    if (!fs.existsSync(p)) return fallback;
+    return JSON.parse(fs.readFileSync(p, 'utf8'));
+  } catch (e) {
+    return fallback;
+  }
+}
+
+function escapeHtml(text) {
+  return String(text || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function youtubeId(url) {
+  const m = String(url || '').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:[^&]*&)*v=|embed\/|shorts\/|live\/))([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
+function heroMedia(pengaturan) {
+  const value = String(pengaturan.hero_image || '').trim();
+  if (!value) {
+    return `<div class="absolute inset-0 bg-cover bg-center" style="background-image: url('realgedung.jpeg'); opacity: 0.25;"></div>`;
+  }
+  const yt = youtubeId(value);
+  if (yt) {
+    return `<iframe src="https://www.youtube-nocookie.com/embed/${yt}?autoplay=1&mute=1&loop=1&playlist=${yt}&controls=0&playsinline=1&rel=0&modestbranding=1" title="Video hero sekolah" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style="width:100vw; height:56.25vw; min-height:100%; min-width:177.78vh; opacity:0.45;"></iframe>`;
+  }
+  return `<div class="absolute inset-0 bg-cover bg-center" style="background-image: url('${value}'); opacity: 0.25;"></div>`;
+}
+
+// ===== INSTAGRAM =====
+const IG_FILE = 'instagram.json';
+const IG_ACCOUNT_URL = 'https://www.instagram.com/eagleschool_';
+const IG_REFRESH_MS = 30 * 60 * 1000;
+const IG_MAX_AGE_MS = 20 * 60 * 60 * 1000;
+
+async function fetchInstagram() {
+  const cache = readJSONSafe(IG_FILE, { fetched_at: null, posts: [] });
+  const posts = Array.isArray(cache.posts) ? cache.posts : [];
+  const age = cache.fetched_at ? Date.now() - new Date(cache.fetched_at).getTime() : Infinity;
+  const token = process.env.IG_ACCESS_TOKEN;
+  const userId = process.env.IG_USER_ID;
+
+  if (token && userId && age > IG_REFRESH_MS) {
+    try {
+      const url = `https://graph.facebook.com/v21.0/${userId}/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp&limit=3&access_token=${encodeURIComponent(token)}`;
+      const res = await fetch(url);
+      const body = await res.json();
+      if (!res.ok) {
+        const msg = body && body.error && body.error.message ? body.error.message : `HTTP ${res.status}`;
+        throw new Error(msg);
+      }
+      const fresh = (body.data || []).slice(0, 3).map((p) => ({
+        id: p.id,
+        permalink: p.permalink || IG_ACCOUNT_URL,
+        caption: p.caption || '',
+        media_type: p.media_type || '',
+        media_url: p.media_url || '',
+        thumbnail_url: p.thumbnail_url || '',
+        timestamp: p.timestamp || '',
+      }));
+      fs.writeFileSync(path.join(DATA_DIR, IG_FILE), JSON.stringify({ fetched_at: new Date().toISOString(), posts: fresh }, null, 2));
+      console.log(`Instagram: ${fresh.length} postingan terbaru dimuat.`);
+      return fresh;
+    } catch (e) {
+      console.warn(`Instagram: gagal memuat (${e.message}), memakai cache.`);
+    }
+  }
+
+  if (!token || !userId) {
+    if (age === Infinity) console.warn('Instagram: IG_ACCESS_TOKEN / IG_USER_ID belum diatur, blok dilewati.');
+  } else if (age > IG_MAX_AGE_MS) {
+    console.warn('Instagram: cache lebih tua dari 20 jam (url foto kedaluwarsa), blok dilewati.');
+    return [];
+  }
+  return posts;
+}
+
 const HEAD = `<!DOCTYPE html>
 <html lang="id">
 <head>
@@ -158,7 +241,7 @@ function footer(pengaturan) {
 </body></html>`;
 }
 
-function generateIndex(pengaturan, berita, pengumuman, galeri, guru) {
+function generateIndex(pengaturan, berita, pengumuman, galeri, guru, igPosts) {
   const years = pengaturan.tahun_berdiri ? new Date().getFullYear() - pengaturan.tahun_berdiri : 0;
   let html = HEAD.replace('{{TITLE}}', `${pengaturan.nama_sekolah} — Beranda`).replace('{{DESCRIPTION}}', pengaturan.deskripsi_singkat || '');
   html += navbar(pengaturan);
@@ -166,7 +249,7 @@ function generateIndex(pengaturan, berita, pengumuman, galeri, guru) {
 
   // Hero
   html += `<section class="relative overflow-hidden bg-ink-800">
-    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('realgedung.jpeg'); opacity: 0.25;"></div>
+    ${heroMedia(pengaturan)}
     <div class="absolute inset-0 opacity-[0.07]" style="background-image: radial-gradient(circle at 20% 20%, white 1px, transparent 1px); background-size: 22px 22px;"></div>
     <div class="max-w-7xl mx-auto px-5 sm:px-8 py-20 lg:py-28 grid lg:grid-cols-5 gap-12 items-center relative">
         <div class="lg:col-span-3 fade-up">
@@ -226,6 +309,36 @@ function generateIndex(pengaturan, berita, pengumuman, galeri, guru) {
     </a>`;
   }
   html += `</div></section>`;
+
+  // Instagram terbaru
+  const igLatest = (igPosts || []).filter((p) => p && (p.media_url || p.thumbnail_url)).slice(0, 3);
+  if (igLatest.length) {
+    html += `<section class="max-w-7xl mx-auto px-5 sm:px-8 pb-20">
+    <div class="flex items-end justify-between mb-10">
+        <div>
+            <span class="text-xs uppercase tracking-widest text-gold-600 font-semibold">Instagram</span>
+            <h2 class="font-display text-3xl sm:text-4xl text-ink-800 mt-2">Terbaru di Instagram</h2>
+        </div>
+        <a href="${IG_ACCOUNT_URL}" target="_blank" rel="noopener" class="hidden sm:inline-flex text-sm font-semibold text-ink-700 hover:text-gold-600">@eagleschool_ &rarr;</a>
+    </div>
+    <div class="grid md:grid-cols-3 gap-8">`;
+    for (const p of igLatest) {
+      const caption = escapeHtml(String(p.caption || '').replace(/\n{2,}/g, '\n'));
+      html += `<a href="${escapeHtml(p.permalink || IG_ACCOUNT_URL)}" target="_blank" rel="noopener" class="group block bg-white rounded-2xl overflow-hidden border border-ink-100 hover:shadow-xl transition">
+        <div class="aspect-[4/3] bg-ink-100 overflow-hidden">
+            <img src="${escapeHtml(p.thumbnail_url || p.media_url)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Postingan Instagram" loading="lazy">
+        </div>
+        <div class="p-6">
+            <span class="text-xs uppercase tracking-wider text-gold-600 font-semibold">Instagram</span>
+            <p class="mt-2 text-sm text-ink-600 line-clamp-3">${caption ? truncate(caption, 220).replace(/\n/g, '<br>') : 'Lihat postingan di Instagram'}</p>
+            ${p.timestamp ? `<p class="mt-4 text-xs text-ink-400">${formatDate(p.timestamp)}</p>` : ''}
+        </div>
+    </a>`;
+    }
+    html += `</div>
+    <p class="mt-8 sm:hidden"><a href="${IG_ACCOUNT_URL}" target="_blank" rel="noopener" class="text-sm font-semibold text-ink-700 hover:text-gold-600">@eagleschool_ &rarr;</a></p>
+</section>`;
+  }
 
   // Galeri preview
   if (galeri.length > 0) {
@@ -535,28 +648,37 @@ function generateKontak(pengaturan) {
 }
 
 // BUILD
-console.log('Building static site...\n');
+async function main() {
+  console.log('Building static site...\n');
 
-const pengaturan = readJSON('pengaturan.json');
-const berita = readJSON('berita.json');
-const pengumuman = readJSON('pengumuman.json');
-const galeri = readJSON('galeri.json');
-const guru = readJSON('guru.json');
-const kategoris = readJSON('kategori.json');
+  const igPosts = await fetchInstagram();
 
-generateIndex(pengaturan, berita, pengumuman, galeri, guru);
-generateProfil(pengaturan);
-generateBeritaIndex(pengaturan, berita, kategoris);
-for (const b of berita.filter(b => b.status === 'published')) {
-  const related = berita.filter(r => r.id !== b.id && r.status === 'published').slice(0, 3);
-  generateBeritaShow(pengaturan, b, related, kategoris);
+  const pengaturan = readJSON('pengaturan.json');
+  const berita = readJSON('berita.json');
+  const pengumuman = readJSON('pengumuman.json');
+  const galeri = readJSON('galeri.json');
+  const guru = readJSON('guru.json');
+  const kategoris = readJSON('kategori.json');
+
+  generateIndex(pengaturan, berita, pengumuman, galeri, guru, igPosts);
+  generateProfil(pengaturan);
+  generateBeritaIndex(pengaturan, berita, kategoris);
+  for (const b of berita.filter(b => b.status === 'published')) {
+    const related = berita.filter(r => r.id !== b.id && r.status === 'published').slice(0, 3);
+    generateBeritaShow(pengaturan, b, related, kategoris);
+  }
+  generatePengumumanIndex(pengaturan, pengumuman);
+  for (const p of pengumuman.filter(p => p.status === 'published')) {
+    generatePengumumanShow(pengaturan, p);
+  }
+  generateGaleriIndex(pengaturan, galeri);
+  generateGuruIndex(pengaturan, guru);
+  generateKontak(pengaturan);
+
+  console.log('\nBuild complete!');
 }
-generatePengumumanIndex(pengaturan, pengumuman);
-for (const p of pengumuman.filter(p => p.status === 'published')) {
-  generatePengumumanShow(pengaturan, p);
-}
-generateGaleriIndex(pengaturan, galeri);
-generateGuruIndex(pengaturan, guru);
-generateKontak(pengaturan);
 
-console.log('\nBuild complete!');
+main().catch((err) => {
+  console.error('Build gagal:', err && err.message ? err.message : err);
+  process.exit(1);
+});
