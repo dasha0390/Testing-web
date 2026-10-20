@@ -86,6 +86,7 @@
             <button onclick="switchTab('guru')" class="py-3 px-1 text-gray-500 hover:text-gray-800" data-tab="guru">Guru & Staff</button>
             <button onclick="switchTab('galeri')" class="py-3 px-1 text-gray-500 hover:text-gray-800" data-tab="galeri">Galeri</button>
             <button onclick="switchTab('kategori')" class="py-3 px-1 text-gray-500 hover:text-gray-800" data-tab="kategori">Kategori</button>
+            <button onclick="switchTab('heroslides')" class="py-3 px-1 text-gray-500 hover:text-gray-800" data-tab="heroslides">Slide Hero</button>
         </nav>
     </div>
 </div>
@@ -249,12 +250,22 @@
         <div id="kategoriList" class="space-y-3"></div>
     </div>
 
+    <!-- SLIDE HERO -->
+    <div id="panel-heroslides" class="tab-panel hidden">
+        <div class="flex items-center justify-between mb-2">
+            <h2 class="text-lg font-bold">Slide Hero Beranda</h2>
+            <button onclick="addHeroSlide()" class="text-sm px-4 py-2 rounded-lg bg-amber-500 text-white font-semibold hover:bg-amber-600 transition">+ Tambah Slide</button>
+        </div>
+        <p class="text-sm text-gray-500 mb-6">Slide informasi (gambar) yang tampil bergantian secara otomatis (auto-slide) di bagian hero beranda, setelah hero utama (video/gambar dari Pengaturan).</p>
+        <div id="heroSlidesList" class="space-y-4"></div>
+    </div>
+
 </main>
 
 <script>
 // ===== STATE =====
 let config = { username: '', repo: '', branch: 'main', token: '' };
-let data = { pengaturan: {}, berita: [], pengumuman: [], guru: [], galeri: [], kategori: [] };
+let data = { pengaturan: {}, berita: [], pengumuman: [], guru: [], galeri: [], kategori: [], heroSlides: [] };
 let originalSha = {};
 
 // ===== GITHUB API =====
@@ -388,6 +399,7 @@ async function loadData() {
         data.pengumuman = (await getFileContent('pengumuman.json')) || [];
         data.guru = (await getFileContent('guru.json')) || [];
         data.galeri = (await getFileContent('galeri.json')) || [];
+        data.heroSlides = (await getFileContent('hero_slides.json')) || [];
 
         renderAll();
         document.getElementById('statusBadge').textContent = 'Terhubung';
@@ -417,6 +429,7 @@ function renderAll() {
     renderGuru();
     renderGaleri();
     renderKategori();
+    renderHeroSlides();
 }
 
 function renderPengaturan() {
@@ -848,6 +861,115 @@ function deleteKategori(i) {
     toast('Kategori dihapus', 'info');
 }
 
+// ===== SLIDE HERO =====
+function renderHeroSlides() {
+    const container = document.getElementById('heroSlidesList');
+    if (!container) return;
+    if (!data.heroSlides.length) {
+        container.innerHTML = '<p class="text-gray-500 text-center py-10 bg-white rounded-2xl border border-gray-200">Belum ada slide hero. Klik "+ Tambah Slide" untuk mulai.</p>';
+        return;
+    }
+    container.innerHTML = data.heroSlides.map((s, i) => `
+        <div class="bg-white rounded-2xl border border-gray-200 p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-xs px-2 py-1 rounded-full ${s.aktif ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}">${s.aktif ? 'Aktif' : 'Nonaktif'}</span>
+                    <span class="text-xs text-gray-400">Urutan: ${s.urutan || 0}</span>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="moveHeroSlide(${i}, -1)" title="Naik" class="text-sm px-3 py-1 rounded-lg border border-gray-300 hover:bg-gray-50">&uarr;</button>
+                    <button onclick="moveHeroSlide(${i}, 1)" title="Turun" class="text-sm px-3 py-1 rounded-lg border border-gray-300 hover:bg-gray-50">&darr;</button>
+                    <button onclick="deleteHeroSlide(${i})" class="text-sm px-3 py-1 rounded-lg border border-red-300 text-red-600 hover:bg-red-50">Hapus</button>
+                </div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-5">
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Gambar Slide</label>
+                    <div id="hs_preview${i}" class="mt-2 mb-2">${renderImgPreview(s.gambar || '', 'img-preview')}</div>
+                    <div class="upload-zone" onclick="document.getElementById('hs_file${i}').click()">
+                        <input type="file" id="hs_file${i}" accept="image/png,image/jpeg,image/jpg" onchange="handleHeroSlideUpload(this, ${i})">
+                        <p class="text-sm text-gray-500">Klik untuk upload PNG/JPG (disarankan landscape 16:9)</p>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1">atau masukkan URL gambar:</p>
+                    <input type="text" value="${escHtml(s.gambar || '')}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5" placeholder="uploads/hero-slide-....jpg atau https://..." oninput="data.heroSlides[${i}].gambar = this.value; document.getElementById('hs_preview${i}').innerHTML = renderImgPreview(this.value, 'img-preview')">
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Judul (opsional)</label>
+                        <input type="text" value="${escHtml(s.judul || '')}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5" placeholder="Contoh: Penerimaan Siswa Baru 2026" oninput="data.heroSlides[${i}].judul = this.value">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Subjudul / Deskripsi (opsional)</label>
+                        <textarea rows="2" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5" placeholder="Teks singkat yang mendampingi gambar" oninput="data.heroSlides[${i}].subjudul = this.value">${escHtml(s.subjudul || '')}</textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">Teks Tombol</label>
+                            <input type="text" value="${escHtml(s.tombol_teks || '')}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5" placeholder="Daftar Sekarang" oninput="data.heroSlides[${i}].tombol_teks = this.value">
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">Link Tombol</label>
+                            <input type="text" value="${escHtml(s.tombol_link || '')}" class="mt-1 w-full rounded-lg border-gray-300 border px-4 py-2.5" placeholder="kontak.html" oninput="data.heroSlides[${i}].tombol_link = this.value">
+                        </div>
+                    </div>
+                    <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
+                        <input type="checkbox" ${s.aktif ? 'checked' : ''} onchange="data.heroSlides[${i}].aktif = this.checked; renderHeroSlides()" class="rounded border-gray-300 text-amber-500 focus:ring-amber-500">
+                        Tampilkan slide ini di beranda
+                    </label>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function addHeroSlide() {
+    data.heroSlides.push({ gambar: '', judul: '', subjudul: '', tombol_teks: '', tombol_link: '', urutan: data.heroSlides.length, aktif: true });
+    renderHeroSlides();
+    toast('Slide baru ditambahkan. Jangan lupa upload gambar lalu klik "Simpan & Push".', 'info');
+}
+
+function deleteHeroSlide(i) {
+    if (!confirm('Hapus slide hero ini?')) return;
+    data.heroSlides.splice(i, 1);
+    data.heroSlides.forEach((s, idx) => s.urutan = idx);
+    renderHeroSlides();
+    toast('Slide dihapus. Klik "Simpan & Push" untuk menyimpan.', 'info');
+}
+
+function moveHeroSlide(i, dir) {
+    const j = i + dir;
+    if (j < 0 || j >= data.heroSlides.length) return;
+    const tmp = data.heroSlides[i];
+    data.heroSlides[i] = data.heroSlides[j];
+    data.heroSlides[j] = tmp;
+    data.heroSlides.forEach((s, idx) => s.urutan = idx);
+    renderHeroSlides();
+}
+
+async function handleHeroSlideUpload(input, i) {
+    const file = input.files[0];
+    if (!file) return;
+    if (!file.type.match(/^image\/(png|jpeg|jpg)$/)) {
+        toast('Hanya file PNG dan JPG yang diizinkan', 'error');
+        input.value = '';
+        return;
+    }
+    try {
+        toast('Mengkompres gambar...', 'info');
+        const dataUrl = await compressImage(file, 1600, 0.82);
+        const filename = 'hero-slide-' + Date.now() + '.jpg';
+        toast('Mengunggah ' + filename + ' ke repository...', 'info');
+        await pushBinary('dist/uploads/' + filename, dataUrl.split(',')[1], 'CMS: upload slide hero ' + filename);
+        data.heroSlides[i].gambar = 'uploads/' + filename;
+        renderHeroSlides();
+        toast('Gambar slide berhasil diupload. Klik "Simpan & Push" untuk menyimpan data slide.', 'success');
+    } catch (e) {
+        toast('Gagal upload gambar: ' + e.message, 'error');
+    } finally {
+        input.value = '';
+    }
+}
+
 // ===== TABS =====
 function switchTab(tab) {
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
@@ -876,6 +998,7 @@ async function saveAll() {
         await pushFile('pengumuman.json', data.pengumuman, 'CMS: update pengumuman');
         await pushFile('guru.json', data.guru, 'CMS: update guru');
         await pushFile('galeri.json', data.galeri, 'CMS: update galeri');
+        await pushFile('hero_slides.json', data.heroSlides, 'CMS: update slide hero');
         toast('Semua data berhasil di-push ke GitHub! Netlify akan auto-deploy.', 'success');
     } catch (e) {
         toast('Gagal push: ' + e.message, 'error');

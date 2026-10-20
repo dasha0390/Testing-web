@@ -53,6 +53,17 @@ function escapeHtml(text) {
     .replace(/"/g, '&quot;');
 }
 
+const escHtml = escapeHtml;
+
+function escAttr(text) {
+  return String(text || '')
+    .replace(/&/g, '&amp;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 function youtubeId(url) {
   const m = String(url || '').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:[^&]*&)*v=|embed\/|shorts\/|live\/))([A-Za-z0-9_-]{11})/);
   return m ? m[1] : null;
@@ -241,14 +252,20 @@ function footer(pengaturan) {
 </body></html>`;
 }
 
-function generateIndex(pengaturan, berita, pengumuman, galeri, guru, igPosts) {
+function generateIndex(pengaturan, berita, pengumuman, galeri, guru, igPosts, heroSlides) {
   const years = pengaturan.tahun_berdiri ? new Date().getFullYear() - pengaturan.tahun_berdiri : 0;
   let html = HEAD.replace('{{TITLE}}', `${pengaturan.nama_sekolah} — Beranda`).replace('{{DESCRIPTION}}', pengaturan.deskripsi_singkat || '');
   html += navbar(pengaturan);
   html += `<main>`;
 
   // Hero
-  html += `<section class="relative overflow-hidden bg-ink-800">
+  const slides = (Array.isArray(heroSlides) ? heroSlides : [])
+    .filter(s => s && s.aktif !== false && String(s.gambar || '').trim())
+    .sort((a, b) => (a.urutan || 0) - (b.urutan || 0));
+  const totalSlides = slides.length + 1;
+
+  if (slides.length === 0) {
+    html += `<section class="relative overflow-hidden bg-ink-800">
     ${heroMedia(pengaturan)}
     <div class="absolute inset-0 opacity-[0.07]" style="background-image: radial-gradient(circle at 20% 20%, white 1px, transparent 1px); background-size: 22px 22px;"></div>
     <div class="max-w-7xl mx-auto px-5 sm:px-8 py-20 lg:py-28 grid lg:grid-cols-5 gap-12 items-center relative">
@@ -270,6 +287,80 @@ function generateIndex(pengaturan, berita, pengumuman, galeri, guru, igPosts) {
         </div>
     </div>
 </section>`;
+  } else {
+    const slideBgs = slides.map((s, si) => {
+      const g = String(s.gambar).trim();
+      return `<div x-show="active === ${si + 1}" x-transition.opacity.duration.700ms class="absolute inset-0" x-cloak>
+        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('${escAttr(g)}');"></div>
+        <div class="absolute inset-0 bg-ink-800/70"></div>
+      </div>`;
+    }).join('\n');
+
+    const slideContents = slides.map((s, si) => `
+      <div x-show="active === ${si + 1}" x-transition.opacity.duration.700ms class="contents" x-cloak>
+        <div class="lg:col-span-5 text-center max-w-3xl mx-auto fade-up">
+            ${s.judul ? `<h1 class="font-display text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.08]">${escHtml(s.judul)}</h1>` : ''}
+            ${s.subjudul ? `<p class="mt-6 text-ink-100/90 text-lg leading-relaxed">${escHtml(s.subjudul)}</p>` : ''}
+            ${s.tombol_teks ? `<a href="${escAttr(String(s.tombol_link || '#').trim())}" class="mt-8 inline-block rounded-full bg-gold-500 text-ink-800 font-semibold px-7 py-3.5 hover:bg-gold-400 transition">${escHtml(s.tombol_teks)}</a>` : ''}
+        </div>
+      </div>`).join('\n');
+
+    html += `<section x-data="heroCarousel(${totalSlides})" x-init="start()" class="relative overflow-hidden bg-ink-800 min-h-[520px] lg:min-h-[640px]">
+    <div x-show="active === 0" x-transition.opacity.duration.700ms class="absolute inset-0">
+        ${heroMedia(pengaturan)}
+        <div class="absolute inset-0 opacity-[0.07]" style="background-image: radial-gradient(circle at 20% 20%, white 1px, transparent 1px); background-size: 22px 22px;"></div>
+    </div>
+    ${slideBgs}
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 py-20 lg:py-28 grid lg:grid-cols-5 gap-12 items-center relative min-h-[520px] lg:min-h-[640px]">
+        <div x-show="active === 0" x-transition.opacity.duration.700ms class="contents">
+            <div class="lg:col-span-3 fade-up">
+                <span class="inline-flex items-center gap-2 text-gold-400 text-xs tracking-[0.2em] uppercase font-semibold">
+                    <span class="h-px w-8 bg-gold-400"></span> Sejak ${pengaturan.tahun_berdiri || '—'}
+                </span>
+                <h1 class="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.08]">
+                    Membangun Generasi Pemimpin,<br class="hidden sm:block"> <span class="signature-underline text-gold-400">Berwawasan Global, Terampil</span> & Berjiwa Pengusaha.
+                </h1>
+                <p class="mt-6 text-ink-100/90 text-lg max-w-xl leading-relaxed">${pengaturan.deskripsi_singkat || ''}</p>
+                <div class="mt-8 flex flex-wrap gap-4">
+                    <a href="profil.html" class="rounded-full bg-gold-500 text-ink-800 font-semibold px-7 py-3.5 hover:bg-gold-400 transition">Kenali Sekolah Kami</a>
+                    <a href="kontak.html" class="rounded-full border border-white/30 text-white px-7 py-3.5 hover:bg-white/10 transition">Hubungi Kami</a>
+                </div>
+            </div>
+            <div class="lg:col-span-2 fade-up" style="animation-delay:.15s">
+                <img src="gedung.png" alt="Gedung Sekolah" class="rounded-2xl shadow-2xl w-full object-cover rotate-1 hover:rotate-0 transition-transform duration-300">
+            </div>
+        </div>
+        ${slideContents}
+    </div>
+    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+        <template x-for="n in total" :key="n">
+            <button @click="go(n - 1)" :class="active === (n - 1) ? 'w-8 bg-gold-500' : 'w-3 bg-white/50'" class="h-3 rounded-full transition-all duration-300" :aria-label="'Ke slide ' + n"></button>
+        </template>
+    </div>
+    <button @click="prev()" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center backdrop-blur" aria-label="Sebelumnya">&lsaquo;</button>
+    <button @click="next()" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center backdrop-blur" aria-label="Berikutnya">&rsaquo;</button>
+    <script>
+    function heroCarousel(total) {
+        return {
+            active: 0,
+            total: total,
+            timer: null,
+            start() {
+                if (this.total <= 1) return;
+                this.timer = setInterval(() => this.next(), 6000);
+            },
+            go(i) {
+                this.active = ((i % this.total) + this.total) % this.total;
+                clearInterval(this.timer);
+                this.timer = setInterval(() => this.next(), 6000);
+            },
+            next() { this.go(this.active + 1); },
+            prev() { this.go(this.active - 1); }
+        }
+    }
+    </script>
+</section>`;
+  }
 
   // Pengumuman ticker
   if (pengumuman.length > 0) {
@@ -665,8 +756,9 @@ async function main() {
   const galeri = readJSON('galeri.json');
   const guru = readJSON('guru.json');
   const kategoris = readJSON('kategori.json');
+  const heroSlides = readJSONSafe('hero_slides.json', []);
 
-  generateIndex(pengaturan, berita, pengumuman, galeri, guru, igPosts);
+  generateIndex(pengaturan, berita, pengumuman, galeri, guru, igPosts, heroSlides);
   generateProfil(pengaturan);
   generateBeritaIndex(pengaturan, berita, kategoris);
   for (const b of berita.filter(b => b.status === 'published')) {
