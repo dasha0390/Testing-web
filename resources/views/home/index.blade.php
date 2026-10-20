@@ -126,7 +126,7 @@ function heroCarousel(total) {
         timer: null,
         start() {
             if (this.total <= 1) return;
-            this.timer = setInterval(() => this.next(), 6000);
+            this.timer = setInterval(() => this.next(), 15000);
         },
         go(i) {
             this.active = (i + this.total) % this.total;
