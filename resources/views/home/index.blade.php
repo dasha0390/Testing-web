@@ -6,40 +6,142 @@
 @section('content')
 
 {{-- HERO --}}
-<section class="relative overflow-hidden bg-ink-800">
-    @if($pengaturan->hero_bg_video)
-        <video class="absolute inset-0 w-full h-full object-cover" autoplay muted loop playsinline>
-            <source src="{{ asset('storage/'.$pengaturan->hero_bg_video) }}" type="video/mp4">
-        </video>
-        <div class="absolute inset-0 bg-ink-800/70"></div>
-    @elseif($pengaturan->hero_image)
-        <img src="{{ asset('storage/'.$pengaturan->hero_image) }}" alt="" class="absolute inset-0 w-full h-full object-cover">
-        <div class="absolute inset-0 bg-ink-800/70"></div>
-    @else
-        <div class="absolute inset-0 opacity-[0.07]" style="background-image: radial-gradient(circle at 20% 20%, white 1px, transparent 1px); background-size: 22px 22px;"></div>
-    @endif
-    <div class="max-w-7xl mx-auto px-5 sm:px-8 py-20 lg:py-28 grid lg:grid-cols-5 gap-12 items-center relative">
-        <div class="lg:col-span-3 fade-up">
-            <span class="inline-flex items-center gap-2 text-gold-400 text-xs tracking-[0.2em] uppercase font-semibold">
-                <span class="h-px w-8 bg-gold-400"></span> Sejak {{ $pengaturan->tahun_berdiri ?? '—' }}
-            </span>
-            <h1 class="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.08]">
-                Membangun Generasi Pemimpin,<br class="hidden sm:block"> <span class="signature-underline text-gold-400">Berkarakter Kristus</span> Berwawasan Global & Terampil.
-            </h1>
-            <p class="mt-6 text-ink-100/90 text-lg max-w-xl leading-relaxed">
-                {{ $pengaturan->deskripsi_singkat }}
-            </p>
-            <div class="mt-8 flex flex-wrap gap-4">
-                <a href="{{ route('profil') }}" class="rounded-full bg-gold-500 text-ink-800 font-semibold px-7 py-3.5 hover:bg-gold-400 transition">Kenali Sekolah Kami</a>
-                <a href="{{ route('kontak.index') }}" class="rounded-full border border-white/30 text-white px-7 py-3.5 hover:bg-white/10 transition">Hubungi Kami</a>
-            </div>
-        </div>
+@php
+    $heroItems = collect();
+    if ($pengaturan->hero_bg_video || $pengaturan->hero_image) {
+        $heroItems->push((object)[
+            'tipe' => 'utama',
+            'video' => $pengaturan->hero_bg_video,
+            'gambar' => $pengaturan->hero_image,
+        ]);
+    }
+    foreach ($heroSlides as $slide) {
+        $heroItems->push((object)[
+            'tipe' => 'slide',
+            'video' => null,
+            'gambar' => $slide->gambar,
+            'judul' => $slide->judul,
+            'subjudul' => $slide->subjudul,
+            'tombol_teks' => $slide->tombol_teks,
+            'tombol_link' => $slide->tombol_link,
+        ]);
+    }
+@endphp
 
-        <div class="lg:col-span-2 fade-up" style="animation-delay:.15s">
-            <img src="{{ asset('gedung.png') }}" alt="Gedung Sekolah" class="rounded-2xl shadow-2xl w-full object-cover rotate-1 hover:rotate-0 transition-transform duration-300">
+<section x-data="heroCarousel({{ $heroItems->count() ?: 1 }})" x-init="start()" class="relative overflow-hidden bg-ink-800 min-h-[520px] lg:min-h-[640px]">
+    @forelse($heroItems as $i => $item)
+        <div x-show="active === {{ $i }}" x-transition.opacity.duration.700ms class="absolute inset-0" {{ $i === 0 ? '' : 'x-cloak' }}>
+            @if($item->tipe === 'utama' && $item->video)
+                <video class="absolute inset-0 w-full h-full object-cover" autoplay muted loop playsinline>
+                    <source src="{{ asset('storage/'.$item->video) }}" type="video/mp4">
+                </video>
+                <div class="absolute inset-0 bg-ink-800/70"></div>
+            @elseif($item->gambar)
+                <img src="{{ asset('storage/'.$item->gambar) }}" alt="" class="absolute inset-0 w-full h-full object-cover">
+                <div class="absolute inset-0 bg-ink-800/70"></div>
+            @else
+                <div class="absolute inset-0 opacity-[0.07]" style="background-image: radial-gradient(circle at 20% 20%, white 1px, transparent 1px); background-size: 22px 22px;"></div>
+            @endif
         </div>
+    @empty
+        <div class="absolute inset-0 opacity-[0.07]" style="background-image: radial-gradient(circle at 20% 20%, white 1px, transparent 1px); background-size: 22px 22px;"></div>
+    @endforelse
+
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 py-20 lg:py-28 grid lg:grid-cols-5 gap-12 items-center relative min-h-[520px] lg:min-h-[640px]">
+        @if($heroItems->isNotEmpty())
+            @foreach($heroItems as $i => $item)
+                <div x-show="active === {{ $i }}" x-transition.opacity.duration.700ms class="contents" {{ $i === 0 ? '' : 'x-cloak' }}>
+                    @if($item->tipe === 'utama')
+                        <div class="lg:col-span-3 fade-up">
+                            <span class="inline-flex items-center gap-2 text-gold-400 text-xs tracking-[0.2em] uppercase font-semibold">
+                                <span class="h-px w-8 bg-gold-400"></span> Sejak {{ $pengaturan->tahun_berdiri ?? '—' }}
+                            </span>
+                            <h1 class="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.08]">
+                                Membangun Generasi Pemimpin,<br class="hidden sm:block"> <span class="signature-underline text-gold-400">Berkarakter Kristus</span> Berwawasan Global & Terampil.
+                            </h1>
+                            <p class="mt-6 text-ink-100/90 text-lg max-w-xl leading-relaxed">
+                                {{ $pengaturan->deskripsi_singkat }}
+                            </p>
+                            <div class="mt-8 flex flex-wrap gap-4">
+                                <a href="{{ route('profil') }}" class="rounded-full bg-gold-500 text-ink-800 font-semibold px-7 py-3.5 hover:bg-gold-400 transition">Kenali Sekolah Kami</a>
+                                <a href="{{ route('kontak.index') }}" class="rounded-full border border-white/30 text-white px-7 py-3.5 hover:bg-white/10 transition">Hubungi Kami</a>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-2 fade-up" style="animation-delay:.15s">
+                            <img src="{{ asset('gedung.png') }}" alt="Gedung Sekolah" class="rounded-2xl shadow-2xl w-full object-cover rotate-1 hover:rotate-0 transition-transform duration-300">
+                        </div>
+                    @else
+                        <div class="lg:col-span-5 fade-up text-center max-w-3xl mx-auto">
+                            @if($item->judul)
+                                <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.08]">{{ $item->judul }}</h1>
+                            @endif
+                            @if($item->subjudul)
+                                <p class="mt-6 text-ink-100/90 text-lg leading-relaxed">{{ $item->subjudul }}</p>
+                            @endif
+                            @if($item->tombol_teks)
+                                <a href="{{ $item->tombol_link ?: '#' }}" class="mt-8 inline-block rounded-full bg-gold-500 text-ink-800 font-semibold px-7 py-3.5 hover:bg-gold-400 transition">{{ $item->tombol_teks }}</a>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+            @endforeach
+        @else
+            <div class="lg:col-span-3 fade-up">
+                <span class="inline-flex items-center gap-2 text-gold-400 text-xs tracking-[0.2em] uppercase font-semibold">
+                    <span class="h-px w-8 bg-gold-400"></span> Sejak {{ $pengaturan->tahun_berdiri ?? '—' }}
+                </span>
+                <h1 class="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.08]">
+                    Membangun Generasi Pemimpin,<br class="hidden sm:block"> <span class="signature-underline text-gold-400">Berkarakter Kristus</span> Berwawasan Global & Terampil.
+                </h1>
+                <p class="mt-6 text-ink-100/90 text-lg max-w-xl leading-relaxed">
+                    {{ $pengaturan->deskripsi_singkat }}
+                </p>
+                <div class="mt-8 flex flex-wrap gap-4">
+                    <a href="{{ route('profil') }}" class="rounded-full bg-gold-500 text-ink-800 font-semibold px-7 py-3.5 hover:bg-gold-400 transition">Kenali Sekolah Kami</a>
+                    <a href="{{ route('kontak.index') }}" class="rounded-full border border-white/30 text-white px-7 py-3.5 hover:bg-white/10 transition">Hubungi Kami</a>
+                </div>
+            </div>
+            <div class="lg:col-span-2 fade-up" style="animation-delay:.15s">
+                <img src="{{ asset('gedung.png') }}" alt="Gedung Sekolah" class="rounded-2xl shadow-2xl w-full object-cover rotate-1 hover:rotate-0 transition-transform duration-300">
+            </div>
+        @endif
     </div>
+
+    @if($heroItems->count() > 1)
+        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+            <template x-for="n in total" :key="n">
+                <button @click="go(n - 1)" :class="active === (n - 1) ? 'w-8 bg-gold-500' : 'w-3 bg-white/50'" class="h-3 rounded-full transition-all duration-300" :aria-label="'Ke slide ' + n"></button>
+            </template>
+        </div>
+        <button @click="prev()" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center backdrop-blur" aria-label="Sebelumnya">‹</button>
+        <button @click="next()" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center backdrop-blur" aria-label="Berikutnya">›</button>
+    @endif
 </section>
+
+<script>
+function heroCarousel(total) {
+    return {
+        active: 0,
+        total: total,
+        timer: null,
+        start() {
+            if (this.total <= 1) return;
+            this.timer = setInterval(() => this.next(), 6000);
+        },
+        go(i) {
+            this.active = (i + this.total) % this.total;
+            this.restart();
+        },
+        next() { this.go(this.active + 1); },
+        prev() { this.go(this.active - 1); },
+        restart() {
+            clearInterval(this.timer);
+            this.timer = setInterval(() => this.next(), 6000);
+        }
+    }
+}
+</script>
+<style>[x-cloak]{display:none!important}</style>
 
 {{-- PENGUMUMAN BERJALAN --}}
 @if($pengumumanTerbaru->count())

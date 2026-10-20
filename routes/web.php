@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\GaleriController as AdminGaleriController;
 use App\Http\Controllers\Admin\GuruController as AdminGuruController;
 use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\PengaturanController;
+use App\Http\Controllers\Admin\HeroSlideController;
 use App\Http\Controllers\Admin\PengumumanController as AdminPengumumanController;
 use App\Http\Controllers\Admin\PesanController;
 use App\Http\Controllers\Auth\LoginController;
@@ -93,4 +94,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     Route::get('/pengaturan', [PengaturanController::class, 'edit'])->name('pengaturan.edit');
     Route::put('/pengaturan', [PengaturanController::class, 'update'])->name('pengaturan.update');
+
+    Route::resource('hero-slides', HeroSlideController::class)->except(['show']);
 });

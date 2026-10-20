@@ -37,6 +37,7 @@
                         ['route' => 'admin.galeri.index', 'active' => 'admin.galeri.*', 'label' => 'Galeri', 'icon' => '🖼️'],
                         ['route' => 'admin.guru.index', 'active' => 'admin.guru.*', 'label' => 'Guru & Staff', 'icon' => '👩‍🏫'],
                         ['route' => 'admin.pesan.index', 'active' => 'admin.pesan.*', 'label' => 'Pesan Masuk', 'icon' => '✉️'],
+                        ['route' => 'admin.hero-slides.index', 'active' => 'admin.hero-slides.*', 'label' => 'Slide Hero', 'icon' => '🎞️'],
                         ['route' => 'admin.pengaturan.edit', 'active' => 'admin.pengaturan.*', 'label' => 'Pengaturan Situs', 'icon' => '⚙️'],
                     ];
                 @endphp
