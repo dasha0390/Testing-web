@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "gambar": "",
+    "judul": "",
+    "subjudul": "",
+    "tombol_teks": "",
+    "tombol_link": "",
+    "urutan": 0,
+    "aktif": true
+  }
+]
