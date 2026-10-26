@@ -473,7 +473,7 @@ function generateIndex(pengaturan, berita, pengumuman, galeri, guru, igPosts, he
   }
 
   // CTA
-  html += `<section class="max-w-7xl mx-auto px-5 sm:px-8 pb-24">
+  html += `<section class="max-w-7xl mx-auto px-5 sm:px-8 pt-20 pb-24">
     <div class="rounded-3xl bg-gold-500 px-8 py-14 sm:px-16 text-center">
         <h2 class="font-display text-3xl sm:text-4xl text-ink-800">Tertarik Bergabung dengan Kami?</h2>
         <p class="mt-3 text-ink-800/80 max-w-xl mx-auto">Tim kami siap membantu menjawab pertanyaan seputar pendaftaran dan program sekolah.</p>
