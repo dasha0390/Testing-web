@@ -254,7 +254,7 @@ ${waWidget()}
 }
 
 function waWidget() {
-  return `<div class="fixed bottom-5 right-5 z-[60] flex flex-col items-end gap-3">
+  return `<div class="fixed bottom-5 left-5 z-[60] flex flex-col items-start gap-3">
     <div id="wa-popup" class="hidden w-[19rem] max-w-[calc(100vw-2.5rem)] overflow-hidden rounded-2xl border border-ink-100 bg-white shadow-2xl">
         <div class="flex items-center gap-3 bg-[#25D366] px-4 py-3">
             <span class="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#25D366]">
