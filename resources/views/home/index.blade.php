@@ -216,31 +216,6 @@ function heroCarousel(total) {
 </section>
 @endif
 
-{{-- GURU UNGGULAN --}}
-@if($guruUnggulan->count())
-<section class="max-w-7xl mx-auto px-5 sm:px-8 py-20">
-    <div class="mb-10">
-        <span class="text-xs uppercase tracking-widest text-gold-600 font-semibold">Tim Pendidik</span>
-        <h2 class="font-display text-3xl sm:text-4xl text-ink-800 mt-2">Dibimbing Guru Terbaik</h2>
-    </div>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        @foreach($guruUnggulan as $guru)
-        <div class="text-center">
-            <div class="aspect-square rounded-2xl overflow-hidden bg-ink-100 mb-4">
-                @if($guru->foto)
-                    <img src="{{ asset('storage/'.$guru->foto) }}" class="w-full h-full object-cover" alt="{{ $guru->nama }}">
-                @else
-                    <div class="w-full h-full flex items-center justify-center text-ink-300 font-display text-3xl">{{ mb_substr($guru->nama,0,1) }}</div>
-                @endif
-            </div>
-            <p class="font-display text-lg text-ink-800">{{ $guru->nama }}</p>
-            <p class="text-sm text-gold-600">{{ $guru->jabatan }}</p>
-        </div>
-        @endforeach
-    </div>
-</section>
-@endif
-
 {{-- CTA --}}
 <section class="max-w-7xl mx-auto px-5 sm:px-8 pb-24">
     <div class="rounded-3xl bg-gold-500 px-8 py-14 sm:px-16 text-center">
