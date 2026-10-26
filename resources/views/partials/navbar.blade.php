@@ -21,7 +21,6 @@
                 <a href="{{ route('berita.index') }}" class="hover:text-gold-600 transition {{ request()->routeIs('berita.*') ? 'text-gold-600' : '' }}">Berita</a>
                 <a href="{{ route('pengumuman.index') }}" class="hover:text-gold-600 transition {{ request()->routeIs('pengumuman.*') ? 'text-gold-600' : '' }}">Pengumuman</a>
                 <a href="{{ route('galeri.index') }}" class="hover:text-gold-600 transition {{ request()->routeIs('galeri.*') ? 'text-gold-600' : '' }}">Galeri</a>
-                <a href="{{ route('guru.index') }}" class="hover:text-gold-600 transition {{ request()->routeIs('guru.*') ? 'text-gold-600' : '' }}">Guru &amp; Staff</a>
                 <a href="{{ route('kontak.index') }}" class="ml-2 inline-flex items-center rounded-full bg-ink-700 text-white px-5 py-2.5 hover:bg-gold-600 transition">Kontak</a>
             </nav>
 
@@ -37,7 +36,6 @@
             <a href="{{ route('berita.index') }}">Berita</a>
             <a href="{{ route('pengumuman.index') }}">Pengumuman</a>
             <a href="{{ route('galeri.index') }}">Galeri</a>
-            <a href="{{ route('guru.index') }}">Guru &amp; Staff</a>
             <a href="{{ route('kontak.index') }}" class="inline-flex w-fit items-center rounded-full bg-ink-700 text-white px-5 py-2.5">Kontak</a>
         </nav>
     </div>

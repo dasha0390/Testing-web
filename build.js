@@ -191,7 +191,6 @@ function navbar(pengaturan) {
                 <a href="berita.html" class="hover:text-gold-600 transition" id="nav-berita">Berita</a>
                 <a href="pengumuman.html" class="hover:text-gold-600 transition" id="nav-pengumuman">Pengumuman</a>
                 <a href="galeri.html" class="hover:text-gold-600 transition" id="nav-galeri">Galeri</a>
-                <a href="guru.html" class="hover:text-gold-600 transition" id="nav-guru">Guru &amp; Staff</a>
                 <a href="kontak.html" class="ml-2 inline-flex items-center rounded-full bg-ink-700 text-white px-5 py-2.5 hover:bg-gold-600 transition">Kontak</a>
             </nav>
             <button @click="open = !open" class="lg:hidden p-2 text-ink-700" aria-label="Buka menu">
@@ -205,7 +204,6 @@ function navbar(pengaturan) {
             <a href="berita.html">Berita</a>
             <a href="pengumuman.html">Pengumuman</a>
             <a href="galeri.html">Galeri</a>
-            <a href="guru.html">Guru &amp; Staff</a>
             <a href="kontak.html" class="inline-flex w-fit items-center rounded-full bg-ink-700 text-white px-5 py-2.5">Kontak</a>
         </nav>
     </div>
@@ -419,33 +417,6 @@ function generateIndex(pengaturan, berita, pengumuman, galeri, guru, igPosts, he
     </div>
 </div>`;
   }
-
-  // Berita terbaru
-  html += `<section class="max-w-7xl mx-auto px-5 sm:px-8 py-20">
-    <div class="flex items-end justify-between mb-10">
-        <div>
-            <span class="text-xs uppercase tracking-widest text-gold-600 font-semibold">Kabar Terkini</span>
-            <h2 class="font-display text-3xl sm:text-4xl text-ink-800 mt-2">Berita &amp; Kegiatan</h2>
-        </div>
-        <a href="berita.html" class="hidden sm:inline-flex text-sm font-semibold text-ink-700 hover:text-gold-600">Lihat semua berita &rarr;</a>
-    </div>
-    <div class="grid md:grid-cols-3 gap-8">`;
-  const beritaList = berita.filter(b => b.status === 'published').slice(0, 3);
-  for (const b of beritaList) {
-    const excerpt = truncate(b.konten, 150);
-    html += `<a href="berita-${b.slug}.html" class="group block bg-white rounded-2xl overflow-hidden border border-ink-100 hover:shadow-xl transition">
-        <div class="aspect-[4/3] bg-ink-100 overflow-hidden">
-            ${b.thumbnail ? `<img src="${b.thumbnail}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="${b.judul}">` : `<div class="w-full h-full flex items-center justify-center text-ink-300 font-display text-4xl">Aa</div>`}
-        </div>
-        <div class="p-6">
-            ${b.kategori_id ? `<span class="text-xs uppercase tracking-wider text-gold-600 font-semibold">${getKategori(b.kategori_id, readJSON('kategori.json'))}</span>` : ''}
-            <h3 class="mt-2 font-display text-xl text-ink-800 leading-snug group-hover:text-gold-600 transition">${b.judul}</h3>
-            <p class="mt-2 text-sm text-ink-600 line-clamp-2">${excerpt}</p>
-            <p class="mt-4 text-xs text-ink-400">${formatDate(b.tanggal_publish)}</p>
-        </div>
-    </a>`;
-  }
-  html += `</div></section>`;
 
   // Instagram terbaru
   const igWidget = String(pengaturan.ig_widget || '').trim();

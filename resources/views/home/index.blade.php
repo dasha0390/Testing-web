@@ -157,43 +157,6 @@ function heroCarousel(total) {
 </div>
 @endif
 
-{{-- BERITA TERBARU --}}
-<section class="max-w-7xl mx-auto px-5 sm:px-8 py-20">
-    <div class="flex items-end justify-between mb-10">
-        <div>
-            <span class="text-xs uppercase tracking-widest text-gold-600 font-semibold">Kabar Terkini</span>
-            <h2 class="font-display text-3xl sm:text-4xl text-ink-800 mt-2">Berita &amp; Kegiatan</h2>
-        </div>
-        <a href="{{ route('berita.index') }}" class="hidden sm:inline-flex text-sm font-semibold text-ink-700 hover:text-gold-600">Lihat semua berita →</a>
-    </div>
-
-    @if($beritaTerbaru->count())
-    <div class="grid md:grid-cols-3 gap-8">
-        @foreach($beritaTerbaru as $berita)
-        <a href="{{ route('berita.show', $berita->slug) }}" class="group block bg-white rounded-2xl overflow-hidden border border-ink-100 hover:shadow-xl transition">
-            <div class="aspect-[4/3] bg-ink-100 overflow-hidden">
-                @if($berita->thumbnail)
-                    <img src="{{ asset('storage/'.$berita->thumbnail) }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="{{ $berita->judul }}">
-                @else
-                    <div class="w-full h-full flex items-center justify-center text-ink-300 font-display text-4xl">Aa</div>
-                @endif
-            </div>
-            <div class="p-6">
-                @if($berita->kategori)
-                <span class="text-xs uppercase tracking-wider text-gold-600 font-semibold">{{ $berita->kategori->nama }}</span>
-                @endif
-                <h3 class="mt-2 font-display text-xl text-ink-800 leading-snug group-hover:text-gold-600 transition">{{ $berita->judul }}</h3>
-                <p class="mt-2 text-sm text-ink-600 line-clamp-2">{{ $berita->excerpt }}</p>
-                <p class="mt-4 text-xs text-ink-400">{{ $berita->tanggal_publish->translatedFormat('d F Y') }}</p>
-            </div>
-        </a>
-        @endforeach
-    </div>
-    @else
-    <p class="text-ink-500">Belum ada berita yang dipublikasikan.</p>
-    @endif
-</section>
-
 {{-- GALERI PREVIEW --}}
 @if($galeriTerbaru->count())
 <section class="bg-ink-700 py-20">
