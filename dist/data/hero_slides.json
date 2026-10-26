@@ -1,11 +1,47 @@
 [
   {
-    "gambar": "uploads/hero-slide-1792506520053.jpg",
-    "judul": "Eagle Fest 5.0",
-    "subjudul": "Eagle Fest 5.0",
+    "gambar": "uploads/hero-slide-1793022119570.jpg",
+    "judul": "",
+    "subjudul": "",
     "tombol_teks": "",
     "tombol_link": "",
     "urutan": 0,
+    "aktif": true
+  },
+  {
+    "gambar": "uploads/hero-slide-1793022135951.jpg",
+    "judul": "",
+    "subjudul": "",
+    "tombol_teks": "",
+    "tombol_link": "",
+    "urutan": 1,
+    "aktif": true
+  },
+  {
+    "gambar": "uploads/hero-slide-1793022150285.jpg",
+    "judul": "",
+    "subjudul": "",
+    "tombol_teks": "",
+    "tombol_link": "",
+    "urutan": 2,
+    "aktif": true
+  },
+  {
+    "gambar": "uploads/hero-slide-1793022169257.jpg",
+    "judul": "",
+    "subjudul": "",
+    "tombol_teks": "",
+    "tombol_link": "",
+    "urutan": 3,
+    "aktif": true
+  },
+  {
+    "gambar": "uploads/hero-slide-1793022178412.jpg",
+    "judul": "",
+    "subjudul": "",
+    "tombol_teks": "",
+    "tombol_link": "",
+    "urutan": 4,
     "aktif": true
   }
 ]
