@@ -61,7 +61,7 @@
                             <h1 class="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.08]">
                                 Welcome to Eagle School
                             </h1>
-                            <p class="mt-6 text-ink-100/90 text-lg mx-auto leading-relaxed">
+                            <p class="mt-6 text-ink-100/90 text-lg mx-auto leading-relaxed" style="font-family:'Poppins',sans-serif;">
                                 {{ $pengaturan->deskripsi_singkat }}
                             </p>
                             <div class="mt-8 flex flex-wrap gap-4 justify-center">
@@ -92,7 +92,7 @@
                 <h1 class="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.08]">
                     Welcome to Eagle School
                 </h1>
-                <p class="mt-6 text-ink-100/90 text-lg mx-auto leading-relaxed">
+                <p class="mt-6 text-ink-100/90 text-lg mx-auto leading-relaxed" style="font-family:'Poppins',sans-serif;">
                     {{ $pengaturan->deskripsi_singkat }}
                 </p>
                 <div class="mt-8 flex flex-wrap gap-4 justify-center">

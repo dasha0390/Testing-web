@@ -138,7 +138,7 @@ const HEAD = `<!DOCTYPE html>
     <meta name="description" content="{{DESCRIPTION}}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script>
         tailwind.config = {
@@ -316,7 +316,7 @@ function generateIndex(pengaturan, berita, pengumuman, galeri, guru, igPosts, he
         <h1 class="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.08]">
             Welcome to Eagle School
         </h1>
-        <p class="mt-6 text-ink-100/90 text-lg mx-auto leading-relaxed">${pengaturan.deskripsi_singkat || ''}</p>
+                <p class="mt-6 text-ink-100/90 text-lg mx-auto leading-relaxed" style="font-family:'Poppins',sans-serif;">${pengaturan.deskripsi_singkat || ''}</p>
         <div class="mt-8 flex flex-wrap gap-4 justify-center">
             <a href="profil.html" class="rounded-full bg-gold-500 text-ink-800 font-semibold px-7 py-3.5 hover:bg-gold-400 transition">Kenali Sekolah Kami</a>
             <a href="kontak.html" class="rounded-full border border-white/30 text-white px-7 py-3.5 hover:bg-white/10 transition">Hubungi Kami</a>
@@ -350,7 +350,7 @@ function generateIndex(pengaturan, berita, pengumuman, galeri, guru, igPosts, he
                 <h1 class="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.08]">
                     Welcome to Eagle School
                 </h1>
-                <p class="mt-6 text-ink-100/90 text-lg mx-auto leading-relaxed">${pengaturan.deskripsi_singkat || ''}</p>
+        <p class="mt-6 text-ink-100/90 text-lg mx-auto leading-relaxed" style="font-family:'Poppins',sans-serif;">${pengaturan.deskripsi_singkat || ''}</p>
                 <div class="mt-8 flex flex-wrap gap-4 justify-center">
                     <a href="profil.html" class="rounded-full bg-gold-500 text-ink-800 font-semibold px-7 py-3.5 hover:bg-gold-400 transition">Kenali Sekolah Kami</a>
                     <a href="kontak.html" class="rounded-full border border-white/30 text-white px-7 py-3.5 hover:bg-white/10 transition">Hubungi Kami</a>
