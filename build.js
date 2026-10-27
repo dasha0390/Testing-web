@@ -309,22 +309,17 @@ function generateIndex(pengaturan, berita, pengumuman, galeri, guru, igPosts, he
     html += `<section class="relative overflow-hidden bg-ink-800">
     ${heroMedia(pengaturan)}
     <div class="absolute inset-0 opacity-[0.07]" style="background-image: radial-gradient(circle at 20% 20%, white 1px, transparent 1px); background-size: 22px 22px;"></div>
-    <div class="max-w-7xl mx-auto px-5 sm:px-8 py-20 lg:py-28 grid lg:grid-cols-5 gap-12 items-center relative">
-        <div class="lg:col-span-3 fade-up">
-            <span class="inline-flex items-center gap-2 text-gold-400 text-xs tracking-[0.2em] uppercase font-semibold">
-                <span class="h-px w-8 bg-gold-400"></span> Sejak ${pengaturan.tahun_berdiri || '—'}
-            </span>
-            <h1 class="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.08]">
-                Membangun Generasi Pemimpin,<br class="hidden sm:block"> <span class="signature-underline text-gold-400">Berwawasan Global, Terampil</span> & Berjiwa Pengusaha.
-            </h1>
-            <p class="mt-6 text-ink-100/90 text-lg max-w-xl leading-relaxed">${pengaturan.deskripsi_singkat || ''}</p>
-            <div class="mt-8 flex flex-wrap gap-4">
-                <a href="profil.html" class="rounded-full bg-gold-500 text-ink-800 font-semibold px-7 py-3.5 hover:bg-gold-400 transition">Kenali Sekolah Kami</a>
-                <a href="kontak.html" class="rounded-full border border-white/30 text-white px-7 py-3.5 hover:bg-white/10 transition">Hubungi Kami</a>
-            </div>
-        </div>
-        <div class="lg:col-span-2 fade-up" style="animation-delay:.15s">
-            <img src="gedung.png" alt="Gedung Sekolah" class="rounded-2xl shadow-2xl w-full object-cover rotate-1 hover:rotate-0 transition-transform duration-300">
+    <div class="relative max-w-3xl mx-auto px-5 sm:px-8 py-20 lg:py-28 text-center fade-up">
+        <span class="inline-flex items-center gap-2 text-gold-400 text-xs tracking-[0.2em] uppercase font-semibold">
+            <span class="h-px w-8 bg-gold-400"></span> Sejak ${pengaturan.tahun_berdiri || '—'}
+        </span>
+        <h1 class="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.08]">
+            Welcome to Eagle School
+        </h1>
+        <p class="mt-6 text-ink-100/90 text-lg mx-auto leading-relaxed">${pengaturan.deskripsi_singkat || ''}</p>
+        <div class="mt-8 flex flex-wrap gap-4 justify-center">
+            <a href="profil.html" class="rounded-full bg-gold-500 text-ink-800 font-semibold px-7 py-3.5 hover:bg-gold-400 transition">Kenali Sekolah Kami</a>
+            <a href="kontak.html" class="rounded-full border border-white/30 text-white px-7 py-3.5 hover:bg-white/10 transition">Hubungi Kami</a>
         </div>
     </div>
 </section>`;
@@ -349,22 +344,17 @@ function generateIndex(pengaturan, berita, pengumuman, galeri, guru, igPosts, he
                 ${heroMedia(pengaturan)}
                 <div class="absolute inset-0 opacity-[0.07]" style="background-image: radial-gradient(circle at 20% 20%, white 1px, transparent 1px); background-size: 22px 22px;"></div>
             </div>
-            <div class="max-w-7xl mx-auto px-5 sm:px-8 py-20 lg:py-28 grid lg:grid-cols-5 gap-12 items-center relative w-full">
-                <div class="lg:col-span-3 fade-up">
-                    <span class="inline-flex items-center gap-2 text-gold-400 text-xs tracking-[0.2em] uppercase font-semibold">
-                        <span class="h-px w-8 bg-gold-400"></span> Sejak ${pengaturan.tahun_berdiri || '—'}
-                    </span>
-                    <h1 class="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.08]">
-                        Membangun Generasi Pemimpin,<br class="hidden sm:block"> <span class="signature-underline text-gold-400">Berwawasan Global, Terampil</span> & Berjiwa Pengusaha.
-                    </h1>
-                    <p class="mt-6 text-ink-100/90 text-lg max-w-xl leading-relaxed">${pengaturan.deskripsi_singkat || ''}</p>
-                    <div class="mt-8 flex flex-wrap gap-4">
-                        <a href="profil.html" class="rounded-full bg-gold-500 text-ink-800 font-semibold px-7 py-3.5 hover:bg-gold-400 transition">Kenali Sekolah Kami</a>
-                        <a href="kontak.html" class="rounded-full border border-white/30 text-white px-7 py-3.5 hover:bg-white/10 transition">Hubungi Kami</a>
-                    </div>
-                </div>
-                <div class="lg:col-span-2 fade-up" style="animation-delay:.15s">
-                    <img src="gedung.png" alt="Gedung Sekolah" class="rounded-2xl shadow-2xl w-full object-cover rotate-1 hover:rotate-0 transition-transform duration-300">
+            <div class="relative max-w-3xl mx-auto px-5 sm:px-8 py-20 lg:py-28 text-center fade-up w-full">
+                <span class="inline-flex items-center gap-2 text-gold-400 text-xs tracking-[0.2em] uppercase font-semibold">
+                    <span class="h-px w-8 bg-gold-400"></span> Sejak ${pengaturan.tahun_berdiri || '—'}
+                </span>
+                <h1 class="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.08]">
+                    Welcome to Eagle School
+                </h1>
+                <p class="mt-6 text-ink-100/90 text-lg mx-auto leading-relaxed">${pengaturan.deskripsi_singkat || ''}</p>
+                <div class="mt-8 flex flex-wrap gap-4 justify-center">
+                    <a href="profil.html" class="rounded-full bg-gold-500 text-ink-800 font-semibold px-7 py-3.5 hover:bg-gold-400 transition">Kenali Sekolah Kami</a>
+                    <a href="kontak.html" class="rounded-full border border-white/30 text-white px-7 py-3.5 hover:bg-white/10 transition">Hubungi Kami</a>
                 </div>
             </div>
         </div>
