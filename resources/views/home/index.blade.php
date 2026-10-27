@@ -36,9 +36,11 @@
                     <source src="{{ asset('storage/'.$item->video) }}" type="video/mp4">
                 </video>
                 <div class="absolute inset-0 bg-ink-800/70"></div>
-            @elseif($item->gambar)
+            @elseif($item->tipe === 'utama' && $item->gambar)
                 <img src="{{ asset('storage/'.$item->gambar) }}" alt="" class="absolute inset-0 w-full h-full object-cover">
                 <div class="absolute inset-0 bg-ink-800/70"></div>
+            @elseif($item->gambar)
+                <img src="{{ asset('storage/'.$item->gambar) }}" alt="" class="absolute inset-0 w-full h-full object-cover">
             @else
                 <div class="absolute inset-0 opacity-[0.07]" style="background-image: radial-gradient(circle at 20% 20%, white 1px, transparent 1px); background-size: 22px 22px;"></div>
             @endif

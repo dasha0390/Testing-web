@@ -179,7 +179,7 @@ function navbar(pengaturan) {
     <div class="max-w-7xl mx-auto px-5 sm:px-8">
         <div class="flex items-center justify-between h-20">
             <a href="index.html" class="flex items-center gap-3">
-                ${pengaturan.logo ? `<img src="${pengaturan.logo}" alt="Logo" class="h-11 w-11 rounded-full object-cover">` : `<img src="eagle.jpg" alt="Logo" class="h-11 w-11 rounded-full object-cover">`}
+                <img src="eagle.jpg" alt="Logo" class="h-11 w-11 rounded-full object-cover">
                 <div class="leading-tight">
                     <p class="font-display text-lg text-ink-800">${pengaturan.singkatan || 'Sekolah Kita'}</p>
                     <p class="text-[11px] tracking-widest uppercase text-ink-600/70">Berprestasi &amp; Berkarakter</p>
@@ -328,7 +328,6 @@ function generateIndex(pengaturan, berita, pengumuman, galeri, guru, igPosts, he
       const g = String(s.gambar).trim();
       return `<div class="relative w-full shrink-0 min-h-[520px] lg:min-h-[640px] flex items-center">
         <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('${escAttr(g)}');"></div>
-        <div class="absolute inset-0 bg-ink-800/70"></div>
         <div class="relative w-full max-w-3xl mx-auto px-5 sm:px-8 py-20 lg:py-28 text-center">
             ${s.judul ? `<h1 class="font-display text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.08]">${escHtml(s.judul)}</h1>` : ''}
             ${s.subjudul ? `<p class="mt-6 text-ink-100/90 text-lg leading-relaxed">${escHtml(s.subjudul)}</p>` : ''}

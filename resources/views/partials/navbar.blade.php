@@ -5,9 +5,7 @@
                 @if($pengaturanGlobal->logo ?? false)
                     <img src="{{ asset('storage/'.$pengaturanGlobal->logo) }}" alt="Logo" class="h-11 w-11 rounded-full object-cover">
                 @else
-                    <span class="h-11 w-11 rounded-full bg-ink-700 text-gold-100 flex items-center justify-center font-display text-lg">
-                        {{ mb_substr($pengaturanGlobal->singkatan ?? 'S', 0, 1) }}
-                    </span>
+                    <img src="{{ asset('eagle.jpg') }}" alt="Logo" class="h-11 w-11 rounded-full object-cover">
                 @endif
                 <div class="leading-tight">
                     <p class="font-display text-lg text-ink-800">{{ $pengaturanGlobal->singkatan ?? 'Sekolah Kita' }}</p>
